@@ -1,0 +1,71 @@
+<html>
+
+<head>
+<script src="./ressources/jquery-3.1.1.min.js"></script>
+<script src="./ressources/fabric-1.7.6.min.js"></script>
+<script src="./ressources/canvas.js"></script>
+</head>
+
+<body>
+
+Canvas ! !
+<div id='container' style="height:600px;width:800px;border:1px solid #000">
+<canvas id='canvas345' width='600px' height='800px' style='border:1px solid #EEE'> </canvas>
+</div>
+
+
+<canvas id="c" width="600" height="500" style="border:1px solid #ccc"></canvas>
+
+<script id="main">
+
+console.log('create canvas ');
+var mw = mw || {};
+$(document).ready(function () {
+	console.log('start');
+	var editor = new mw.ext.imageAnnotator.Editor('container','canvas345','');
+});
+/*
+var canvas = new fabric.Canvas('c');
+fabric.Image.fromURL('../assets/pug_small.jpg', function(img) {
+  img.scale(0.5).set({
+    left: 150,
+    top: 150,
+    angle: -15
+  });
+  canvas.add(img).setActiveObject(img);
+});
+
+var info = document.getElementById('info');
+
+ canvas.add(
+    new fabric.Rect({ top: 100, left: 100, width: 50, height: 50, fill: '#f55' }),
+    new fabric.Circle({ top: 140, left: 230, radius: 75, fill: 'green' }),
+    new fabric.Triangle({ top: 300, left: 210, width: 100, height: 100, fill: 'blue' })
+  );
+
+canvas.on({
+  'touch:gesture': function() {
+    var text = document.createTextNode(' Gesture ');
+    info.insertBefore(text, info.firstChild);
+  },
+  'touch:drag': function() {
+    var text = document.createTextNode(' Dragging ');
+    info.insertBefore(text, info.firstChild);
+  },
+  'touch:orientation': function() {
+    var text = document.createTextNode(' Orientation ');
+    info.insertBefore(text, info.firstChild);
+  },
+  'touch:shake': function() {
+    var text = document.createTextNode(' Shaking ');
+    info.insertBefore(text, info.firstChild);
+  },
+  'touch:longpress': function() {
+    var text = document.createTextNode(' Longpress ');
+    info.insertBefore(text, info.firstChild);
+  }
+});*/
+</script>
+
+</body>
+</html>
