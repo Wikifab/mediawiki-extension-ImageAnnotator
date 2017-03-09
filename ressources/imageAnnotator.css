@@ -18,3 +18,14 @@
 .mw-ia-popup-buttonbar {
 	
 }
+
+.mw-ia-editButton {
+	
+    background: url(images/edit.png) no-repeat 0 0;
+    cursor: pointer;
+    float: right;
+    height: 26px;
+    margin-left: 5px;
+    padding: 5px 10px;
+    width: 26px;
+}

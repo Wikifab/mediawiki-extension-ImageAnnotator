@@ -23,7 +23,7 @@ mw.ext.imageAnnotator = mw.ext.imageAnnotator || {};
 		this.staticEditor = staticEditor;
 		this.dataInput = dataInput;
 		
-		var button = $('<button>Edit</button>');
+		var button = $('<span class="image-button mw-ia-editButton"></span>');
 
 		button.click(function() {
 			setTimeout(function() {
