@@ -1,0 +1,7 @@
+{
+    "name": "wikifab/ImageAnnotator",
+    "description": "Mediawiki extension to integrate Image editor in semantic page form",
+    "type": "mediawiki-extension",
+    "require": {
+    }
+}

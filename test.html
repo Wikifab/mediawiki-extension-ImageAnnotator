@@ -3,7 +3,7 @@
 <head>
 <script src="./ressources/jquery-3.1.1.min.js"></script>
 <script src="./ressources/fabric-1.7.6.min.js"></script>
-<script src="./ressources/canvas.js"></script>
+<script src="./ressources/mw.ext.imageAnnotator.Editor.js"></script>
 </head>
 
 <body>
@@ -22,7 +22,7 @@ console.log('create canvas ');
 var mw = mw || {};
 $(document).ready(function () {
 	console.log('start');
-	var editor = new mw.ext.imageAnnotator.Editor('container','canvas345','');
+	var editor = new mw.ext.imageAnnotator.Editor('#container','canvas345','');
 });
 /*
 var canvas = new fabric.Canvas('c');

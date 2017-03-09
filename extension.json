@@ -1,0 +1,61 @@
+{
+	"name": "ImageAnnotator",
+	"version": "0.1.0",
+	"author": [
+		"Pierre Boutet"
+	],
+	"url": "https://github.com/wikifab/ImageAnnotator",
+	"descriptionmsg": "imageAnnotator-desc",
+	"license-name": "MIT",
+	"type": "other",
+	"requires": {
+		"MediaWiki": ">= 1.28.0",
+		"extensions": {
+			"PageForms": "*"
+		}
+	},
+	"callback": "ImageAnnotator\\Hooks::onRegistration",
+	"ExtensionFunctions": [
+			"ImageAnnotator\\Hooks::initialize"
+	],
+	"config": {
+		"ImageAnnotator-areaClasses": "imageAnnotator"
+	},
+	"MessagesDirs": {
+		"ImageAnnotator": [
+			"i18n"
+		]
+	},
+	"Hooks": {
+		"FormEdit::showEditForm:initial": [
+			"ImageAnnotator\\Hooks::start"
+		]
+	},
+	"ResourceModules": {
+		"ext.imageannotator.editor": {
+			"scripts": [
+				"ressources/fabric-1.7.6.min.js",
+				"ressources/jquery.popup.overlay.1.7.13.js",
+				"ressources/mw.ext.imageAnnotator.Editor.js",
+				"ressources/mw.ext.imageAnnotator.EditorPopup.js",
+				"ressources/mw.ext.imageAnnotator.EditLink.js",
+				"ressources/mw.ext.imageAnnotator.init.js"
+			],
+			"styles": "ressources/imageAnnotator.css",
+			"dependencies": [
+			],
+			"messages": [
+				"flow-ve-switch-editor-tool-title"
+			]
+		}
+	},
+	"ResourceFileModulePaths": {
+		"localBasePath": "",
+		"remoteExtPath": "ImageAnnotator"
+	},
+	"AutoloadClasses": {
+		"ImageAnnotator\\Hooks": "includes/Hooks.php",
+		"ImageAnnotator\\InputEditableImage": "includes/InputEditableImage.php"
+	},
+	"manifest_version": 1
+}
