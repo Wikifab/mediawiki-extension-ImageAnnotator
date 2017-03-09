@@ -26,7 +26,13 @@
 			"i18n"
 		]
 	},
+	"ExtensionMessagesFiles": {
+		"ImageAnnotatorMagic": "ImageAnnotator.i18n.php"
+	},
 	"Hooks": {
+	    "ParserFirstCallInit": [
+			"ImageAnnotator\\Hooks::onParserFirstCallInit"
+		],
 		"FormEdit::showEditForm:initial": [
 			"ImageAnnotator\\Hooks::start"
 		]

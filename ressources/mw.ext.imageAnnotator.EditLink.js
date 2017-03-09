@@ -22,7 +22,6 @@ mw.ext.imageAnnotator = mw.ext.imageAnnotator || {};
 		this.image = image;
 		this.staticEditor = staticEditor;
 		this.dataInput = dataInput;
-		this.content = $(dataInput).val();
 		
 		var button = $('<button>Edit</button>');
 
@@ -37,7 +36,7 @@ mw.ext.imageAnnotator = mw.ext.imageAnnotator || {};
 	
 	mw.ext.imageAnnotator.EditLink.prototype.openEditor = function () {
 		
-		this.popup = new mw.ext.imageAnnotator.EditorPopup( this.image, this.content, this.staticEditor );
+		this.popup = new mw.ext.imageAnnotator.EditorPopup( this.image, $(this.dataInput).val(), this.staticEditor, this.dataInput );
 		
 	}
 

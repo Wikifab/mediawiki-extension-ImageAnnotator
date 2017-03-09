@@ -43,8 +43,10 @@ mw.ext.imageAnnotator = mw.ext.imageAnnotator || {};
 			var canvasElement = $("<canvas>").attr('id', this.canvasId ).css('border','1px solid #EEE');
 			// .attr('width', '300').attr('height', '200')
 			if (image) {
-				canvasElement.attr('width', $(image).width());
-				canvasElement.attr('height', $(image).height());
+				var width = mw.ext.imageAnnotator.standardWidth;
+				var height = $(image).height() * width / $(image).width();
+				canvasElement.attr('width', width);
+				canvasElement.attr('height', height);
 			}
 			this.container.append(canvasElement);
 		}
@@ -312,11 +314,24 @@ mw.ext.imageAnnotator = mw.ext.imageAnnotator || {};
 	 * this function generate an img div with svg content of canvas, and put it over the source image
 	 */
 	mw.ext.imageAnnotator.Editor.prototype.exportOverSourceImage = function () {
-		var img = $('<img>').attr('src', "data:image/svg+xml;utf8," + this.getSVG());
 		
-		$(img).css({position:'absolute', width:'100%', height:'auto', top: $(this.image).position().top, left: $(this.image).position().left});
+		if(this.overlayImg) {
+			$(this.overlayImg).remove();
+		}
+		this.overlayImg = $('<img>').attr('src', "data:image/svg+xml;utf8," + this.getSVG());
+		console.log('image init width : ' + this.overlayImg.width());
+		console.log('image container width : ' + $(this.image).width());
 
-		$(img).insertAfter(this.image);
+		// positioning
+		$(this.image).parent().css({ position:'relative'});
+		$(this.overlayImg).insertAfter(this.image);
+		$(this.overlayImg).css({ width:'100%'});
+
+		$(this.overlayImg).css({position:'absolute', width:'100%', height:'auto', top: 0, left: 0});
+
+		console.log('image final width : ' + this.overlayImg.width());
+
+		$('#'+this.canvasId).hide();
 	}
 
 

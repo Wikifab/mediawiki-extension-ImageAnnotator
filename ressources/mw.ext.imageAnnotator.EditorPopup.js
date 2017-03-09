@@ -15,10 +15,11 @@ mw.ext.imageAnnotator = mw.ext.imageAnnotator || {};
 	 * @param {jQuery} container container to put editor in it
 	 * @param {string} [content='']
 	 */
-	mw.ext.imageAnnotator.EditorPopup = function ( image, content, staticEditor ) {
+	mw.ext.imageAnnotator.EditorPopup = function ( image, content, staticEditor, dataInput ) {
 		this.initPopup();
 		this.image = image;
 		this.staticEditor = staticEditor;
+		this.dataInput = dataInput;
 		this.content = content;
 		
 		console.log('launch EditorPopup');
@@ -42,8 +43,10 @@ mw.ext.imageAnnotator = mw.ext.imageAnnotator || {};
 		};
 		this.editor = new mw.ext.imageAnnotator.Editor( this.imagediv, null, this.content, this.clonedImage, true, options );
 
+		$(this.imagediv).css('width',mw.ext.imageAnnotator.standardWidth + 'px');
 		$(this.imagediv).css("background-image", "url('" + this.clonedImage.attr('src') +"')");
 		$(this.imagediv).css("background-repeat","no");
+		$(this.imagediv).css("background-size","100% 100%");
 		this.clonedImage.hide();
 		
 		this.buttonbar.append($('<button>Save</button>').click(function () {
@@ -101,7 +104,9 @@ mw.ext.imageAnnotator = mw.ext.imageAnnotator || {};
 	 */
 	mw.ext.imageAnnotator.EditorPopup.prototype.save = function () {
 		if (this.staticEditor) {
-			this.staticEditor.updateData(this.editor.getJson());
+			var json = this.editor.getJson()
+			$(this.dataInput).val(json)
+			this.staticEditor.updateData(json);
 		}
 		$('#mw-ia-popup-div').popup('hide');
 		
