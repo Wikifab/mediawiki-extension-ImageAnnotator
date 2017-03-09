@@ -47,12 +47,15 @@ $(document).ready(function () {
 	$('.annotatedImageContainer').each(function () {
 		var annotatedContent = $(this).find('.annotatedcontent').attr('data-annotatedcontent');
 		var image = $(this).find('img');
-		console.log('annotatedImage');
-		console.log(annotatedContent);
-		if (annotatedContent) {
-			var staticEditor = new mw.ext.imageAnnotator.Editor( this, canvasId = null, annotatedContent, image ) ;
+		if( image) {
+			// we add editor only for existing images
+			console.log('annotatedImage');
+			console.log(annotatedContent);
+			if (annotatedContent) {
+				var staticEditor = new mw.ext.imageAnnotator.Editor( this, canvasId = null, annotatedContent, image ) ;
+			}
+			$(this).find('a').css('display','inline-block');
 		}
-		$(this).find('a').css('display','inline-block');
 	});
 });
 

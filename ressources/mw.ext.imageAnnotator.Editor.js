@@ -68,21 +68,7 @@ mw.ext.imageAnnotator = mw.ext.imageAnnotator || {};
 		
 		//content = '{"objects":[{"type":"image","originX":"left","originY":"top","left":39,"top":53,"width":360,"height":258,"fill":"rgb(0,0,0)","stroke":null,"strokeWidth":0,"strokeDashArray":null,"strokeLineCap":"butt","strokeLineJoin":"miter","strokeMiterLimit":10,"scaleX":1,"scaleY":1,"angle":0,"flipX":false,"flipY":false,"opacity":1,"shadow":null,"visible":true,"clipTo":null,"backgroundColor":"","fillRule":"nonzero","globalCompositeOperation":"source-over","transformMatrix":null,"skewX":0,"skewY":0,"crossOrigin":"","alignX":"none","alignY":"none","meetOrSlice":"meet","src":"http://files.wikifab.org/7/7b/Le_petit_robot_%C3%A9ducatif_SCOTT_by_La_Machinerie_robot-scott.jpg","filters":[],"resizeFilters":[]},{"type":"polyline","originX":"left","originY":"top","left":20,"top":20,"width":10,"height":90,"fill":"rgba(255,0,0,0)","stroke":"red","strokeWidth":3,"strokeDashArray":null,"strokeLineCap":"butt","strokeLineJoin":"miter","strokeMiterLimit":10,"scaleX":1,"scaleY":1,"angle":-90,"flipX":false,"flipY":false,"opacity":1,"shadow":null,"visible":true,"clipTo":null,"backgroundColor":"","fillRule":"nonzero","globalCompositeOperation":"source-over","transformMatrix":null,"skewX":0,"skewY":0,"points":[{"x":30,"y":30},{"x":30,"y":120},{"x":25,"y":110},{"x":30,"y":120},{"x":35,"y":110}]}]}';
 		
-		if(content) {
-			
-			this.updateData(content);
-
-			//this.canvas.loadFromJSON(content);
-			//this.canvas.renderAll();
-		} else if (image) {
-			this.fabricImage = new fabric.Image(image.get(0), {
-				  left: 0,
-				  top: 0,
-				  angle: 0,
-				  opacity: 1
-				});
-			this.canvas.add(this.fabricImage);
-		}
+		this.updateData(content);
 		
 		if( ! this.isStatic) {
 			this.addToolbarDyn(toolbarConfig);
@@ -95,13 +81,21 @@ mw.ext.imageAnnotator = mw.ext.imageAnnotator || {};
 		console.log("editor Update");
 		console.log(content);
 		this.canvas.remove(this.canvas.getObjects());
-		this.canvas.loadFromJSON(content, function () {
+		if (content) {
+			this.canvas.loadFromJSON(content, function () {
+				editor.canvas.renderAll();
+				if ( editor.isStatic) {
+					editor.placeOverSourceImage();
+				}
+				console.log('canvas reloaded');
+			});
+		} else {
 			editor.canvas.renderAll();
 			if ( editor.isStatic) {
 				editor.placeOverSourceImage();
 			}
-			console.log('cavas reloaded');
-		});
+			console.log('empty canvas reloaded');
+		}
 	}
 
 	mw.ext.imageAnnotator.Editor.prototype.addRectangle = function (size) {
