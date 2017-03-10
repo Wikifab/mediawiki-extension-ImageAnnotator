@@ -3,14 +3,8 @@ mw.ext = mw.ext || {};
 mw.ext.imageAnnotator = mw.ext.imageAnnotator || {};
 
 
-$( document ).ready(function() {
-    console.log( "ready!" );
-});
-
 $(document).ready(function () {
-		
-	
-	console.log('START ImageAnnotator ' );
+
 	
 	// edition : 
 	$('.editableImageDataInput').each(function () {
@@ -30,8 +24,6 @@ $(document).ready(function () {
 		var canvasId = null;//imageInputId + "_overlaycanvas";
 		var content = $(this).val();
 		var image = imagePreview.find('img')
-		
-		console.log('new Editor on ' + targetInputName + ' : ' + canvasId);
 
 		// load static canvas
 		var staticEditor = new mw.ext.imageAnnotator.Editor( imagePreview, canvasId = null, content, image ) ;
@@ -47,14 +39,20 @@ $(document).ready(function () {
 	$('.annotatedImageContainer').each(function () {
 		var annotatedContent = $(this).find('.annotatedcontent').attr('data-annotatedcontent');
 		var image = $(this).find('img');
-		if( image) {
-			// we add editor only for existing images
-			console.log('annotatedImage');
-			console.log(annotatedContent);
-			if (annotatedContent) {
+
+		if( image && annotatedContent) {
+			try {
+				// check that this is json (not json when field doesn't exist)
+				// it trigger an exception if so
+				var jsonObject = jQuery.parseJSON(annotatedContent);
+				// we add editor only for existing images
 				var staticEditor = new mw.ext.imageAnnotator.Editor( this, canvasId = null, annotatedContent, image ) ;
+				$(this).find('a').css('display','inline-block');
 			}
-			$(this).find('a').css('display','inline-block');
+			catch(e) {
+				// occur for empty field, which set annotatedContent = {{{<fieldName>}}} (not JSON)
+				return;
+			}
 		}
 	});
 });

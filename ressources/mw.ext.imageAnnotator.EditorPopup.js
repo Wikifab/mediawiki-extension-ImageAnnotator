@@ -22,7 +22,6 @@ mw.ext.imageAnnotator = mw.ext.imageAnnotator || {};
 		this.dataInput = dataInput;
 		this.content = content;
 		
-		console.log('launch EditorPopup');
 
 		this.clonedImage = $(image).clone();
 		this.clonedImage.appendTo(this.imagediv);

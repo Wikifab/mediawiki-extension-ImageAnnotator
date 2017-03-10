@@ -78,8 +78,6 @@ mw.ext.imageAnnotator = mw.ext.imageAnnotator || {};
 	
 	mw.ext.imageAnnotator.Editor.prototype.updateData = function (content) {
 		var editor = this;
-		console.log("editor Update");
-		console.log(content);
 		this.canvas.remove(this.canvas.getObjects());
 		if (content) {
 			this.canvas.loadFromJSON(content, function () {
@@ -87,14 +85,12 @@ mw.ext.imageAnnotator = mw.ext.imageAnnotator || {};
 				if ( editor.isStatic) {
 					editor.placeOverSourceImage();
 				}
-				console.log('canvas reloaded');
 			});
 		} else {
 			editor.canvas.renderAll();
 			if ( editor.isStatic) {
 				editor.placeOverSourceImage();
 			}
-			console.log('empty canvas reloaded');
 		}
 	}
 
@@ -193,12 +189,10 @@ mw.ext.imageAnnotator = mw.ext.imageAnnotator || {};
 		    case 'del':
 		    	button.click(function() {
 					editor.delSelection();
-					console.log(editor.getJson());
 					return false;
 				});
 		        break;
-		    default : 
-		    	console.log('type not found' + label);
+		    default :
 		    	return;
 		}
 		this.toolbar.append(button);
@@ -274,7 +268,6 @@ mw.ext.imageAnnotator = mw.ext.imageAnnotator || {};
 	}
 	mw.ext.imageAnnotator.Editor.prototype.getSVG = function () {
 		
-		console.log(this.canvas.toSVG());
 		return this.canvas.toSVG();
 	}
 	mw.ext.imageAnnotator.Editor.prototype.replaceSourceImageBySVG = function () {
@@ -313,8 +306,6 @@ mw.ext.imageAnnotator = mw.ext.imageAnnotator || {};
 			$(this.overlayImg).remove();
 		}
 		this.overlayImg = $('<img>').attr('src', "data:image/svg+xml;utf8," + this.getSVG());
-		console.log('image init width : ' + this.overlayImg.width());
-		console.log('image container width : ' + $(this.image).width());
 
 		// positioning
 		$(this.image).parent().css({ position:'relative'});
@@ -322,8 +313,6 @@ mw.ext.imageAnnotator = mw.ext.imageAnnotator || {};
 		$(this.overlayImg).css({ width:'100%'});
 
 		$(this.overlayImg).css({position:'absolute', width:'100%', height:'auto', top: 0, left: 0});
-
-		console.log('image final width : ' + this.overlayImg.width());
 
 		$('#'+this.canvasId).hide();
 	}
