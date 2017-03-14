@@ -18,6 +18,9 @@ mw.ext.imageAnnotator = mw.ext.imageAnnotator || {};
 	mw.ext.imageAnnotator.Editor = function ( container, canvasId, content, image, editable, options ) {
 		var editor = this;
 		this.container = $( container);
+		if (this.container.length == 0) {
+			return;
+		}
 		this.isStatic = editable ? false : true;
 		this.image = image;
 		this.canvasElement = null;

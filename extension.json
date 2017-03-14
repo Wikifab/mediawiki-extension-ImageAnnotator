@@ -49,6 +49,7 @@
 			],
 			"styles": "ressources/imageAnnotator.css",
 			"dependencies": [
+				"oojs"
 			],
 			"messages": [
 				"flow-ve-switch-editor-tool-title"
