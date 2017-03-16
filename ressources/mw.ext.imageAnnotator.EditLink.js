@@ -6,6 +6,7 @@ mw.ext.imageAnnotator = mw.ext.imageAnnotator || {};
 	'use strict';
 
 
+	var editLinkCounter = 0;
 	/**
 	 * @class
 	 * @constructor
@@ -16,6 +17,10 @@ mw.ext.imageAnnotator = mw.ext.imageAnnotator || {};
 	 */
 	mw.ext.imageAnnotator.EditLink = function ( container, dataInput, image, staticEditor ) {
 		
+		editLinkCounter ++;
+		
+		this.editLinkId = editLinkCounter;
+		
 		
 		var editor = this; 
 		this.container = container;
@@ -23,7 +28,7 @@ mw.ext.imageAnnotator = mw.ext.imageAnnotator || {};
 		this.staticEditor = staticEditor;
 		this.dataInput = dataInput;
 		
-		var button = $('<span class="image-button mw-ia-editButton"></span>');
+		var button = $('<span class="image-button mw-ia-editButton"></span>').attr('id', this.getId());
 
 		button.click(function() {
 			setTimeout(function() {
@@ -32,6 +37,21 @@ mw.ext.imageAnnotator = mw.ext.imageAnnotator || {};
 			return false;
 		});
 		this.container.append(button);
+		console.log (this.getId());
+	}
+	
+	mw.ext.imageAnnotator.EditLink.prototype.getId = function () {
+		return 'iaEditLink' + this.editLinkId;
+	}
+	
+	/**
+	 * this function allow to change the dataInput linked to this button
+	 * for instance, if after reorder images elements, image is move into another input
+	 * 
+	 * @param [Object] datainput
+	 */
+	mw.ext.imageAnnotator.EditLink.prototype.updateDataInput = function (dataInput) {
+		this.dataInput = dataInput;
 	}
 	
 	mw.ext.imageAnnotator.EditLink.prototype.openEditor = function () {

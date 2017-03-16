@@ -43,15 +43,19 @@ mw.ext.imageAnnotator = mw.ext.imageAnnotator || {};
 			this.canvasId = canvasId;
 		} else {
 			this.canvasId = 'ia_canvas_' + mw.ext.imageAnnotator.canvasNextId;
-			var canvasElement = $("<canvas>").attr('id', this.canvasId ).css('border','1px solid #EEE');
+			this.canvasElement = $("<canvas>").attr('id', this.canvasId ).css('border','1px solid #EEE');
 			// .attr('width', '300').attr('height', '200')
 			if (image) {
-				var width = mw.ext.imageAnnotator.standardWidth;
-				var height = $(image).height() * width / $(image).width();
-				canvasElement.attr('width', width);
-				canvasElement.attr('height', height);
+				
+				editor.updateSize();
+				//if image not loaded, with recalc size after load :
+				$(image) 
+				    .load(function() {
+				    	editor.updateSize();
+				    });
+				
 			}
-			this.container.append(canvasElement);
+			this.container.append(this.canvasElement);
 		}
 
 		mw.ext.imageAnnotator.canvasNextId += mw.ext.imageAnnotator.canvasNextId;
@@ -79,11 +83,30 @@ mw.ext.imageAnnotator = mw.ext.imageAnnotator || {};
 		
 	}
 	
+	mw.ext.imageAnnotator.Editor.prototype.updateSize= function () {
+		var width = mw.ext.imageAnnotator.standardWidth;
+		var height = Math.round($(this.image).height() * width / $(this.image).width());
+		console.log('id:' + this.canvasId + 'width:'+ width + ' height:'+ height);
+		this.canvasElement.attr('width', width);
+		this.canvasElement.attr('height', height);
+		if (this.canvas) {
+			this.canvas.renderAll();
+		}
+	}
+	
 	mw.ext.imageAnnotator.Editor.prototype.updateData = function (content) {
 		var editor = this;
 		this.canvas.remove(this.canvas.getObjects());
 		if (content) {
 			this.canvas.loadFromJSON(content, function () {
+				//set width and height :
+				var obj = JSON.parse(content);
+				if (typeof obj.width !== 'undefined' ) {
+					editor.canvasElement.attr('width', obj.width);
+				}
+				if (typeof obj.height !== 'undefined' ) {
+					editor.canvasElement.attr('height', obj.height);
+				}
 				editor.canvas.renderAll();
 				if ( editor.isStatic) {
 					editor.placeOverSourceImage();
@@ -267,7 +290,11 @@ mw.ext.imageAnnotator = mw.ext.imageAnnotator || {};
 	// serialization methods :
 	
 	mw.ext.imageAnnotator.Editor.prototype.getJson = function () {
-		return JSON.stringify(this.canvas);
+		var objectData = this.canvas.toObject();
+		// we add height and width information :
+		objectData.height = this.canvasElement.attr('height');
+		objectData.width = this.canvasElement.attr('width');
+		return JSON.stringify(objectData);
 	}
 	mw.ext.imageAnnotator.Editor.prototype.getSVG = function () {
 		

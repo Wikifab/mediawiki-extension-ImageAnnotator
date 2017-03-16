@@ -42,10 +42,10 @@ mw.ext.imageAnnotator = mw.ext.imageAnnotator || {};
 		};
 		this.editor = new mw.ext.imageAnnotator.Editor( this.imagediv, null, this.content, this.clonedImage, true, options );
 
-		$(this.imagediv).css('width',mw.ext.imageAnnotator.standardWidth + 'px');
+		$(this.imagediv).css('width', mw.ext.imageAnnotator.standardWidth + 'px');
 		$(this.imagediv).css("background-image", "url('" + this.clonedImage.attr('src') +"')");
-		$(this.imagediv).css("background-repeat","no");
-		$(this.imagediv).css("background-size","100% 100%");
+		$(this.imagediv).css("background-repeat", "no");
+		$(this.imagediv).css("background-size", "100% 100%");
 		this.clonedImage.hide();
 		
 		this.buttonbar.append($('<button>Save</button>').click(function () {

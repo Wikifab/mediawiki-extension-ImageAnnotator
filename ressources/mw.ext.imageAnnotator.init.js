@@ -6,6 +6,9 @@ mw.ext.imageAnnotator = mw.ext.imageAnnotator || {};
 $(document).ready(function () {
 
 	
+	var editLinkRegister = mw.ext.imageAnnotator.getEditLinkRegister();
+	
+	
 	// edition : 
 	$('.editableImageDataInput').each(function () {
 		
@@ -25,14 +28,69 @@ $(document).ready(function () {
 		var content = $(this).val();
 		var image = imagePreview.find('img')
 
+		console.log("create canvas " + imageInputId);
+		console.log(content);
 		// load static canvas
 		var staticEditor = new mw.ext.imageAnnotator.Editor( imagePreview, canvasId = null, content, image ) ;
 		
+		var editLink = new mw.ext.imageAnnotator.EditLink( imagePreview, this, image, staticEditor);
 		
-		// TODO :  set link between edit link and static Canvas, and create save button
-		new mw.ext.imageAnnotator.EditLink( imagePreview, this, image, staticEditor);
+		editLinkRegister.registerEditLink(editLink, $(this).attr('name'));
 		
 	});
+
+	mw.hook('pmg.secondaryGallery.itemRemoved').add( function(input) {
+		//editLinkRegister.registerEditLink(editLink, $(this).attr('name'));
+		
+	});
+	mw.hook('pmg.secondaryGallery.itemChanged').add( function(input, li) {
+		// we reorder thumb, we must change the input used to store the json data
+		//editLinkRegister.registerEditLink(editLink, $(this).attr('name'));
+		
+	});
+
+	/*
+	mw.hook('pmg.secondaryGallery.newThumbAdded').add( function(li) {
+		console.log('add thumb !!');
+		console.log(li);
+		// get image preview div
+		var imagePreview = $(li).find('.pfImagePreviewWrapper');
+		if (imagePreview.length != 1) {
+			return;
+		}
+		
+		if ($(li).find('.mw-ia-editButton').length > 0 ) {
+			console.log ('edit link allready created');
+			return;
+		}
+		console.log(imagePreview);
+		var inputId = imagePreview.attr('id');
+		if(inputId) {
+			inputId = inputId.replace('_imagepreview','');
+		} else {
+			console.log ('fail to get input Id');
+			return;
+		}
+		// get image element
+		var image = imagePreview.find('img');
+		console.log("look for " + inputId);
+		// get data input element
+		var inputName = $('#' + inputId).attr('name');
+		console.log( 'attr name ' + inputName);
+		var dataInput = $('input.editableImageDataInput[data-targetname="' +inputName + '"]');
+		console.log(dataInput);
+		
+		imagePreview.find('img')
+		// load static canvas
+		var staticEditor = new mw.ext.imageAnnotator.Editor( imagePreview, null, dataInput.val(), image ) ;
+		
+		new mw.ext.imageAnnotator.EditLink( imagePreview, dataInput, image, staticEditor);
+		
+		//check if link already there
+		// create editor
+		// create editlink
+		
+	});*/
 	
 	
 	// display image annotation on view page :

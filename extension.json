@@ -45,6 +45,7 @@
 				"ressources/mw.ext.imageAnnotator.Editor.js",
 				"ressources/mw.ext.imageAnnotator.EditorPopup.js",
 				"ressources/mw.ext.imageAnnotator.EditLink.js",
+				"ressources/mw.ext.imageAnnotator.EditLinkRegister.js",
 				"ressources/mw.ext.imageAnnotator.init.js"
 			],
 			"styles": "ressources/imageAnnotator.css",
