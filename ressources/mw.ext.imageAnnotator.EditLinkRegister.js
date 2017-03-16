@@ -57,19 +57,22 @@ mw.ext.imageAnnotator = mw.ext.imageAnnotator || {};
 	/**
 	 * update the input target linked to the editLink
 	 */
-	mw.ext.imageAnnotator.EditLinkRegister.prototype.updateEditLinkInput = function (container, input) {
+	mw.ext.imageAnnotator.EditLinkRegister.prototype.updateEditLinkInput = function (container, dataInputName) {
 
-		this.inputsManaged[editLinkId] = dataInputId;
-		console.log("TODO update edit link ");
+		var editLinkId = $(container).find('.mw-ia-editButton').attr('id');
+		this.inputsManaged[editLinkId] = dataInputName;
+		
+		this.editLinks[editLinkId].updateDataInput($("input[name='"+dataInputName + "']"));
+		console.log("Update edit link id:" + editLinkId + " inputName:" + dataInputName);
 	}
 	
 	/**
 	 * update the input target linked to the editLink
 	 */
-	mw.ext.imageAnnotator.EditLinkRegister.prototype.removeEditLinkInput = function (input) {
+	mw.ext.imageAnnotator.EditLinkRegister.prototype.removeEditLinkInput = function (container) {
 
-		
-		console.log("TODO remove edit link ");
+		var editLinkId = $(container).find('.mw-ia-editButton').attr('id');
+		console.log("Remove edit link ");
 	}
 	
 

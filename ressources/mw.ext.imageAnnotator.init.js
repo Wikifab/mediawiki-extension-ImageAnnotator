@@ -39,13 +39,19 @@ $(document).ready(function () {
 		
 	});
 
-	mw.hook('pmg.secondaryGallery.itemRemoved').add( function(input) {
-		//editLinkRegister.registerEditLink(editLink, $(this).attr('name'));
+	mw.hook('pmg.secondaryGallery.itemRemoved').add( function(li) {
+		editLinkRegister.removeEditLinkInput(li);
 		
 	});
 	mw.hook('pmg.secondaryGallery.itemChanged').add( function(input, li) {
-		// we reorder thumb, we must change the input used to store the json data
-		//editLinkRegister.registerEditLink(editLink, $(this).attr('name'));
+		
+		//the input is the image input, we must get the data input :
+		//find target Image : 
+		var inputName = $(input).attr('name');
+		
+		var dataInput = $("input[data-targetname='"+inputName + "']");
+
+		editLinkRegister.updateEditLinkInput (li, $(dataInput).attr('name')) ;
 		
 	});
 

@@ -15,11 +15,10 @@ mw.ext.imageAnnotator = mw.ext.imageAnnotator || {};
 	 * @param {jQuery} container container to put editor in it
 	 * @param {string} [content='']
 	 */
-	mw.ext.imageAnnotator.EditorPopup = function ( image, content, staticEditor, dataInput ) {
+	mw.ext.imageAnnotator.EditorPopup = function (editLink, image, content ) {
+		this.editLink = editLink;
 		this.initPopup();
 		this.image = image;
-		this.staticEditor = staticEditor;
-		this.dataInput = dataInput;
 		this.content = content;
 		
 
@@ -99,14 +98,10 @@ mw.ext.imageAnnotator = mw.ext.imageAnnotator || {};
 	};
 	
 	/**
-	 * save modifications into original input in the staticEditor
+	 * save modifications into original input
 	 */
 	mw.ext.imageAnnotator.EditorPopup.prototype.save = function () {
-		if (this.staticEditor) {
-			var json = this.editor.getJson()
-			$(this.dataInput).val(json)
-			this.staticEditor.updateData(json);
-		}
+		this.editLink.updateData(this.editor.getJson());
 		$('#mw-ia-popup-div').popup('hide');
 		
 	}

@@ -27,6 +27,7 @@ mw.ext.imageAnnotator = mw.ext.imageAnnotator || {};
 		this.image = image;
 		this.staticEditor = staticEditor;
 		this.dataInput = dataInput;
+		this.content = $(this.dataInput).val();
 		
 		var button = $('<span class="image-button mw-ia-editButton"></span>').attr('id', this.getId());
 
@@ -52,12 +53,22 @@ mw.ext.imageAnnotator = mw.ext.imageAnnotator || {};
 	 */
 	mw.ext.imageAnnotator.EditLink.prototype.updateDataInput = function (dataInput) {
 		this.dataInput = dataInput;
+		$(this.dataInput).val(this.content);
 	}
 	
 	mw.ext.imageAnnotator.EditLink.prototype.openEditor = function () {
 		
-		this.popup = new mw.ext.imageAnnotator.EditorPopup( this.image, $(this.dataInput).val(), this.staticEditor, this.dataInput );
+		this.popup = new mw.ext.imageAnnotator.EditorPopup(this, this.image, $(this.dataInput).val() );
 		
+	}
+	
+	mw.ext.imageAnnotator.EditLink.prototype.updateData = function (content) {
+		this.content = content;
+		$(this.dataInput).val(content)
+		console.log('update Edit data ' + this.getId()); 
+		console.log( content); 
+		
+		this.staticEditor.updateData(content);
 	}
 
 
