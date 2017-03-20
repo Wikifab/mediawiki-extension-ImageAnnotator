@@ -54,6 +54,46 @@ $(document).ready(function () {
 		editLinkRegister.updateEditLinkInput (li, $(dataInput).attr('name')) ;
 		
 	});
+	
+	
+	mw.hook('pmg.secondaryGallery.newImageAdded').add( function(imageInput,li) {
+		
+		// hook to add edit link on image dropped on step :
+		
+		// TODO : this doesn't work, see why !
+		//find target Image : 
+		//var targetInputName = $(this).attr('data-targetname');
+		
+		//find imagePreview : 
+
+		//var imageInput = $("input[name='"+targetInputName + "']");
+		var targetInputName = $(imageInput).attr('name');
+		var dataInput = $("input[data-targetname='"+targetInputName + "']");
+		var imageInputId = $(imageInput).attr('id');
+		var imagePreview = $(li).find('.pfImagePreviewWrapper');
+		var buttonBar = $(li).find('.file-buttonbar');
+		
+		console.log('add image ');
+		console.log('imageInput');
+		console.log(buttonBar);
+		
+		// correct img size :
+		imagePreview.find('img').width("100%");
+		
+		var canvasId = null;//imageInputId + "_overlaycanvas";
+		var content = $(dataInput).val();
+		var image = imagePreview.find('img')
+
+		console.log("create canvas " + imageInputId);
+		console.log(content);
+		// load static canvas
+		var staticEditor = new mw.ext.imageAnnotator.Editor( imagePreview, canvasId = null, content, image ) ;
+		
+		var editLink = new mw.ext.imageAnnotator.EditLink( buttonBar, dataInput, image, staticEditor);
+		
+		editLinkRegister.registerEditLink(editLink, $(dataInput).attr('name'));
+		
+	});
 
 	/*
 	mw.hook('pmg.secondaryGallery.newThumbAdded').add( function(li) {
