@@ -1,4 +1,4 @@
-var mw = mw || {};
+ var mw = mw || {};
 mw.ext = mw.ext || {};
 mw.ext.imageAnnotator = mw.ext.imageAnnotator || {};
 
