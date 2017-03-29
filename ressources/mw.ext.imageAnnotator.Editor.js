@@ -1,13 +1,12 @@
-var mw = mw || {};
-mw.ext = mw.ext || {};
-mw.ext.imageAnnotator = mw.ext.imageAnnotator || {};
 
-( function ( $, mw, fabric ) {
+var ext_imageAnnotator = ext_imageAnnotator || {};
+
+( function ( $, mw, fabric, ext_imageAnnotator ) {
 	'use strict';
 
 	
-	mw.ext.imageAnnotator.canvasNextId = 1;
-	mw.ext.imageAnnotator.standardWidth = 600;
+	ext_imageAnnotator.canvasNextId = 1;
+	ext_imageAnnotator.standardWidth = 600;
 
 	/**
 	 * @class
@@ -15,7 +14,7 @@ mw.ext.imageAnnotator = mw.ext.imageAnnotator || {};
 	 * @param {jQuery} container container to put editor in it
 	 * @param {string} [content='']
 	 */
-	mw.ext.imageAnnotator.Editor = function ( container, canvasId, content, image, editable, options ) {
+	ext_imageAnnotator.Editor = function ( container, canvasId, content, image, editable, options ) {
 		var editor = this;
 		this.container = $( container);
 		if (this.container.length == 0) {
@@ -32,6 +31,7 @@ mw.ext.imageAnnotator = mw.ext.imageAnnotator || {};
 				'square',
 				'circle',
 				'arrow',
+				'text',
 				'del',
 				['color', 'black'],
 				['color', 'white'],
@@ -42,7 +42,7 @@ mw.ext.imageAnnotator = mw.ext.imageAnnotator || {};
 		if (canvasId) {
 			this.canvasId = canvasId;
 		} else {
-			this.canvasId = 'ia_canvas_' + mw.ext.imageAnnotator.canvasNextId;
+			this.canvasId = 'ia_canvas_' + ext_imageAnnotator.canvasNextId;
 			this.canvasElement = $("<canvas>").attr('id', this.canvasId ).css('border','1px solid #EEE');
 			// .attr('width', '300').attr('height', '200')
 			if (image) {
@@ -58,7 +58,7 @@ mw.ext.imageAnnotator = mw.ext.imageAnnotator || {};
 			this.container.append(this.canvasElement);
 		}
 
-		mw.ext.imageAnnotator.canvasNextId += mw.ext.imageAnnotator.canvasNextId;
+		ext_imageAnnotator.canvasNextId += ext_imageAnnotator.canvasNextId;
 
 		// METHOD 1
 		//$(self.container).append(canvaElement);
@@ -83,8 +83,8 @@ mw.ext.imageAnnotator = mw.ext.imageAnnotator || {};
 		
 	}
 	
-	mw.ext.imageAnnotator.Editor.prototype.updateSize= function () {
-		var width = mw.ext.imageAnnotator.standardWidth;
+	ext_imageAnnotator.Editor.prototype.updateSize= function () {
+		var width = ext_imageAnnotator.standardWidth;
 		var height = Math.round($(this.image).height() * width / $(this.image).width());
 		console.log('id:' + this.canvasId + 'width:'+ width + ' height:'+ height);
 		this.canvasElement.attr('width', width);
@@ -94,7 +94,7 @@ mw.ext.imageAnnotator = mw.ext.imageAnnotator || {};
 		}
 	}
 	
-	mw.ext.imageAnnotator.Editor.prototype.updateData = function (content) {
+	ext_imageAnnotator.Editor.prototype.updateData = function (content) {
 		var editor = this;
 		this.canvas.remove(this.canvas.getObjects());
 		if (content) {
@@ -120,14 +120,28 @@ mw.ext.imageAnnotator = mw.ext.imageAnnotator || {};
 		}
 	}
 
-	mw.ext.imageAnnotator.Editor.prototype.addRectangle = function (size) {
+	ext_imageAnnotator.Editor.prototype.addRectangle = function (size) {
 		
 		this.canvas.add(
 				new fabric.Rect({ top: 20, left: 20, width: size, height: size, strokeWidth: 3, stroke:this.currentColor, fill: 'rgba(255,0,0,0)' })
 		);
 	}
 
-	mw.ext.imageAnnotator.Editor.prototype.addCircle = function (size) {
+	ext_imageAnnotator.Editor.prototype.addCircle = function (size) {
+		
+		this.canvas.add(
+				new fabric.Circle({ 
+					top: 20,
+					left: 20,
+					radius: size,
+					strokeWidth: 3,
+					stroke:this.currentColor,
+					fill: 'rgba(255,0,0,0)'
+				})
+		);
+	}
+
+	ext_imageAnnotator.Editor.prototype.addText = function (size) {
 		
 		this.canvas.add(
 				new fabric.Circle({ 
@@ -141,7 +155,7 @@ mw.ext.imageAnnotator = mw.ext.imageAnnotator || {};
 		);
 	}
 	
-	mw.ext.imageAnnotator.Editor.prototype.addArrow = function (size) {
+	ext_imageAnnotator.Editor.prototype.addArrow = function (size) {
 		
 		var x = 20;
 		var y = 20;
@@ -162,7 +176,7 @@ mw.ext.imageAnnotator = mw.ext.imageAnnotator || {};
 		this.canvas.add(poly);
 	}
 	
-	mw.ext.imageAnnotator.Editor.prototype.setColor = function (color) {
+	ext_imageAnnotator.Editor.prototype.setColor = function (color) {
 		this.currentColor = color;
 		if(this.canvas.getActiveObject()) {
 			this.canvas.getActiveObject().setStroke(this.currentColor);
@@ -170,13 +184,13 @@ mw.ext.imageAnnotator = mw.ext.imageAnnotator || {};
 		}
 	}
 	
-	mw.ext.imageAnnotator.Editor.prototype.delSelection = function () {
+	ext_imageAnnotator.Editor.prototype.delSelection = function () {
 		if(this.canvas.getActiveObject()) {
 			this.canvas.getActiveObject().remove();
 		}
 	}
 
-	mw.ext.imageAnnotator.Editor.prototype.addButton = function (type, params) {
+	ext_imageAnnotator.Editor.prototype.addButton = function (type, params) {
 
 		var editor = this; 
 		var label  = type;
@@ -218,13 +232,19 @@ mw.ext.imageAnnotator = mw.ext.imageAnnotator || {};
 					return false;
 				});
 		        break;
+		    case 'text':
+		    	button.click(function() {
+					editor.addText();
+					return false;
+				});
+		        break;
 		    default :
 		    	return;
 		}
 		this.toolbar.append(button);
 	}
 
-	mw.ext.imageAnnotator.Editor.prototype.addToolbarDyn = function (buttons) {
+	ext_imageAnnotator.Editor.prototype.addToolbarDyn = function (buttons) {
 		
 		
 		if (this.options.hasOwnProperty('toolbarContainer')) {
@@ -246,7 +266,7 @@ mw.ext.imageAnnotator = mw.ext.imageAnnotator || {};
 		}
 	}
 
-	mw.ext.imageAnnotator.Editor.prototype.addToolbar = function () {
+	ext_imageAnnotator.Editor.prototype.addToolbar = function () {
 		var editor = this; 
 		this.toolbar = $('<div>').addClass('editorToolbar');
 		var carre = $('<button>carre</button>');
@@ -289,24 +309,24 @@ mw.ext.imageAnnotator = mw.ext.imageAnnotator || {};
 	
 	// serialization methods :
 	
-	mw.ext.imageAnnotator.Editor.prototype.getJson = function () {
+	ext_imageAnnotator.Editor.prototype.getJson = function () {
 		var objectData = this.canvas.toObject();
 		// we add height and width information :
 		objectData.height = this.canvasElement.attr('height');
 		objectData.width = this.canvasElement.attr('width');
 		return JSON.stringify(objectData);
 	}
-	mw.ext.imageAnnotator.Editor.prototype.getSVG = function () {
+	ext_imageAnnotator.Editor.prototype.getSVG = function () {
 		
 		return this.canvas.toSVG();
 	}
-	mw.ext.imageAnnotator.Editor.prototype.replaceSourceImageBySVG = function () {
+	ext_imageAnnotator.Editor.prototype.replaceSourceImageBySVG = function () {
 		$(this.image).attr('src', "data:image/svg+xml;utf8," + this.getSVG());
 	}
 	/**
 	 * this function generate an img div with svg content of canvas, and put it over the source image
 	 */
-	mw.ext.imageAnnotator.Editor.prototype.placeOverSourceImage = function ( noredim) {
+	ext_imageAnnotator.Editor.prototype.placeOverSourceImage = function ( noredim) {
 		
 		return this.exportOverSourceImage();
 		//var img = $('<img>').attr('src', "data:image/svg+xml;utf8," + this.getSVG());
@@ -330,7 +350,7 @@ mw.ext.imageAnnotator = mw.ext.imageAnnotator || {};
 	/**
 	 * this function generate an img div with svg content of canvas, and put it over the source image
 	 */
-	mw.ext.imageAnnotator.Editor.prototype.exportOverSourceImage = function () {
+	ext_imageAnnotator.Editor.prototype.exportOverSourceImage = function () {
 		
 		if(this.overlayImg) {
 			$(this.overlayImg).remove();
@@ -348,7 +368,7 @@ mw.ext.imageAnnotator = mw.ext.imageAnnotator || {};
 	}
 
 
-})(jQuery, mw, fabric);
+})(jQuery, mw, fabric, ext_imageAnnotator);
 
 
 

@@ -1,13 +1,18 @@
+<<<<<<< HEAD
  var mw = mw || {};
 mw.ext = mw.ext || {};
 mw.ext.imageAnnotator = mw.ext.imageAnnotator || {};
+=======
+>>>>>>> origin/master
 
-( function ( $, mw, fabric ) {
+ext_imageAnnotator = ext_imageAnnotator || {};
+
+( function ( $, mw, fabric, ext_imageAnnotator) {
 	'use strict';
 
 
-	mw.ext.imageAnnotator.EditorPopup_isInit = false;
-	mw.ext.imageAnnotator.EditorPopup_mainDiv = null;
+	ext_imageAnnotator.EditorPopup_isInit = false;
+	ext_imageAnnotator.EditorPopup_mainDiv = null;
 	
 	/**
 	 * @class
@@ -15,7 +20,7 @@ mw.ext.imageAnnotator = mw.ext.imageAnnotator || {};
 	 * @param {jQuery} container container to put editor in it
 	 * @param {string} [content='']
 	 */
-	mw.ext.imageAnnotator.EditorPopup = function (editLink, image, content ) {
+	ext_imageAnnotator.EditorPopup = function (editLink, image, content ) {
 		this.editLink = editLink;
 		this.initPopup();
 		this.image = image;
@@ -29,7 +34,7 @@ mw.ext.imageAnnotator = mw.ext.imageAnnotator || {};
 		this.launchEditor();
 	}
 	
-	mw.ext.imageAnnotator.EditorPopup.prototype.launchEditor = function () {
+	ext_imageAnnotator.EditorPopup.prototype.launchEditor = function () {
 		var editorPopup = this;
 /*
 		console.log('width : ' + this.image.width());
@@ -39,9 +44,9 @@ mw.ext.imageAnnotator = mw.ext.imageAnnotator || {};
 		var options = {
 				'toolbarContainer' : this.toolbar
 		};
-		this.editor = new mw.ext.imageAnnotator.Editor( this.imagediv, null, this.content, this.clonedImage, true, options );
+		this.editor = new ext_imageAnnotator.Editor( this.imagediv, null, this.content, this.clonedImage, true, options );
 
-		$(this.imagediv).css('width', mw.ext.imageAnnotator.standardWidth + 'px');
+		$(this.imagediv).css('width', ext_imageAnnotator.standardWidth + 'px');
 		$(this.imagediv).css("background-image", "url('" + this.clonedImage.attr('src') +"')");
 		$(this.imagediv).css("background-repeat", "no");
 		$(this.imagediv).css("background-size", "100% 100%");
@@ -58,11 +63,11 @@ mw.ext.imageAnnotator = mw.ext.imageAnnotator || {};
 	/**
 	 * this init popups div, if one popup has previously been launch, it erase content
 	 */
-	mw.ext.imageAnnotator.EditorPopup.prototype.initPopup = function () {
+	ext_imageAnnotator.EditorPopup.prototype.initPopup = function () {
 		var editorPopup = this;
-		if (mw.ext.imageAnnotator.EditorPopup_isInit) {
+		if (ext_imageAnnotator.EditorPopup_isInit) {
 			this.containerdiv = $('#mw-ia-popup-div');
-			this.maindiv = mw.ext.imageAnnotator.EditorPopup_mainDiv;
+			this.maindiv = ext_imageAnnotator.EditorPopup_mainDiv;
 			this.toolbar = this.maindiv.find('.mw-ia-popup-toolbar');
 			this.imagediv = this.maindiv.find('.mw-ia-popup-image');
 			this.buttonbar = this.maindiv.find('.mw-ia-popup-buttonbar');
@@ -93,17 +98,17 @@ mw.ext.imageAnnotator = mw.ext.imageAnnotator || {};
 		this.hiddendiv = $( '<div>' ).css('display', 'none').append(this.containerdiv);
 		this.hiddendiv.appendTo($('body'));
 		
-		mw.ext.imageAnnotator.EditorPopup_mainDiv = this.maindiv;
-		mw.ext.imageAnnotator.EditorPopup_isInit = true;
+		ext_imageAnnotator.EditorPopup_mainDiv = this.maindiv;
+		ext_imageAnnotator.EditorPopup_isInit = true;
 	};
 	
 	/**
 	 * save modifications into original input
 	 */
-	mw.ext.imageAnnotator.EditorPopup.prototype.save = function () {
+	ext_imageAnnotator.EditorPopup.prototype.save = function () {
 		this.editLink.updateData(this.editor.getJson());
 		$('#mw-ia-popup-div').popup('hide');
 		
 	}
 
-})(jQuery, mw, fabric);
+})(jQuery, mw, fabric, ext_imageAnnotator);

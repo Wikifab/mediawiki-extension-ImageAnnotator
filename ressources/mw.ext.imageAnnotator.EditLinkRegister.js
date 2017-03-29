@@ -1,6 +1,5 @@
-var mw = mw || {};
-mw.ext = mw.ext || {};
-mw.ext.imageAnnotator = mw.ext.imageAnnotator || {};
+
+ext_imageAnnotator = ext_imageAnnotator || {};
 
 
 /**
@@ -8,7 +7,7 @@ mw.ext.imageAnnotator = mw.ext.imageAnnotator || {};
  * for instance, when element are reordered using drag and drop, edit links must be reasign to appropriate input
  * 
  */
-( function ( $, mw, fabric ) {
+( function ( $, mw, fabric, ext_imageAnnotator ) {
 	'use strict';
 
 	var editLinkRegisterInstance = null;
@@ -18,7 +17,7 @@ mw.ext.imageAnnotator = mw.ext.imageAnnotator || {};
 	 * @class
 	 * @constructor
 	 */
-	mw.ext.imageAnnotator.EditLinkRegister = function (  ) {
+	ext_imageAnnotator.EditLinkRegister = function (  ) {
 		this.editLinks = {};
 		this.inputsManaged = {};
 	}
@@ -26,9 +25,9 @@ mw.ext.imageAnnotator = mw.ext.imageAnnotator || {};
 	/**
 	 * factory to get the register instance
 	 */
-	mw.ext.imageAnnotator.getEditLinkRegister = function (  ) {
+	ext_imageAnnotator.getEditLinkRegister = function (  ) {
 		if (editLinkRegisterInstance == null) {
-			editLinkRegisterInstance = new mw.ext.imageAnnotator.EditLinkRegister();
+			editLinkRegisterInstance = new ext_imageAnnotator.EditLinkRegister();
 		}
 		return editLinkRegisterInstance;
 	}
@@ -36,7 +35,7 @@ mw.ext.imageAnnotator = mw.ext.imageAnnotator || {};
 	/**
 	 * register a new edit link
 	 */
-	mw.ext.imageAnnotator.EditLinkRegister.prototype.registerEditLink = function (editLink, dataInputName) {
+	ext_imageAnnotator.EditLinkRegister.prototype.registerEditLink = function (editLink, dataInputName) {
 		var editLinkId = editLink.getId();
 		
 		this.editLinks[editLinkId] = editLink;
@@ -48,7 +47,7 @@ mw.ext.imageAnnotator = mw.ext.imageAnnotator || {};
 	/**
 	 * update the input target linked to the editLink
 	 */
-	mw.ext.imageAnnotator.EditLinkRegister.prototype.updateEditLinkInputId = function (editLinkId, dataInputId) {
+	ext_imageAnnotator.EditLinkRegister.prototype.updateEditLinkInputId = function (editLinkId, dataInputId) {
 
 		this.inputsManaged[editLinkId] = dataInputId;
 		console.log("update " + editLinkId + " -> " + dataInputName);
@@ -57,7 +56,7 @@ mw.ext.imageAnnotator = mw.ext.imageAnnotator || {};
 	/**
 	 * update the input target linked to the editLink
 	 */
-	mw.ext.imageAnnotator.EditLinkRegister.prototype.updateEditLinkInput = function (container, dataInputName) {
+	ext_imageAnnotator.EditLinkRegister.prototype.updateEditLinkInput = function (container, dataInputName) {
 
 		var editLinkId = $(container).find('.mw-ia-editButton').attr('id');
 		this.inputsManaged[editLinkId] = dataInputName;
@@ -69,7 +68,7 @@ mw.ext.imageAnnotator = mw.ext.imageAnnotator || {};
 	/**
 	 * update the input target linked to the editLink
 	 */
-	mw.ext.imageAnnotator.EditLinkRegister.prototype.removeEditLinkInput = function (container) {
+	ext_imageAnnotator.EditLinkRegister.prototype.removeEditLinkInput = function (container) {
 
 		var editLinkId = $(container).find('.mw-ia-editButton').attr('id');
 		console.log("Remove edit link ");
@@ -77,7 +76,7 @@ mw.ext.imageAnnotator = mw.ext.imageAnnotator || {};
 	
 
 
-})(jQuery, mw, fabric);
+})(jQuery, mw, fabric, ext_imageAnnotator);
 
 
 

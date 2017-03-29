@@ -1,8 +1,8 @@
 var mw = mw || {};
 mw.ext = mw.ext || {};
-mw.ext.imageAnnotator = mw.ext.imageAnnotator || {};
+ext_imageAnnotator = ext_imageAnnotator || {};
 
-( function ( $, mw, fabric ) {
+( function ( $, mw, fabric, ext_imageAnnotator ) {
 	'use strict';
 
 
@@ -15,7 +15,7 @@ mw.ext.imageAnnotator = mw.ext.imageAnnotator || {};
 	 * @param {jQuery} imageElement 
 	 * @param {fabric.StaticCanvas} static editor, (make image param useless ?)
 	 */
-	mw.ext.imageAnnotator.EditLink = function ( container, dataInput, image, staticEditor ) {
+	ext_imageAnnotator.EditLink = function ( container, dataInput, image, staticEditor ) {
 		
 		editLinkCounter ++;
 		
@@ -41,7 +41,7 @@ mw.ext.imageAnnotator = mw.ext.imageAnnotator || {};
 		console.log (this.getId());
 	}
 	
-	mw.ext.imageAnnotator.EditLink.prototype.getId = function () {
+	ext_imageAnnotator.EditLink.prototype.getId = function () {
 		return 'iaEditLink' + this.editLinkId;
 	}
 	
@@ -51,18 +51,18 @@ mw.ext.imageAnnotator = mw.ext.imageAnnotator || {};
 	 * 
 	 * @param [Object] datainput
 	 */
-	mw.ext.imageAnnotator.EditLink.prototype.updateDataInput = function (dataInput) {
+	ext_imageAnnotator.EditLink.prototype.updateDataInput = function (dataInput) {
 		this.dataInput = dataInput;
 		$(this.dataInput).val(this.content);
 	}
 	
-	mw.ext.imageAnnotator.EditLink.prototype.openEditor = function () {
+	ext_imageAnnotator.EditLink.prototype.openEditor = function () {
 		
-		this.popup = new mw.ext.imageAnnotator.EditorPopup(this, this.image, $(this.dataInput).val() );
+		this.popup = new ext_imageAnnotator.EditorPopup(this, this.image, $(this.dataInput).val() );
 		
 	}
 	
-	mw.ext.imageAnnotator.EditLink.prototype.updateData = function (content) {
+	ext_imageAnnotator.EditLink.prototype.updateData = function (content) {
 		this.content = content;
 		$(this.dataInput).val(content)
 		console.log('update Edit data ' + this.getId()); 
@@ -72,7 +72,7 @@ mw.ext.imageAnnotator = mw.ext.imageAnnotator || {};
 	}
 
 
-})(jQuery, mw, fabric);
+})(jQuery, mw, fabric, ext_imageAnnotator);
 
 
 
