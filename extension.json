@@ -30,6 +30,9 @@
 		"ImageAnnotatorMagic": "ImageAnnotator.i18n.php"
 	},
 	"Hooks": {
+	    "BeforePageDisplay": [
+			"ImageAnnotator\\Hooks::onBeforePageDisplay"
+		],
 	    "ParserFirstCallInit": [
 			"ImageAnnotator\\Hooks::onParserFirstCallInit"
 		],
@@ -48,6 +51,7 @@
 				"ressources/mw.ext.imageAnnotator.EditLinkRegister.js",
 				"ressources/mw.ext.imageAnnotator.init.js"
 			],
+			"position": "bottom",
 			"styles": "ressources/imageAnnotator.css",
 			"dependencies": [
 				"oojs"

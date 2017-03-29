@@ -28,15 +28,17 @@ class Hooks {
 	}
 
 
+	public static function onBeforePageDisplay( &$oOutputPage, &$oSkin ) {
+		$oOutputPage->addModules( 'ext.imageannotator.editor' );
+		return true;
+	}
+
+
 	public static function onParserFirstCallInit($parser) {
-		global $wgOut;
-		$wgOut->addModules( [
-				'ext.imageannotator.editor'
-		] );
 
 		$parser->setFunctionHook( 'annotatedImage', array('ImageAnnotator\\Hooks', 'annotatedImageParser' ));
-		//$parser->setFunctionHook( 'annotatedImage', 'ImageAnnotator\\Hooks::annotatedImageParser' );
 	}
+
 	public static function start() {
 		global $wgOut;
 
