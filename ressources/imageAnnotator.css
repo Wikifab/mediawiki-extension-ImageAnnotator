@@ -5,22 +5,93 @@
 .mw-ia-popup-main {
 	padding:10px;
 	background:#FFF;
-	-webkit-border-radius: 10px;
-	-moz-border-radius: 10px;
-	border-radius: 10px;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
 }
 .mw-ia-popup-toolbar {
-	
+	background:#555555;	
 }
+
+.mw-ia-popup-toolbar .editorButton {
+	background-color: #555555;
+    float: left;
+    border: 0px;
+    height: 36px;
+    width: 37px;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.mw-ia-popup-toolbar .editorButton:hover {
+	background-color: #777;
+}
+
+.mw-ia-popup-toolbar .editorButton.square {
+    background-image: url(images/square.png);
+}
+
+.mw-ia-popup-toolbar .editorButton.circle {
+    background-image: url(images/circle.png);
+}
+
+.mw-ia-popup-toolbar .editorButton.arrow {
+    background-image: url(images/arrow.png);
+}
+
+.mw-ia-popup-toolbar .editorButton.del {
+    background-image: url(images/del.png);
+    float:right;
+}
+
+.mw-ia-popup-toolbar .editorButton.text {
+    background-image: url(images/text.png);
+}
+
+.mw-ia-popup-toolbar .editorButton.black {
+    background-image: url(images/black.png);
+}
+
+.mw-ia-popup-toolbar .editorButton.white {
+    background-image: url(images/white.png);
+}
+
+.mw-ia-popup-toolbar .editorButton.red {
+    background-image: url(images/red.png);
+}
+
+.mw-ia-popup-toolbar .editorButton.blue {
+    background-image: url(images/blue.png);
+}
+
+.mw-ia-popup-toolbar .editorButton.yellow {
+    background-image: url(images/yellow.png);
+}
+
+.mw-ia-popup-toolbar .editorButton.green {
+    background-image: url(images/green.png);
+}
+
 .mw-ia-popup-image {
 	
 }
+
 .mw-ia-popup-buttonbar {
-	
+	background-color: #7ab55c;
+    color: #fff;
+    border: 0px;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+    margin-top: 5px;
+    padding: 6px 17px;
+}
+
+.mw-ia-popup-buttonbar:hover {
+	background-color: #6aa74c;
 }
 
 .mw-ia-editButton {
-	
     background: url(images/edit.png) no-repeat 0 0;
     cursor: pointer;
     float: right;
