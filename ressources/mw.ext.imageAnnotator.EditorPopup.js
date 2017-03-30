@@ -1,10 +1,3 @@
-<<<<<<< HEAD
- var mw = mw || {};
-mw.ext = mw.ext || {};
-mw.ext.imageAnnotator = mw.ext.imageAnnotator || {};
-=======
->>>>>>> origin/master
-
 ext_imageAnnotator = ext_imageAnnotator || {};
 
 ( function ( $, mw, fabric, ext_imageAnnotator) {
