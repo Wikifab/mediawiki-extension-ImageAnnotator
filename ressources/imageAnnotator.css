@@ -10,20 +10,22 @@
 	border-radius: 5px;
 }
 .mw-ia-popup-toolbar {
-	background:#555555;	
+    border: 1px solid #ccc;
+    height: 42px;
+    background: #f9f9f9;
 }
 
 .mw-ia-popup-toolbar .editorButton {
-	background-color: #555555;
+	background-color: #f9f9f9;
     border: 0px;
-    height: 36px;
-    width: 37px;
+    height: 40px;
+    width: 40px;
     background-position: center;
     background-repeat: no-repeat;
 }
 
 .mw-ia-popup-toolbar .editorButton:hover {
-	background-color: #777;
+	background-color: #eaecf0;
 }
 
 .mw-ia-popup-toolbar .editorButton.square {
@@ -49,33 +51,44 @@
 
 .mw-ia-popup-toolbar .editorButton.black {
     background-image: url(images/black.png);
+    width: 31px;
 }
 
 .mw-ia-popup-toolbar .editorButton.white {
     background-image: url(images/white.png);
+    width: 31px;
 }
 
 .mw-ia-popup-toolbar .editorButton.red {
     background-image: url(images/red.png);
+    width: 31px;
 }
 
 .mw-ia-popup-toolbar .editorButton.blue {
     background-image: url(images/blue.png);
+    width: 31px;
 }
 
 .mw-ia-popup-toolbar .editorButton.yellow {
     background-image: url(images/yellow.png);
+    width: 31px;
 }
 
 .mw-ia-popup-toolbar .editorButton.green {
     background-image: url(images/green.png);
+    width: 31px;
 }
 
 .mw-ia-popup-image {
-	
+    border: 1px solid #ccc;
+    border-top: none;
 }
 
-.mw-ia-popup-buttonbar {
+.mw-ia-popup-image .lower-canvas, .mw-ia-popup-image .upper-canvas {
+    border:none;
+}
+
+.mw-ia-popup-buttonbar button {
 	background-color: #7ab55c;
     color: #fff;
     border: 0px;
@@ -86,7 +99,7 @@
     padding: 6px 17px;
 }
 
-.mw-ia-popup-buttonbar:hover {
+.mw-ia-popup-buttonbar button:hover {
 	background-color: #6aa74c;
 }
 

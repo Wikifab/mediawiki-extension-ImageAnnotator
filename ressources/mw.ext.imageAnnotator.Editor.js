@@ -197,7 +197,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		if (type == 'color') {
 			label = params;
 		}
-		var button = $('<button>' + label + '</button>').addClass('editorButton').addClass(label);
+		var button = $('<button>' + '</button>').addClass('editorButton').addClass(label);
 
 		
 		switch (type) {
@@ -269,35 +269,35 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 	ext_imageAnnotator.Editor.prototype.addToolbar = function () {
 		var editor = this; 
 		this.toolbar = $('<div>').addClass('editorToolbar');
-		var carre = $('<button>carre</button>');
+		var carre = $('<button></button>');
 		carre.click(function() {
 			editor.addRectangle(100);
 		});
-		var rond = $('<button>rond</button>');
+		var rond = $('<button></button>');
 		rond.click(function() {
 			editor.addCircle(100);
 		});
-		var arrow = $('<button>Arrow</button>');
+		var arrow = $('<button></button>');
 		arrow.click(function() {
 			editor.addArrow(100);
 		});
-		var del = $('<button>Del</button>');
+		var del = $('<button></button>');
 		del.click(function() {
 			editor.delSelection();
 		});
-		var black = $('<button>Black</button>');
+		var black = $('<button></button>');
 		black.click(function() {
 			editor.setColor('black');
 		});
-		var blue = $('<button>Blue</button>');
+		var blue = $('<button></button>');
 		blue.click(function() {
 			editor.setColor('blue');
 		});
-		var red = $('<button>Red</button>');
+		var red = $('<button></button>');
 		red.click(function() {
 			editor.setColor('red');
 		});
-		var white = $('<button>white</button>');
+		var white = $('<button></button>');
 		white.click(function() {
 			editor.setColor('white');
 		});
