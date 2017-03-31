@@ -6,7 +6,7 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 
 	ext_imageAnnotator.EditorPopup_isInit = false;
 	ext_imageAnnotator.EditorPopup_mainDiv = null;
-	
+
 	/**
 	 * @class
 	 * @constructor
@@ -18,7 +18,7 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 		this.initPopup();
 		this.image = image;
 		this.content = content;
-		
+
 
 		this.clonedImage = $(image).clone();
 		this.clonedImage.appendTo(this.imagediv);
@@ -26,7 +26,7 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 		$('#mw-ia-popup-div').popup('show');
 		this.launchEditor();
 	}
-	
+
 	ext_imageAnnotator.EditorPopup.prototype.launchEditor = function () {
 		var editorPopup = this;
 
@@ -40,15 +40,21 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 		$(this.imagediv).css("background-repeat", "no");
 		$(this.imagediv).css("background-size", "100% 100%");
 		this.clonedImage.hide();
-		
-		this.buttonbar.append($('<button>Save</button>').click(function () {
+
+		// add save button
+		this.buttonbar.append($('<button>' +mw.message( 'imageannotator-button-save' ).text() + '</button>').click(function () {
 			setTimeout(function () {
 				editorPopup.save();
 			}, 10);
 			return false;
 		}));
+
+		// add cancel button
+		//this.buttonbar.append($('<button class="btn btn-default" data-dismiss="modal">' +mw.message( 'imageannotator-button-cancel' ).text() + '</button>').click(function () {
+		//	return false;
+		//}));
 	}
-		
+
 	/**
 	 * this init popups div, if one popup has previously been launch, it erase content
 	 */
@@ -65,8 +71,8 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 			this.buttonbar.html('');
 			return true;
 		}
-		
-		
+
+
 		this.containerdiv = $( '<div id="mw-ia-popup-div">' )
 			.addClass( 'mw-ia-popup-container' );
 		this.maindiv = $( '<div>' )
@@ -81,23 +87,23 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 		this.buttonbar = $( '<div>' )
 			.addClass( 'mw-ia-popup-buttonbar' )
 			.appendTo(this.maindiv);
-		
-		
+
+
 
 		this.hiddendiv = $( '<div>' ).css('display', 'none').append(this.containerdiv);
 		this.hiddendiv.appendTo($('body'));
-		
+
 		ext_imageAnnotator.EditorPopup_mainDiv = this.maindiv;
 		ext_imageAnnotator.EditorPopup_isInit = true;
 	};
-	
+
 	/**
 	 * save modifications into original input
 	 */
 	ext_imageAnnotator.EditorPopup.prototype.save = function () {
 		this.editLink.updateData(this.editor.getJson());
 		$('#mw-ia-popup-div').popup('hide');
-		
+
 	}
 
 })(jQuery, mw, fabric, ext_imageAnnotator);

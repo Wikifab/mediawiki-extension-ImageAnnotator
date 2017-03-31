@@ -27,16 +27,19 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 		// default params :
 		this.currentColor = 'red';
+		this.toolbarDivs = {};
 		var toolbarConfig = [
-				'square',
-				'circle',
-				'arrow',
-				'text',
-				'del',
-				['color', 'black'],
-				['color', 'white'],
-				['color', 'blue'],
-				['color', 'red'],
+				{'type':'div', 'name':'tools'},
+				{'type':'div', 'name':'colors'},
+				{'type':'square', 'parent':'tools'},
+				{'type':'circle', 'parent':'tools'},
+				{'type':'arrow', 'parent':'tools'},
+				{'type':'text', 'parent':'tools'},
+				{'type':'del', 'parent':'tools'},
+				{'type':'color', 'color':'black', 'parent':'colors'},
+				{'type':'color', 'color':'white', 'parent':'colors'},
+				{'type':'color', 'color':'blue', 'parent':'colors'},
+				{'type':'color', 'color':'red', 'parent':'colors'}
 			];
 
 		if (canvasId) {
@@ -201,6 +204,9 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		this.currentColor = color;
 		if(this.canvas.getActiveObject()) {
 			this.canvas.getActiveObject().setStroke(this.currentColor);
+			if (this.canvas.getActiveObject().getFill() != 'rgba(255,0,0,0)') {
+				this.canvas.getActiveObject().setFill(this.currentColor);
+			}
 			this.canvas.renderAll();
 		}
 	}
@@ -243,15 +249,28 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		this.moveSelection(0,5);
 	}
 
+	ext_imageAnnotator.Editor.prototype.addToolbarDiv = function (params) {
+
+		var name = params['name'];
+		var div = $('<div>').addClass('editorToolbarArea').addClass('toolbarArea-'+name);
+		this.toolbarDivs[name] = div;
+
+		this.toolbar.append(div);
+	}
+
 	ext_imageAnnotator.Editor.prototype.addButton = function (type, params) {
 
 		var editor = this;
 		var label  = type;
 		if (type == 'color') {
-			label = params;
+			label = params['color'];
 		}
+		if (type =='div') {
+			return this.addToolbarDiv(params);
+		}
+		var tooltip = mw.message( 'imageannotator-toolbar-'+ label + '-label' ).text()
 		var button = $('<button>' + '</button>').addClass('editorButton').addClass(label);
-
+		button.attr('alt',tooltip);
 
 		switch (type) {
 		    case 'color':
@@ -294,7 +313,11 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		    default :
 		    	return;
 		}
-		this.toolbar.append(button);
+		if (typeof(params['parent']) == "string") {
+			this.toolbarDivs[params['parent']].append(button);
+		} else {
+			this.toolbar.append(button);
+		}
 	}
 
 	ext_imageAnnotator.Editor.prototype.addToolbarDyn = function (buttons) {
@@ -309,14 +332,9 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		}
 
 		for(var configIndex in buttons) {
-			var type , params = '';
-			if(typeof buttons[configIndex] == 'string') {
-				type = buttons[configIndex];
-			} else {
-				type = buttons[configIndex][0];
-				params = buttons[configIndex][1];
-			}
-			this.addButton(type, params);
+			var button = buttons[configIndex];
+			var type = button['type'], params = '';
+			this.addButton(type, button);
 		}
 
 		// add keypress listener
@@ -415,7 +433,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 	}
 
 
-})(jQuery, mw, fabric, ext_imageAnnotator);
+})(jQuery, mediaWiki, fabric, ext_imageAnnotator);
 
 
 

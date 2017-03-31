@@ -57,7 +57,18 @@
 				"oojs"
 			],
 			"messages": [
-				"flow-ve-switch-editor-tool-title"
+			    "imageannotator-button-save",
+			    "imageannotator-button-cancel",
+			    "imageannotator-toolbar-square-label",
+			    "imageannotator-toolbar-circle-label",
+			    "imageannotator-toolbar-arrow-label",
+			    "imageannotator-toolbar-black-label",
+			    "imageannotator-toolbar-white-label",
+			    "imageannotator-toolbar-red-label",
+			    "imageannotator-toolbar-blue-label",
+			    "imageannotator-toolbar-yellow-label",
+			    "imageannotator-toolbar-green-label",
+			    "imageannotator-toolbar-dell-label"
 			]
 		}
 	},

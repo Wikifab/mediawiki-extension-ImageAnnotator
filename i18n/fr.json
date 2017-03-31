@@ -1,0 +1,29 @@
+{
+    "@metadata": {
+        "authors": [
+            "Pierre Boutet"
+        ]
+    },
+    "imageannotator-button-save": "Valider",
+    "imageannotator-button-cancel": "Annuler",
+    "imageannotator-toolbar-square-label": "Carré",
+    "imageannotator-toolbar-circle-label": "Cercle",
+    "imageannotator-toolbar-arrow-label": "Fléche",
+    "imageannotator-toolbar-black-label": "Noir",
+    "imageannotator-toolbar-white-label": "Blanc",
+    "imageannotator-toolbar-red-label": "Rouge",
+    "imageannotator-toolbar-blue-label": "Bleu",
+    "imageannotator-toolbar-yellow-label": "Jaune",
+    "imageannotator-toolbar-green-label": "Vert",
+    "imageannotator-toolbar-dell-label": "Supprimer"
+}
+
+
+
+ 
+
+
+
+
+
+
