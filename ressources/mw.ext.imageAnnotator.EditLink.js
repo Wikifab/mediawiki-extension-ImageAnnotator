@@ -38,7 +38,6 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 			return false;
 		});
 		this.container.append(button);
-		console.log (this.getId());
 	}
 	
 	ext_imageAnnotator.EditLink.prototype.getId = function () {
@@ -65,8 +64,6 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 	ext_imageAnnotator.EditLink.prototype.updateData = function (content) {
 		this.content = content;
 		$(this.dataInput).val(content)
-		console.log('update Edit data ' + this.getId()); 
-		console.log( content); 
 		
 		this.staticEditor.updateData(content);
 	}

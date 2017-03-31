@@ -40,8 +40,6 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 		
 		this.editLinks[editLinkId] = editLink;
 		this.inputsManaged[editLinkId] = dataInputName;
-		
-		console.log("register " + editLinkId + " -> " + dataInputName);
 	}
 
 	/**
@@ -50,7 +48,6 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 	ext_imageAnnotator.EditLinkRegister.prototype.updateEditLinkInputId = function (editLinkId, dataInputId) {
 
 		this.inputsManaged[editLinkId] = dataInputId;
-		console.log("update " + editLinkId + " -> " + dataInputName);
 	}
 	
 	/**
@@ -62,7 +59,6 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 		this.inputsManaged[editLinkId] = dataInputName;
 		
 		this.editLinks[editLinkId].updateDataInput($("input[name='"+dataInputName + "']"));
-		console.log("Update edit link id:" + editLinkId + " inputName:" + dataInputName);
 	}
 	
 	/**
@@ -71,7 +67,6 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 	ext_imageAnnotator.EditLinkRegister.prototype.removeEditLinkInput = function (container) {
 
 		var editLinkId = $(container).find('.mw-ia-editButton').attr('id');
-		console.log("Remove edit link ");
 	}
 	
 

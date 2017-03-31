@@ -28,8 +28,6 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 		var content = $(this).val();
 		var image = imagePreview.find('img')
 
-		console.log("create canvas " + imageInputId);
-		console.log(content);
 		// load static canvas
 		var staticEditor = new ext_imageAnnotator.Editor( imagePreview, canvasId = null, content, image ) ;
 		
@@ -73,10 +71,6 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 		var imagePreview = $(li).find('.pfImagePreviewWrapper');
 		var buttonBar = $(li).find('.file-buttonbar');
 		
-		console.log('add image ');
-		console.log('imageInput');
-		console.log(buttonBar);
-		
 		// correct img size :
 		imagePreview.find('img').width("100%");
 		
@@ -84,8 +78,6 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 		var content = $(dataInput).val();
 		var image = imagePreview.find('img')
 
-		console.log("create canvas " + imageInputId);
-		console.log(content);
 		// load static canvas
 		var staticEditor = new ext_imageAnnotator.Editor( imagePreview, canvasId = null, content, image ) ;
 		

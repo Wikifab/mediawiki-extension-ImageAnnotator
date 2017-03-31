@@ -73,10 +73,12 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			this.canvas = new fabric.Canvas(this.canvasId);
 		}
 		
+		this.canvas.selectionLineWidth = 10;
+		
 		//content = '{"objects":[{"type":"image","originX":"left","originY":"top","left":39,"top":53,"width":360,"height":258,"fill":"rgb(0,0,0)","stroke":null,"strokeWidth":0,"strokeDashArray":null,"strokeLineCap":"butt","strokeLineJoin":"miter","strokeMiterLimit":10,"scaleX":1,"scaleY":1,"angle":0,"flipX":false,"flipY":false,"opacity":1,"shadow":null,"visible":true,"clipTo":null,"backgroundColor":"","fillRule":"nonzero","globalCompositeOperation":"source-over","transformMatrix":null,"skewX":0,"skewY":0,"crossOrigin":"","alignX":"none","alignY":"none","meetOrSlice":"meet","src":"http://files.wikifab.org/7/7b/Le_petit_robot_%C3%A9ducatif_SCOTT_by_La_Machinerie_robot-scott.jpg","filters":[],"resizeFilters":[]},{"type":"polyline","originX":"left","originY":"top","left":20,"top":20,"width":10,"height":90,"fill":"rgba(255,0,0,0)","stroke":"red","strokeWidth":3,"strokeDashArray":null,"strokeLineCap":"butt","strokeLineJoin":"miter","strokeMiterLimit":10,"scaleX":1,"scaleY":1,"angle":-90,"flipX":false,"flipY":false,"opacity":1,"shadow":null,"visible":true,"clipTo":null,"backgroundColor":"","fillRule":"nonzero","globalCompositeOperation":"source-over","transformMatrix":null,"skewX":0,"skewY":0,"points":[{"x":30,"y":30},{"x":30,"y":120},{"x":25,"y":110},{"x":30,"y":120},{"x":35,"y":110}]}]}';
 		
 		this.updateData(content);
-		
+
 		if( ! this.isStatic) {
 			this.addToolbarDyn(toolbarConfig);
 		}
@@ -86,7 +88,6 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 	ext_imageAnnotator.Editor.prototype.updateSize= function () {
 		var width = ext_imageAnnotator.standardWidth;
 		var height = Math.round($(this.image).height() * width / $(this.image).width());
-		console.log('id:' + this.canvasId + 'width:'+ width + ' height:'+ height);
 		this.canvasElement.attr('width', width);
 		this.canvasElement.attr('height', height);
 		if (this.canvas) {
@@ -122,37 +123,54 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 	ext_imageAnnotator.Editor.prototype.addRectangle = function (size) {
 		
-		this.canvas.add(
-				new fabric.Rect({ top: 20, left: 20, width: size, height: size, strokeWidth: 3, stroke:this.currentColor, fill: 'rgba(255,0,0,0)' })
-		);
+		var rect = new fabric.Rect({
+			originX: 'center',
+			originY: 'center',
+			top: 120,
+			left: 120,
+			width: size,
+			height: size,
+			strokeWidth: 3,
+			stroke:this.currentColor,
+			fill: 'rgba(255,0,0,0)'
+		})
+		this.canvas.add(rect);
+		this.canvas.setActiveObject(rect);
 	}
 
 	ext_imageAnnotator.Editor.prototype.addCircle = function (size) {
 		
-		this.canvas.add(
-				new fabric.Circle({ 
-					top: 20,
-					left: 20,
-					radius: size,
-					strokeWidth: 3,
-					stroke:this.currentColor,
-					fill: 'rgba(255,0,0,0)'
-				})
-		);
+		var circle = new fabric.Circle({ 
+			originX: 'center',
+			originY: 'center',
+			top: 120,
+			left: 120,
+			radius: size,
+			strokeWidth: 3,
+			stroke:this.currentColor,
+			fill: 'rgba(255,0,0,0)'
+		});
+		
+		this.canvas.add(circle);
+		this.canvas.setActiveObject(circle);
 	}
 
 	ext_imageAnnotator.Editor.prototype.addText = function (size) {
 		
-		this.canvas.add(
-				new fabric.Circle({ 
-					top: 20,
-					left: 20,
-					radius: size,
-					strokeWidth: 3,
-					stroke:this.currentColor,
-					fill: 'rgba(255,0,0,0)'
-				})
-		);
+		var text = new fabric.Textbox('Texte',{ 
+			originX: 'center',
+			originY: 'center',
+			top: 120,
+			left: 120,
+			//fontWeight: 'bold',
+			fontSize: 20,
+			stroke:this.currentColor,
+			fill:this.currentColor,
+			//lockUniScaling:true
+			//fill: 'rgba(255,0,0,0)' // transparent
+		});
+		this.canvas.add(text);
+		this.canvas.setActiveObject(text);
 	}
 	
 	ext_imageAnnotator.Editor.prototype.addArrow = function (size) {
@@ -166,14 +184,17 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		    { x: x + 10, y: y + 100 },
 		    { x: x + 15, y: y + 90 }
 			], {
+			originX: 'center',
+			originY: 'center',
 			strokeWidth: 3,
 			stroke:this.currentColor,
 			fill: 'rgba(255,0,0,0)',
-			left: 20,
-			top: 20,
+			left: 120,
+			top: 120,
 			angle: -90,
 		});
 		this.canvas.add(poly);
+		this.canvas.setActiveObject(poly);
 	}
 	
 	ext_imageAnnotator.Editor.prototype.setColor = function (color) {
@@ -189,6 +210,38 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			this.canvas.getActiveObject().remove();
 		}
 	}
+	
+	ext_imageAnnotator.Editor.prototype.moveSelection =  function (dLeft, dTop) {
+		if(this.canvas.getActiveObject()) {
+			
+			var width = parseInt(this.canvasElement.attr('width'));
+			var height = parseInt(this.canvasElement.attr('height'));
+			
+			var left = this.canvas.getActiveObject().getLeft();
+			var top = this.canvas.getActiveObject().getTop();
+			left = Math.min(Math.max(left + dLeft, 0), width );
+			top = Math.min(Math.max(top + dTop, 0 ), height);
+			this.canvas.getActiveObject().setLeft(left);
+			this.canvas.getActiveObject().setTop(top);
+			this.canvas.renderAll();
+		}
+	}
+	
+	ext_imageAnnotator.Editor.prototype.moveLeft =  function () {
+		this.moveSelection(-5,0);
+	}
+	
+	ext_imageAnnotator.Editor.prototype.moveRight =  function () {
+		this.moveSelection(5,0);
+	}
+	
+	ext_imageAnnotator.Editor.prototype.moveUp =  function () {
+		this.moveSelection(0,-5);
+	}
+	
+	ext_imageAnnotator.Editor.prototype.moveDown =  function () {
+		this.moveSelection(0,5);
+	}
 
 	ext_imageAnnotator.Editor.prototype.addButton = function (type, params) {
 
@@ -197,7 +250,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		if (type == 'color') {
 			label = params;
 		}
-		var button = $('<button>' + label + '</button>').addClass('editorButton').addClass(label);
+		var button = $('<button>' + '</button>').addClass('editorButton').addClass(label);
 
 		
 		switch (type) {
@@ -246,6 +299,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 	ext_imageAnnotator.Editor.prototype.addToolbarDyn = function (buttons) {
 		
+		var editor = this;
 		
 		if (this.options.hasOwnProperty('toolbarContainer')) {
 			this.toolbar = this.options.toolbarContainer;
@@ -264,47 +318,42 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			}
 			this.addButton(type, params);
 		}
+		
+		// add keypress listener
+		$( this.container) . find('.canvas-container')
+			.attr('tabindex',1000)
+			.bind('keydown', function (e) {
+				editor.onKeyPress(e);
+			});
 	}
-
-	ext_imageAnnotator.Editor.prototype.addToolbar = function () {
-		var editor = this; 
-		this.toolbar = $('<div>').addClass('editorToolbar');
-		var carre = $('<button>carre</button>');
-		carre.click(function() {
-			editor.addRectangle(100);
-		});
-		var rond = $('<button>rond</button>');
-		rond.click(function() {
-			editor.addCircle(100);
-		});
-		var arrow = $('<button>Arrow</button>');
-		arrow.click(function() {
-			editor.addArrow(100);
-		});
-		var del = $('<button>Del</button>');
-		del.click(function() {
-			editor.delSelection();
-		});
-		var black = $('<button>Black</button>');
-		black.click(function() {
-			editor.setColor('black');
-		});
-		var blue = $('<button>Blue</button>');
-		blue.click(function() {
-			editor.setColor('blue');
-		});
-		var red = $('<button>Red</button>');
-		red.click(function() {
-			editor.setColor('red');
-		});
-		var white = $('<button>white</button>');
-		white.click(function() {
-			editor.setColor('white');
-		});
-
-		this.toolbar.append(carre).append(rond).append(arrow);
-		this.toolbar.append(black).append(white).append(red).append(blue);
-		this.container.prepend(this.toolbar);
+	
+	
+	
+	/**
+	 * handle keyPress actions
+	 */
+	ext_imageAnnotator.Editor.prototype.onKeyPress = function(e) {
+		switch (e.keyCode) {
+			case 46 : 
+				// DELL
+				this.delSelection();
+				break;
+			case 37 : // LEFT
+				this.moveLeft();
+				break;
+			case 38 : // UP
+				this.moveUp();
+				break;
+			case 39 : // RIGHT
+				this.moveRight();
+				break;
+			case 40 : // DOWN
+				this.moveDown();
+				break;
+			default:
+				return true;
+		}
+		e.preventDefault();
 	}
 	
 	// serialization methods :

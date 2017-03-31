@@ -29,11 +29,7 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 	
 	ext_imageAnnotator.EditorPopup.prototype.launchEditor = function () {
 		var editorPopup = this;
-/*
-		console.log('width : ' + this.image.width());
-		console.log('height : ' + this.image.height());
-		console.log('width : ' + this.clonedImage.width());
-		console.log('height : ' + this.clonedImage.height());*/
+
 		var options = {
 				'toolbarContainer' : this.toolbar
 		};
