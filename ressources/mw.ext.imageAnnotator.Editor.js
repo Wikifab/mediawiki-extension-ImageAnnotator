@@ -4,7 +4,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 ( function ( $, mw, fabric, ext_imageAnnotator ) {
 	'use strict';
 
-	
+
 	ext_imageAnnotator.canvasNextId = 1;
 	ext_imageAnnotator.standardWidth = 600;
 
@@ -24,7 +24,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		this.image = image;
 		this.canvasElement = null;
 		this.options = options;
-		
+
 		// default params :
 		this.currentColor = 'red';
 		var toolbarConfig = [
@@ -38,7 +38,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 				['color', 'blue'],
 				['color', 'red'],
 			];
-		
+
 		if (canvasId) {
 			this.canvasId = canvasId;
 		} else {
@@ -46,14 +46,14 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			this.canvasElement = $("<canvas>").attr('id', this.canvasId ).css('border','1px solid #EEE');
 			// .attr('width', '300').attr('height', '200')
 			if (image) {
-				
+
 				editor.updateSize();
 				//if image not loaded, with recalc size after load :
-				$(image) 
+				$(image)
 				    .load(function() {
 				    	editor.updateSize();
 				    });
-				
+
 			}
 			this.container.append(this.canvasElement);
 		}
@@ -72,19 +72,19 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		} else {
 			this.canvas = new fabric.Canvas(this.canvasId);
 		}
-		
+
 		this.canvas.selectionLineWidth = 10;
-		
+
 		//content = '{"objects":[{"type":"image","originX":"left","originY":"top","left":39,"top":53,"width":360,"height":258,"fill":"rgb(0,0,0)","stroke":null,"strokeWidth":0,"strokeDashArray":null,"strokeLineCap":"butt","strokeLineJoin":"miter","strokeMiterLimit":10,"scaleX":1,"scaleY":1,"angle":0,"flipX":false,"flipY":false,"opacity":1,"shadow":null,"visible":true,"clipTo":null,"backgroundColor":"","fillRule":"nonzero","globalCompositeOperation":"source-over","transformMatrix":null,"skewX":0,"skewY":0,"crossOrigin":"","alignX":"none","alignY":"none","meetOrSlice":"meet","src":"http://files.wikifab.org/7/7b/Le_petit_robot_%C3%A9ducatif_SCOTT_by_La_Machinerie_robot-scott.jpg","filters":[],"resizeFilters":[]},{"type":"polyline","originX":"left","originY":"top","left":20,"top":20,"width":10,"height":90,"fill":"rgba(255,0,0,0)","stroke":"red","strokeWidth":3,"strokeDashArray":null,"strokeLineCap":"butt","strokeLineJoin":"miter","strokeMiterLimit":10,"scaleX":1,"scaleY":1,"angle":-90,"flipX":false,"flipY":false,"opacity":1,"shadow":null,"visible":true,"clipTo":null,"backgroundColor":"","fillRule":"nonzero","globalCompositeOperation":"source-over","transformMatrix":null,"skewX":0,"skewY":0,"points":[{"x":30,"y":30},{"x":30,"y":120},{"x":25,"y":110},{"x":30,"y":120},{"x":35,"y":110}]}]}';
-		
+
 		this.updateData(content);
 
 		if( ! this.isStatic) {
 			this.addToolbarDyn(toolbarConfig);
 		}
-		
+
 	}
-	
+
 	ext_imageAnnotator.Editor.prototype.updateSize= function () {
 		var width = ext_imageAnnotator.standardWidth;
 		var height = Math.round($(this.image).height() * width / $(this.image).width());
@@ -94,7 +94,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			this.canvas.renderAll();
 		}
 	}
-	
+
 	ext_imageAnnotator.Editor.prototype.updateData = function (content) {
 		var editor = this;
 		this.canvas.remove(this.canvas.getObjects());
@@ -122,7 +122,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 	}
 
 	ext_imageAnnotator.Editor.prototype.addRectangle = function (size) {
-		
+
 		var rect = new fabric.Rect({
 			originX: 'center',
 			originY: 'center',
@@ -139,8 +139,8 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 	}
 
 	ext_imageAnnotator.Editor.prototype.addCircle = function (size) {
-		
-		var circle = new fabric.Circle({ 
+
+		var circle = new fabric.Circle({
 			originX: 'center',
 			originY: 'center',
 			top: 120,
@@ -150,14 +150,14 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			stroke:this.currentColor,
 			fill: 'rgba(255,0,0,0)'
 		});
-		
+
 		this.canvas.add(circle);
 		this.canvas.setActiveObject(circle);
 	}
 
 	ext_imageAnnotator.Editor.prototype.addText = function (size) {
-		
-		var text = new fabric.Textbox('Texte',{ 
+
+		var text = new fabric.Textbox('Texte',{
 			originX: 'center',
 			originY: 'center',
 			top: 120,
@@ -172,9 +172,9 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		this.canvas.add(text);
 		this.canvas.setActiveObject(text);
 	}
-	
+
 	ext_imageAnnotator.Editor.prototype.addArrow = function (size) {
-		
+
 		var x = 20;
 		var y = 20;
 		var poly = new fabric.Polyline([
@@ -196,7 +196,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		this.canvas.add(poly);
 		this.canvas.setActiveObject(poly);
 	}
-	
+
 	ext_imageAnnotator.Editor.prototype.setColor = function (color) {
 		this.currentColor = color;
 		if(this.canvas.getActiveObject()) {
@@ -204,19 +204,19 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			this.canvas.renderAll();
 		}
 	}
-	
+
 	ext_imageAnnotator.Editor.prototype.delSelection = function () {
 		if(this.canvas.getActiveObject()) {
 			this.canvas.getActiveObject().remove();
 		}
 	}
-	
+
 	ext_imageAnnotator.Editor.prototype.moveSelection =  function (dLeft, dTop) {
 		if(this.canvas.getActiveObject()) {
-			
+
 			var width = parseInt(this.canvasElement.attr('width'));
 			var height = parseInt(this.canvasElement.attr('height'));
-			
+
 			var left = this.canvas.getActiveObject().getLeft();
 			var top = this.canvas.getActiveObject().getTop();
 			left = Math.min(Math.max(left + dLeft, 0), width );
@@ -226,33 +226,33 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			this.canvas.renderAll();
 		}
 	}
-	
+
 	ext_imageAnnotator.Editor.prototype.moveLeft =  function () {
 		this.moveSelection(-5,0);
 	}
-	
+
 	ext_imageAnnotator.Editor.prototype.moveRight =  function () {
 		this.moveSelection(5,0);
 	}
-	
+
 	ext_imageAnnotator.Editor.prototype.moveUp =  function () {
 		this.moveSelection(0,-5);
 	}
-	
+
 	ext_imageAnnotator.Editor.prototype.moveDown =  function () {
 		this.moveSelection(0,5);
 	}
 
 	ext_imageAnnotator.Editor.prototype.addButton = function (type, params) {
 
-		var editor = this; 
+		var editor = this;
 		var label  = type;
 		if (type == 'color') {
 			label = params;
 		}
 		var button = $('<button>' + '</button>').addClass('editorButton').addClass(label);
 
-		
+
 		switch (type) {
 		    case 'color':
 		    	var color = label;
@@ -298,16 +298,16 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 	}
 
 	ext_imageAnnotator.Editor.prototype.addToolbarDyn = function (buttons) {
-		
+
 		var editor = this;
-		
+
 		if (this.options.hasOwnProperty('toolbarContainer')) {
 			this.toolbar = this.options.toolbarContainer;
 		} else {
 			this.toolbar = $('<div>').addClass('editorToolbar');
 			this.container.prepend(this.toolbar);
 		}
-		
+
 		for(var configIndex in buttons) {
 			var type , params = '';
 			if(typeof buttons[configIndex] == 'string') {
@@ -318,7 +318,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			}
 			this.addButton(type, params);
 		}
-		
+
 		// add keypress listener
 		$( this.container) . find('.canvas-container')
 			.attr('tabindex',1000)
@@ -326,15 +326,13 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 				editor.onKeyPress(e);
 			});
 	}
-	
-	
-	
+
 	/**
 	 * handle keyPress actions
 	 */
 	ext_imageAnnotator.Editor.prototype.onKeyPress = function(e) {
 		switch (e.keyCode) {
-			case 46 : 
+			case 46 :
 				// DELL
 				this.delSelection();
 				break;
@@ -355,9 +353,9 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		}
 		e.preventDefault();
 	}
-	
+
 	// serialization methods :
-	
+
 	ext_imageAnnotator.Editor.prototype.getJson = function () {
 		var objectData = this.canvas.toObject();
 		// we add height and width information :
@@ -366,7 +364,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		return JSON.stringify(objectData);
 	}
 	ext_imageAnnotator.Editor.prototype.getSVG = function () {
-		
+
 		return this.canvas.toSVG();
 	}
 	ext_imageAnnotator.Editor.prototype.replaceSourceImageBySVG = function () {
@@ -376,12 +374,12 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 	 * this function generate an img div with svg content of canvas, and put it over the source image
 	 */
 	ext_imageAnnotator.Editor.prototype.placeOverSourceImage = function ( noredim) {
-		
+
 		return this.exportOverSourceImage();
 		//var img = $('<img>').attr('src', "data:image/svg+xml;utf8," + this.getSVG());
-		
+
 		//	css.width = '100%';
-		
+
 		$('#'+this.canvasId).css({
 			position:'absolute',
 			width:'100%',
@@ -400,7 +398,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 	 * this function generate an img div with svg content of canvas, and put it over the source image
 	 */
 	ext_imageAnnotator.Editor.prototype.exportOverSourceImage = function () {
-		
+
 		if(this.overlayImg) {
 			$(this.overlayImg).remove();
 		}
