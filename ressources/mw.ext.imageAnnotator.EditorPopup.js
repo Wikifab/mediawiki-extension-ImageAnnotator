@@ -27,6 +27,10 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 		this.launchEditor();
 	}
 
+	ext_imageAnnotator.EditorPopup.prototype.hide = function() {
+		$('#mw-ia-popup-div').popup('hide');
+	}
+
 	ext_imageAnnotator.EditorPopup.prototype.launchEditor = function () {
 		var editorPopup = this;
 
@@ -41,8 +45,9 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 		$(this.imagediv).css("background-size", "100% 100%");
 		this.clonedImage.hide();
 
+
 		// add save button
-		this.buttonbar.append($('<button>' +mw.message( 'imageannotator-button-save' ).text() + '</button>').click(function () {
+		this.buttonbar.append($('<button>' +mw.message( 'imageannotator-button-save' ).text() + '</button>').addClass('saveButton').click(function () {
 			setTimeout(function () {
 				editorPopup.save();
 			}, 10);
@@ -50,9 +55,12 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 		}));
 
 		// add cancel button
-		//this.buttonbar.append($('<button class="btn btn-default" data-dismiss="modal">' +mw.message( 'imageannotator-button-cancel' ).text() + '</button>').click(function () {
-		//	return false;
-		//}));
+		this.buttonbar.append($('<button >' +mw.message( 'imageannotator-button-cancel' ).text() + '</button>').addClass('cancelButton').click(function () {
+			setTimeout(function () {
+				editorPopup.hide();
+			}, 10);
+			return false;
+		}));
 	}
 
 	/**
@@ -106,4 +114,4 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 
 	}
 
-})(jQuery, mw, fabric, ext_imageAnnotator);
+})(jQuery, mediaWiki, fabric, ext_imageAnnotator);
