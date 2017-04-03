@@ -102,20 +102,25 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		var editor = this;
 		this.canvas.remove(this.canvas.getObjects());
 		if (content) {
-			this.canvas.loadFromJSON(content, function () {
-				//set width and height :
-				var obj = JSON.parse(content);
-				if (typeof obj.width !== 'undefined' ) {
-					editor.canvasElement.attr('width', obj.width);
-				}
-				if (typeof obj.height !== 'undefined' ) {
-					editor.canvasElement.attr('height', obj.height);
-				}
-				editor.canvas.renderAll();
-				if ( editor.isStatic) {
-					editor.placeOverSourceImage();
-				}
-			});
+			try{
+				this.canvas.loadFromJSON(content, function () {
+					//set width and height :
+					var obj = JSON.parse(content);
+					if (typeof obj.width !== 'undefined' ) {
+						editor.canvasElement.attr('width', obj.width);
+					}
+					if (typeof obj.height !== 'undefined' ) {
+						editor.canvasElement.attr('height', obj.height);
+					}
+					editor.canvas.renderAll();
+					if ( editor.isStatic) {
+						editor.placeOverSourceImage();
+					}
+				});
+			} catch (e) {
+				console.log('Fail to load json content');
+				console.log(content);
+			}
 		} else {
 			editor.canvas.renderAll();
 			if ( editor.isStatic) {
