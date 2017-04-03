@@ -23,6 +23,15 @@
 	float:right
 }
 
+.mw-ia-popup-toolbar .editorButton.black.active,
+.mw-ia-popup-toolbar .editorButton.red.active,
+.mw-ia-popup-toolbar .editorButton.white.active,
+.mw-ia-popup-toolbar .editorButton.yellow.active,
+.mw-ia-popup-toolbar .editorButton.blue.active,
+.mw-ia-popup-toolbar .editorButton.green.active {
+    border-color:#555;
+}
+
 .mw-ia-popup-toolbar .editorButton {
 	background-color: #f9f9f9;
     border: 0px;
@@ -58,33 +67,57 @@
 }
 
 .mw-ia-popup-toolbar .editorButton.black {
-    background-image: url(images/black.png);
-    width: 31px;
+    background-color: #000000;
+    margin: 3px 1px;
+    vertical-align: top;
+    border-radius: 5px;
+    border: 2px solid #f9f9f9;
+    height: 33px;
 }
 
 .mw-ia-popup-toolbar .editorButton.white {
-    background-image: url(images/white.png);
-    width: 31px;
+    background-color: #ffffff;
+    margin: 3px 1px;
+    vertical-align: top;
+    border-radius: 5px;
+    border: 2px solid #f9f9f9;
+    height: 33px;
 }
 
 .mw-ia-popup-toolbar .editorButton.red {
-    background-image: url(images/red.png);
-    width: 31px;
+    background-color: #ff0000;
+    margin: 3px 1px;
+    vertical-align: top;
+    border-radius: 5px;
+    border: 2px solid #f9f9f9;
+    height: 33px;
 }
 
 .mw-ia-popup-toolbar .editorButton.blue {
-    background-image: url(images/blue.png);
-    width: 31px;
+    background-color: #0054ff;
+    margin: 3px 1px;
+    vertical-align: top;
+    border-radius: 5px;
+    border: 2px solid #f9f9f9;
+    height: 33px;
 }
 
 .mw-ia-popup-toolbar .editorButton.yellow {
-    background-image: url(images/yellow.png);
-    width: 31px;
+    background-color: #fff600;
+    margin: 3px 1px;
+    vertical-align: top;
+    border-radius: 5px;
+    border: 2px solid #f9f9f9;
+    height: 33px;
 }
 
 .mw-ia-popup-toolbar .editorButton.green {
-    background-image: url(images/green.png);
-    width: 31px;
+    background-color: #4ae40d;
+    margin: 3px 1px;
+    vertical-align: top;
+    border-radius: 5px;
+    border: 2px solid #f9f9f9;
+    height: 33px;
 }
 
 .mw-ia-popup-image {
