@@ -96,6 +96,10 @@
     border:none;
 }
 
+.mw-ia-popup-buttonbar {
+	text-align:right;
+}
+
 .mw-ia-popup-buttonbar button {
 	background-color: #7ab55c;
     color: #fff;
@@ -116,7 +120,7 @@
 }
 
 .mw-ia-popup-buttonbar button.cancelButton:hover {
-	background-color: #a74c4c;
+	background-color: #d43f3a;
 }
 
 .mw-ia-editButton {

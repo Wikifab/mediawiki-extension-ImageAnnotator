@@ -46,6 +46,14 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 		this.clonedImage.hide();
 
 
+		// add cancel button
+		this.buttonbar.append($('<button >' +mw.message( 'imageannotator-button-cancel' ).text() + '</button>').addClass('cancelButton').click(function () {
+			setTimeout(function () {
+				editorPopup.hide();
+			}, 10);
+			return false;
+		}));
+
 		// add save button
 		this.buttonbar.append($('<button>' +mw.message( 'imageannotator-button-save' ).text() + '</button>').addClass('saveButton').click(function () {
 			setTimeout(function () {
@@ -54,13 +62,6 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 			return false;
 		}));
 
-		// add cancel button
-		this.buttonbar.append($('<button >' +mw.message( 'imageannotator-button-cancel' ).text() + '</button>').addClass('cancelButton').click(function () {
-			setTimeout(function () {
-				editorPopup.hide();
-			}, 10);
-			return false;
-		}));
 	}
 
 	/**
