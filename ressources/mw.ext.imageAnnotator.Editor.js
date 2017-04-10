@@ -171,6 +171,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			top: 120,
 			left: 120,
 			//fontWeight: 'bold',
+			fontFamily: 'sans-serif',
 			fontSize: 20,
 			stroke:this.currentColor,
 			fill:this.currentColor,
