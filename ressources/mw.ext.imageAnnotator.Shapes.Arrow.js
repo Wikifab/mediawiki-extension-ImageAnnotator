@@ -17,6 +17,9 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			left: 120,
 			top: 120,
 			angle: -90,
+			transparentCorners:false,
+			borderColor: 'black',
+			cornerColor: 'rgba(200,200,200,1)',
 
 
 	   // Min and Max size to enforce (false == no enforcement)
