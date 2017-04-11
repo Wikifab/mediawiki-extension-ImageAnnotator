@@ -98,12 +98,80 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		}
 	}
 
+	/**
+	 * this function is use to load objects not managed by fabric core
+	 * @param string json content to load
+	 * @return string json content remaining to load
+	 */
+	ext_imageAnnotator.Editor.prototype.getSpecificsObjectsFromJson = function (content) {
+		var data = JSON.parse(content);
+		var editor = this;
+
+		this.specificsObjectsToLoad = [];
+
+		var specificsObjects = [
+			'wfcircle',
+			'wfrect',
+			'wfarrow'
+		]
+
+		for (var x = 0; x < data['objects'].length; x++) {
+			if (specificsObjects.indexOf(data['objects'][x].type) != -1) {
+				var objectToload = data['objects'][x];
+				data['objects'].splice(x, 1);
+				x-= 1;
+				this.specificsObjectsToLoad.push( objectToload);
+			}
+		}
+
+		return JSON.stringify(data);
+	}
+
+	/**
+	 * load object stored in var 'specificsObjectsToLoad'
+	 */
+	ext_imageAnnotator.Editor.prototype.loadSpecificsObjects = function () {
+
+		if(this.specificsObjectsToLoad) {
+			for (var x = 0; x < this.specificsObjectsToLoad.length; x++) {
+				if (this.specificsObjectsToLoad[x].type == 'wfcircle') {
+					var objectToload = this.specificsObjectsToLoad[x];
+					var circle = new ext_imageAnnotator.shapes.Wfcircle(objectToload);
+					this.canvas.add(circle);
+				} else if (this.specificsObjectsToLoad[x].type == 'wfrect') {
+					var objectToload = this.specificsObjectsToLoad[x];
+					var circle = new ext_imageAnnotator.shapes.Wfrect(objectToload);
+					this.canvas.add(circle);
+				} else if (this.specificsObjectsToLoad[x].type == 'wfarrow') {
+					var objectToload = this.specificsObjectsToLoad[x];
+					var circle = new ext_imageAnnotator.shapes.Wfarrow(objectToload);
+					this.canvas.add(circle);
+				} else {
+					console.log('unknown object');
+				}
+			}
+			this.canvas.renderAll();
+		}
+
+		return ;
+	}
+
+
+
+
+
 	ext_imageAnnotator.Editor.prototype.updateData = function (content) {
 		var editor = this;
 		this.canvas.remove(this.canvas.getObjects());
 		if (content) {
-			try{
+			try {
+				// extract specifics objects to be loaded afterwards
+				content = editor.getSpecificsObjectsFromJson(content);
+
 				this.canvas.loadFromJSON(content, function () {
+					// add specifics objects not loaded by fabric
+					editor.loadSpecificsObjects();
+
 					//set width and height :
 					var obj = JSON.parse(content);
 					if (typeof obj.width !== 'undefined' ) {
@@ -118,8 +186,8 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 					}
 				});
 			} catch (e) {
-				console.log('Fail to load json content');
-				console.log(content);
+				console.log('Fail to load json content ');
+				console.log(e);
 			}
 		} else {
 			editor.canvas.renderAll();
@@ -131,7 +199,8 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 	ext_imageAnnotator.Editor.prototype.addRectangle = function (size) {
 
-		var rect = new fabric.Rect({
+		//var rect = new fabric.Rect({
+		var rect = new ext_imageAnnotator.shapes.Wfrect({
 			originX: 'center',
 			originY: 'center',
 			top: 120,
@@ -148,12 +217,17 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 	ext_imageAnnotator.Editor.prototype.addCircle = function (size) {
 
-		var circle = new fabric.Circle({
+
+		//var circle = new ext_imageAnnotator.shapes.Circle({
+		var circle = new ext_imageAnnotator.shapes.Wfcircle({
+		//var circle = new fabric.Circle({
 			originX: 'center',
 			originY: 'center',
 			top: 120,
 			left: 120,
 			radius: size,
+			minSize: 10,
+			maxSize: 100,
 			strokeWidth: 3,
 			stroke:this.currentColor,
 			fill: 'rgba(255,0,0,0)'
@@ -185,13 +259,15 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 		var x = 20;
 		var y = 20;
-		var poly = new fabric.Polyline([
+
+		var poly = new ext_imageAnnotator.shapes.Wfarrow({
+		/*var poly = new fabric.Polyline([
 		    { x: x + 10, y: y + 10 },
 		    { x: x + 10, y: y + 100 },
 		    { x: x + 5, y: y + 90 },
 		    { x: x + 10, y: y + 100 },
 		    { x: x + 15, y: y + 90 }
-			], {
+			], {*/
 			originX: 'center',
 			originY: 'center',
 			strokeWidth: 3,

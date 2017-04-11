@@ -1,0 +1,83 @@
+
+var ext_imageAnnotator = ext_imageAnnotator || {};
+
+( function ( $, mw, fabric, ext_imageAnnotator ) {
+	'use strict';
+
+	ext_imageAnnotator.shapes = ext_imageAnnotator.shapes || {}
+
+	ext_imageAnnotator.shapes.Wfcircle = fabric.util.createClass(fabric.Circle, {
+	   shapeName: 'wfcircle',
+	   type: 'wfcircle',
+	   strokeWidth: 3,
+	   borderWidth: 4,
+	   padding: 5,
+	   originX: 'center',
+	   originY: 'center',
+
+	   // Min and Max size to enforce (false == no enforcement)
+	   minSize: 10,
+	   maxSize: 200,
+
+	   centerTransform: true,
+
+	   outlineWidth: 1,
+	   outlineStyle: '#FFF',
+
+	   _stroke: function(ctx) {
+	      var myScale = this.scaleX;
+	      function scaleU(x) { return x / myScale; }
+	      ctx.lineWidth = scaleU(this.borderWidth + this.outlineWidth);
+	      ctx.strokeStyle = this.outlineStyle;
+	      ctx.stroke();
+
+	      ctx.lineWidth = scaleU(this.borderWidth - this.outlineWidth);
+	      ctx.strokeStyle = this.stroke;
+	      ctx.stroke();
+	   },
+
+	   render: function(ctx) {
+	      this._limitSize();
+	      this.callSuper('render', ctx);
+	   },
+
+	   /**
+	    * Resizes this shape using the two mouse coords (first is treated as the
+	    * center, second is the outside edge.
+	    */
+	   sizeByMousePos: function(x1, y1, x2, y2) {
+	      var xdiff = x2 - this.left;
+	      var ydiff = y2 - this.top;
+	      var radius = Math.sqrt(xdiff * xdiff + ydiff * ydiff);
+	      this.scaleToWidth(radius * 2);
+	      this.setCoords();
+	   },
+
+	   /**
+	    * Enforce the min / max sizes if set.
+	    */
+	   _limitSize: function() {
+
+	      var newRadiusX = this.getRadiusX();
+	      var newRadiusY = this.getRadiusY();
+
+	      if (this.minSize !== false && newRadiusX < this.minSize) {
+	         this.scaleX = this.minSize / this.radius;
+	      } else if (this.maxSize !== false && newRadiusX > this.maxSize) {
+	         this.scaleX = this.maxSize / this.radius;
+	      }
+	      if (this.minSize !== false && newRadiusY < this.minSize) {
+		         this.scaleY = this.minSize / this.radius;
+		      } else if (this.maxSize !== false && newRadiusY > this.maxSize) {
+		         this.scaleY = this.maxSize / this.radius;
+		      }
+	      // change the stroke width to look same
+	      this.setStrokeWidth(3 *2 / (this.scaleX + this.scaleY) );
+	      this.setCoords();
+	   }
+	});
+
+})(jQuery, mw, fabric, ext_imageAnnotator);
+
+
+
