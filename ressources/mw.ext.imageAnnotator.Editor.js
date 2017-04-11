@@ -291,6 +291,14 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			}
 			this.canvas.renderAll();
 		}
+		this.setActiveColorbutton();
+	}
+
+	ext_imageAnnotator.Editor.prototype.setActiveColorbutton = function () {
+
+		// change css class on buttons :
+		$(this.toolbar).find('.toolbarArea-colors button').removeClass('active');
+		$(this.toolbar).find('.toolbarArea-colors button.'+this.currentColor).addClass('active');
 	}
 
 	ext_imageAnnotator.Editor.prototype.delSelection = function () {
@@ -425,6 +433,9 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			.bind('keydown', function (e) {
 				editor.onKeyPress(e);
 			});
+
+
+		this.setActiveColorbutton();
 	}
 
 	/**
