@@ -445,6 +445,8 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		switch (e.keyCode) {
 			case 46 :
 				// DELL
+			case 8 :
+				// Backspace (dell for MAC)
 				this.delSelection();
 				break;
 			case 37 : // LEFT
