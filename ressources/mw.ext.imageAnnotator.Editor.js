@@ -515,7 +515,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		if(this.overlayImg) {
 			$(this.overlayImg).remove();
 		}
-		this.overlayImg = $('<img>').attr('src', "data:image/svg+xml;utf8," + this.getSVG());
+		this.overlayImg = $('<img>').attr('class','annotationlayer').attr('src', "data:image/svg+xml;utf8," + this.getSVG());
 
 		// positioning
 		$(this.image).parent().css({ position:'relative'});
