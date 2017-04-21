@@ -22,6 +22,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		}
 		this.isStatic = editable ? false : true;
 		this.image = image;
+		this.content = content;
 		this.canvasElement = null;
 		this.options = options;
 
@@ -162,6 +163,8 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 	ext_imageAnnotator.Editor.prototype.updateData = function (content) {
 		var editor = this;
+
+		this.content = content;
 		this.canvas.remove(this.canvas.getObjects());
 		if (content) {
 			try {
@@ -489,23 +492,6 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 	ext_imageAnnotator.Editor.prototype.placeOverSourceImage = function ( noredim) {
 
 		return this.exportOverSourceImage();
-		//var img = $('<img>').attr('src', "data:image/svg+xml;utf8," + this.getSVG());
-
-		//	css.width = '100%';
-
-		$('#'+this.canvasId).css({
-			position:'absolute',
-			width:'100%',
-			top: $(this.image).position().top,
-			left: $(this.image).position().left
-		});
-		$(this.container).find('.canvas-container').css({
-			position:'absolute',
-			width:'100%',
-			top: $(this.image).position().top,
-			left: $(this.image).position().left
-		});
-
 	}
 	/**
 	 * this function generate an img div with svg content of canvas, and put it over the source image
@@ -515,15 +501,17 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		if(this.overlayImg) {
 			$(this.overlayImg).remove();
 		}
-		this.overlayImg = $('<img>').attr('class','annotationlayer').attr('src', "data:image/svg+xml;utf8," + this.getSVG());
+		if (this.content) {
+			// display it only if content, (some browsers doesn't like empty images)
+			this.overlayImg = $('<img>').attr('class','annotationlayer').attr('src', "data:image/svg+xml;utf8," + this.getSVG());
 
-		// positioning
-		$(this.image).parent().css({ position:'relative'});
-		$(this.overlayImg).insertAfter(this.image);
-		$(this.overlayImg).css({ width:'100%'});
+			// positioning
+			$(this.image).parent().css({ position:'relative'});
+			$(this.overlayImg).insertAfter(this.image);
+			$(this.overlayImg).css({ width:'100%'});
 
-		$(this.overlayImg).css({position:'absolute', width:'100%', height:'auto', top: 0, left: 0});
-
+			$(this.overlayImg).css({position:'absolute', width:'100%', height:'auto', top: 0, left: 0});
+		}
 		$('#'+this.canvasId).hide();
 	}
 
