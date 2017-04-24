@@ -477,7 +477,15 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		// we add height and width information :
 		objectData.height = this.canvasElement.attr('height');
 		objectData.width = this.canvasElement.attr('width');
-		return JSON.stringify(objectData);
+
+		var json = JSON.stringify(objectData);
+		// to avoid conflict with  '}}' used by semantic form, wa add spaces between multiples '{' or '}':
+		// (twice for each to avoid triples)
+		json = json.replace(/\{\{/g,'{ {');
+		json = json.replace(/\{\{/g,'{ {');
+		json = json.replace(/\}\}/g,'} }');
+		json = json.replace(/\}\}/g,'} }');
+		return json;
 	}
 	ext_imageAnnotator.Editor.prototype.getSVG = function () {
 
