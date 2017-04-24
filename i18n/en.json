@@ -4,6 +4,7 @@
             "Pierre Boutet"
         ]
     },
+    "imageAnnotator-desc": "enable to add annotations over images",
     "imageannotator-button-save": "Save",
     "imageannotator-button-cancel": "Cancel",
     "imageannotator-toolbar-square-label": "Square",

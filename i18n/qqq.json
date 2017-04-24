@@ -1,5 +1,6 @@
 {
     "@metadata": [],
+    "imageAnnotator-desc": "Description de l'extension image annotator'",
     "imageannotator-button-save": "label button for validate on editor",
     "imageannotator-button-cancel": "label button for cancel on editor"
 }
