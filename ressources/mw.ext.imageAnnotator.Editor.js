@@ -252,6 +252,9 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			fontSize: 20,
 			stroke:this.currentColor,
 			fill:this.currentColor,
+			borderColor: 'black',
+			cornerColor: 'rgba(200,200,200,1)',
+			transparentCorners:false
 			//lockUniScaling:true
 			//fill: 'rgba(255,0,0,0)' // transparent
 		});
