@@ -33,7 +33,8 @@ It's important to set the target param, using the name of the image attribute. N
  
  Then, in your templafe, to show the image with his annotations, use the following parser function :
 
-```{{#annotatedImage:[[File:{{{Main_Picture}}}|frameless|border]]|{{{Main_Picture_annotation}}}}}
+```
+{{#annotatedImage:[[File:{{{Main_Picture}}}|frameless|border]]|{{{Main_Picture_annotation}}}}}
  ```
  
  
