@@ -9,7 +9,7 @@ class Hooks {
 
 	public static function initialize() {
 		global $wgPageFormsFormPrinter;
-		$wgPageFormsFormPrinter->setInputTypeHook('editableImage', 'ImageAnnotator\InputEditableImage::editableImageOverlayInput', array());
+		$wgPageFormsFormPrinter->setInputTypeHook('editableImage', 'ImageAnnotator\InputEditableImage', array());
 	}
 
 
