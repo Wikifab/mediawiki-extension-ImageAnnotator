@@ -3,9 +3,23 @@
 
 namespace ImageAnnotator;
 
-class InputEditableImage {
+class InputEditableImage extends \PFFormInput {
 
-
+	public static function getName() {
+		return 'editableImage';
+	}
+	/**
+	 * Returns the HTML code to be included in the output page for this input.
+	 */
+	public function getHtmlText() {
+		return self::getHTML(
+				$this->mCurrentValue,
+				$this->mInputName,
+				$this->mIsMandatory,
+				$this->mIsDisabled,
+				$this->mOtherArgs
+				);
+	}
 
 	/**
 	 * find target html input Name
@@ -39,7 +53,8 @@ class InputEditableImage {
 	 * @param boolean $is_disabled if true, input is disabled
 	 * @param unknown $field_args others args
 	 */
-	public static function editableImageOverlayInput($cur_value, $input_name, $is_mandatory, $is_disabled, $field_args) {
+	public static function getHTML( $cur_value, $input_name, $is_mandatory, $is_disabled, $field_args ) {
+	//public static function editableImageOverlayInput($cur_value, $input_name, $is_mandatory, $is_disabled, $field_args) {
 
 
 		$target = isset($field_args['target']) ? $field_args['target'] :'';
