@@ -11,7 +11,7 @@
 	"requires": {
 		"MediaWiki": ">= 1.28.0",
 		"extensions": {
-			"PageForms": "*"
+			"Page Forms": "*"
 		}
 	},
 	"callback": "ImageAnnotator\\Hooks::onRegistration",
