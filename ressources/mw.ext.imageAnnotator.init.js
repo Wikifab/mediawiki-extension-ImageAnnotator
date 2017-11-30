@@ -9,6 +9,13 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 	var editLinkRegister = ext_imageAnnotator.getEditLinkRegister();
 	
 	
+	function isValidImageType(image) {
+		if( ! image || image.length == 0) {
+			return false;
+		}
+		return true;
+	}
+
 	// edition : 
 	$('.editableImageDataInput').each(function () {
 		
@@ -26,7 +33,12 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 		
 		var canvasId = null;//imageInputId + "_overlaycanvas";
 		var content = $(this).val();
-		var image = imagePreview.find('img')
+		var image = imagePreview.find('img');
+
+		if( ! isValidImageType(image)) {
+			// if the is not an image (a video for instance) we do not add editor
+			return ;
+		}
 
 		// load static canvas
 		var staticEditor = new ext_imageAnnotator.Editor( imagePreview, canvasId = null, content, image ) ;
@@ -76,7 +88,12 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 		
 		var canvasId = null;//imageInputId + "_overlaycanvas";
 		var content = $(dataInput).val();
-		var image = imagePreview.find('img')
+		var image = imagePreview.find('img');
+
+		if( ! isValidImageType(image)) {
+			// if the is not an image (a video for instance) we do not add editor
+			return ;
+		}
 
 		// load static canvas
 		var staticEditor = new ext_imageAnnotator.Editor( imagePreview, canvasId = null, content, image ) ;
