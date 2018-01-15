@@ -1,0 +1,30 @@
+{
+    "@metadata": {
+        "authors": [
+            "Pierre Boutet"
+        ]
+    },
+    "imageAnnotator-desc": "Ermöglicht das Hinzufügen von Anmerkungen zu den Bildern",
+    "imageannotator-button-save": "Bestätigen",
+    "imageannotator-button-cancel": "Abbrechen",
+    "imageannotator-toolbar-square-label": "Quadrat",
+    "imageannotator-toolbar-circle-label": "Kreis",
+    "imageannotator-toolbar-arrow-label": "Pfeil",
+    "imageannotator-toolbar-black-label": "Schwarz",
+    "imageannotator-toolbar-white-label": "Weiß",
+    "imageannotator-toolbar-red-label": "Rot",
+    "imageannotator-toolbar-blue-label": "Blau",
+    "imageannotator-toolbar-yellow-label": "Gelb",
+    "imageannotator-toolbar-green-label": "Grün",
+    "imageannotator-toolbar-dell-label": "Löschen"
+}
+
+
+
+ 
+
+
+
+
+
+
