@@ -137,9 +137,9 @@
 	background-color: #7ab55c;
     color: #fff;
     border: 0px;
-	-webkit-border-radius: 5px;
-	-moz-border-radius: 5px;
-	border-radius: 5px;
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
     margin: 5px 5px 0px 0px;
     padding: 6px 17px;
 }
@@ -147,13 +147,19 @@
 	background-color: #6aa74c;
 }
 
+.canvas-container:focus {
+    outline:0
+}
+
 .mw-ia-popup-buttonbar button.cancelButton {
-	background-color: #c8ccd1;
+	background-color: #30373b;
+    opacity:0.7;
+    transition: 0.25;
     color: #fff;
 }
 
 .mw-ia-popup-buttonbar button.cancelButton:hover {
-	background-color: #d43f3a;
+    opacity:1;
 }
 
 .mw-ia-editButton {
