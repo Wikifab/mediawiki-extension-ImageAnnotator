@@ -163,19 +163,18 @@
 }
 
 .mw-ia-editButton {
-    background-image : url(images/edit.png) no-repeat 0 0;
-    background-color: #f1f1f1;
+    background-image : url(images/edit.png);
+    background-repeat: no-repeat;
     cursor: pointer;
     float: right;
-    height: 30px;
-    width: 30px;
+    height: 32px;
+    width: 32px;
     background-position: center;
     border-radius: 50px;
     background-color: #fff;
     margin-left: 5px;
     padding: 5px 10px;
     opacity: .7;
-    border: 1px solid #ddd;
 }
 
 .mw-ia-editButton:hover {
