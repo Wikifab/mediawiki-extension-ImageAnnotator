@@ -134,7 +134,7 @@
 }
 
 .mw-ia-popup-buttonbar button {
-	background-color: #7ab55c;
+	background-color: #52bad5;
     color: #fff;
     border: 0px;
 	-webkit-border-radius: 3px;
@@ -143,8 +143,9 @@
     margin: 5px 5px 0px 0px;
     padding: 6px 17px;
 }
+
 .mw-ia-popup-buttonbar button:hover {
-	background-color: #6aa74c;
+	background-color: #2c9ab7;
 }
 
 .canvas-container:focus {
