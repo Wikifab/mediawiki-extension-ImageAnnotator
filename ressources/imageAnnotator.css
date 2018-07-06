@@ -145,7 +145,8 @@
 }
 
 .mw-ia-popup-buttonbar button:hover {
-	background-color: var(--main-hover-color);
+	background-color: #2c9ab7;
+	//background-color: var(--main-hover-color);
 }
 
 .canvas-container:focus {
