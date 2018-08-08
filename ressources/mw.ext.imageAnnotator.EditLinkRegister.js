@@ -56,9 +56,11 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 	ext_imageAnnotator.EditLinkRegister.prototype.updateEditLinkInput = function (container, dataInputName) {
 
 		var editLinkId = $(container).find('.mw-ia-editButton').attr('id');
-		this.inputsManaged[editLinkId] = dataInputName;
+		if ( editLinkId ) {
+			this.inputsManaged[editLinkId] = dataInputName;
 		
-		this.editLinks[editLinkId].updateDataInput($("input[name='"+dataInputName + "']"));
+			this.editLinks[editLinkId].updateDataInput($("input[name='"+dataInputName + "']"));
+		}
 	}
 	
 	/**
