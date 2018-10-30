@@ -121,17 +121,35 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 	      ctx.strokeStyle = origStrokeStyle;
 	    },
 
+	    /**
+	     * Returns svg representation of an instance
+	     * @return {Array} an array of strings with the specific svg representation
+	     * of the instance
+	     */
+	    toSVG: function(reviver) {
+	      var p = this.calcLinePoints();
 
-	   /**
-	    * yet another hack  : toSVG function use type property, but must be polyline instead of wfarray
-	    */
-	   toSVG: function(reviver) {
-		   var type = this.type;
-		   this.type = 'line';
-		   var result = this.callSuper('toSVG', reviver);
-		   this.type = type;
-		   return result;
-	   },
+	      var poly = new fabric.Polyline([
+	    	    { x: p.x1, y: p.y1 },
+	    	    { x: p.x2, y: p.y2 },
+	    	    { x: p.x2a, y: p.y2a },
+	    	    { x: p.x2, y: p.y2 },
+	    	    { x: p.x2b, y: p.y2b }
+	    	  ], {
+	    	  stroke: this.stroke,
+	    	  left: this.left,
+	    	  top: this.top,
+				originX:  this.originX,
+				originY:  this.originY,
+				strokeWidth:  this.strokeWidth,
+				borderWidth:  this.borderWidth,
+				fill:  this.fill,
+	    	});
+
+	      //this.callSuper('toSVG', reviver);
+	      return poly.toSVG();
+	    },
+
 	});
 
 })(jQuery, mw, fabric, ext_imageAnnotator);

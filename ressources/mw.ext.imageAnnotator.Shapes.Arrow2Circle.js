@@ -32,6 +32,16 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 					this.callSuper('render', ctx);
 				},
 
+				/**
+				 * bypass toSVG function, to not display those dots in display mode
+				 * (those are edit tools only)
+				 * TODO : do not save same in json, this would avoid to do this
+				 */
+			   toSVG: function(reviver) {
+				   return '';
+			   },
+
+
 			});
 
 })(jQuery, mw, fabric, ext_imageAnnotator);
