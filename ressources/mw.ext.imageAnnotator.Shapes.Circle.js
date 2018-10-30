@@ -75,7 +75,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		         this.scaleY = this.maxSize / this.radius;
 		      }
 	      // change the stroke width to look same
-	      this.setStrokeWidth(3 *2 / (this.scaleX + this.scaleY) );
+	      //this.setStrokeWidth(3 *2 / (this.scaleX + this.scaleY) );
 	      this.setCoords();
 	   }
 	});

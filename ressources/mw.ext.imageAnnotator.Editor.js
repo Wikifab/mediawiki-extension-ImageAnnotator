@@ -115,7 +115,9 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			'wfcircle',
 			'wfrect',
 			'wfarrow',
-			'wfarrow2'
+			'wfarrow2',
+			'wfarrow2circle',
+			'wfarrow2line'
 		]
 
 		for (var x = 0; x < data['objects'].length; x++) {
@@ -153,6 +155,16 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 					var objectToload = this.specificsObjectsToLoad[x];
 					var arrow = new ext_imageAnnotator.shapes.Wfarrow2(objectToload);
 					this.canvas.add(arrow);
+				} else if (this.specificsObjectsToLoad[x].type == 'wfarrow2circle') {
+					var objectToload = this.specificsObjectsToLoad[x];
+					var arrow = new ext_imageAnnotator.shapes.Wfarrow2Circle(objectToload);
+					this.canvas.add(arrow);
+				} else if (this.specificsObjectsToLoad[x].type == 'wfarrow2line') {
+					var objectToload = this.specificsObjectsToLoad[x];
+					var arrow = new ext_imageAnnotator.shapes.Wfarrow2Line(objectToload);
+					this.canvas.add(arrow);
+					var arrow2 = new fabric.Line(objectToload);
+					this.canvas.add(arrow2);
 				} else {
 					console.log('unknown object');
 				}
@@ -289,13 +301,9 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 	ext_imageAnnotator.Editor.prototype.addArrow2 = function (size) {
 
-		var x = 20;
-		var y = 20;
-		var x2 = 120;
-		var y2 = 40;
 
-		var line = new ext_imageAnnotator.shapes.Wfarrow2.Line([x,y,x2,y2], {
-		//var line = new ext_imageAnnotator.shapes.Wfarrow2.Arrow([x,y,x2,y2], {
+		var line = new ext_imageAnnotator.shapes.Wfarrow2Line({
+		//var line = new ext_imageAnnotator.shapes.Wfarrow2Arrow([x,y,x2,y2], {
 			originX: 'center',
 			originY: 'center',
 			strokeWidth: 3,
@@ -303,7 +311,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			fill: 'rgba(255,0,0,0)',
 		});
 
-		var c = new ext_imageAnnotator.shapes.Wfarrow2.Circle({
+		var c = new ext_imageAnnotator.shapes.Wfarrow2Circle({
 			//left : line.get('x1'),
 			//top : line.get('y1'),
 			left : 50,
@@ -314,7 +322,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 		this.canvas.add(c);
 
-		var c2 = new ext_imageAnnotator.shapes.Wfarrow2.Circle({
+		var c2 = new ext_imageAnnotator.shapes.Wfarrow2Circle({
 			//left : line.get('x2'),
 			//top : line.get('y2'),
 			left : 150,
@@ -338,19 +346,19 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 		return;
 
-		var c1 = new ext_imageAnnotator.shapes.Wfarrow2.Circle({
+		var c1 = new ext_imageAnnotator.shapes.Wfarrow2Circle({
 			left: 300,
 			top: 300,
 		});
 		this.canvas.add(c1);
 
-		var c1 = new ext_imageAnnotator.shapes.Wfarrow2.Circle({
+		var c1 = new ext_imageAnnotator.shapes.Wfarrow2Circle({
 			left: line.get('x1'),
 			top: line.get('y1'),
 		});
 		this.canvas.add(c1);
 
-		var c2 = new ext_imageAnnotator.shapes.Wfarrow2.Circle({
+		var c2 = new ext_imageAnnotator.shapes.Wfarrow2Circle({
 			left: line.get('x2'),
 			top: line.get('y2'),
 		});
@@ -440,7 +448,8 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 	ext_imageAnnotator.Editor.prototype.delSelection = function () {
 		if(this.canvas.getActiveObject()) {
-			this.canvas.getActiveObject().remove();
+
+			this.canvas.remove(this.canvas.getActiveObject());
 		}
 	}
 

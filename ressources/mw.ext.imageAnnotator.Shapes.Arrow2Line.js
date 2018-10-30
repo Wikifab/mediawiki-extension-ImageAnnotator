@@ -5,20 +5,19 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 	'use strict';
 
 	ext_imageAnnotator.shapes = ext_imageAnnotator.shapes || {}
-	ext_imageAnnotator.shapes.Wfarrow2 = ext_imageAnnotator.shapes.Wfarrow2 || {}
 
-	ext_imageAnnotator.shapes.Wfarrow2.Line = fabric.util.createClass(fabric.Line, {
+	ext_imageAnnotator.shapes.Wfarrow2Line = fabric.util.createClass(fabric.Line, {
 			shapeName: 'wfarrow2line',
 			type: 'wfarrow2line',
-			originX: 'top',
-			originY: 'left',
+			originX: 'center',
+			originY: 'center',
 			strokeWidth: 3,
 			borderWidth: 4,
 			fill: 'rgba(255,0,0,0)',
 			left: 0,
 			top: 0,
 			transparentCorners:true,
-			selectable:false,
+			selectable:true,
 			hasborder:false,
 			hasControls:false,
 			//borderColor: 'black',
@@ -27,9 +26,16 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 	   /**
 	     * Constructor
 	     */
-	    initialize: function( points, options) {
+	    initialize: function(options) {
 
-	      //var points = [50,50, 50, 150];
+	      var points = [50,50, 50, 150];
+
+	      if(options['left'] && options['x1']) {
+	    	  points[0] = options['left'] + options['x1'];
+	    	  points[1] = options['top'] + options['y1'];
+	    	  points[2] = options['left'] + options['x2'];
+	    	  points[3] = options['top'] + options['y2'];
+	      }
 	      this.callSuper('initialize', points, options);
 	      //this.hasBorder = false;
 	    },

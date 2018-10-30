@@ -5,10 +5,9 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 	'use strict';
 
 	ext_imageAnnotator.shapes = ext_imageAnnotator.shapes || {}
-	ext_imageAnnotator.shapes.Wfarrow2 = ext_imageAnnotator.shapes.Wfarrow2 || {}
 
 
-	ext_imageAnnotator.shapes.Wfarrow2.Circle = fabric.util.createClass(
+	ext_imageAnnotator.shapes.Wfarrow2Circle = fabric.util.createClass(
 			fabric.Circle, {
 				shapeName : 'wfarrow2circle',
 				type : 'wfarrow2circle',

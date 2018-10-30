@@ -5,10 +5,9 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 	'use strict';
 
 	ext_imageAnnotator.shapes = ext_imageAnnotator.shapes || {}
-	ext_imageAnnotator.shapes.Wfarrow2 = ext_imageAnnotator.shapes.Wfarrow2 || {}
 
 
-	ext_imageAnnotator.shapes.Wfarrow2.Arrow = fabric.util.createClass(fabric.Polyline, {
+	ext_imageAnnotator.shapes.Wfarrow2Arrow = fabric.util.createClass(fabric.Polyline, {
 			shapeName: 'wfarrow2arrow',
 			type: 'wfarrow2arrow',
 			originX: 'center',
