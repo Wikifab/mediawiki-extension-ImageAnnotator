@@ -465,9 +465,9 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 	ext_imageAnnotator.Editor.prototype.setColor = function (color) {
 		this.currentColor = color;
 		if(this.canvas.getActiveObject()) {
-			this.canvas.getActiveObject().setStroke(this.currentColor);
-			if (this.canvas.getActiveObject().getFill() != 'rgba(255,0,0,0)') {
-				this.canvas.getActiveObject().setFill(this.currentColor);
+			this.canvas.getActiveObject().set('stroke', this.currentColor);
+			if (this.canvas.getActiveObject().get('fill') != 'rgba(255,0,0,0)') {
+				this.canvas.getActiveObject().set('fill', this.currentColor);
 			}
 			this.canvas.renderAll();
 		}
