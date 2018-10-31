@@ -20,6 +20,9 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			selectable:true,
 			hasborder:false,
 			hasControls:false,
+			lockRotation: true,
+			lockScalingX: true,
+			lockScalingY: true,
 			//borderColor: 'black',
 			//cornerColor: 'rgba(200,200,200,1)',
 

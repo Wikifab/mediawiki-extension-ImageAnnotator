@@ -78,6 +78,9 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			this.canvas = new fabric.Canvas(this.canvasId);
 		}
 
+		// disable Group selection, because scaling object casues issues
+		this.canvas.selection = false;
+
 		this.canvas.selectionLineWidth = 10;
 
 		//content = '{"objects":[{"type":"image","originX":"left","originY":"top","left":39,"top":53,"width":360,"height":258,"fill":"rgb(0,0,0)","stroke":null,"strokeWidth":0,"strokeDashArray":null,"strokeLineCap":"butt","strokeLineJoin":"miter","strokeMiterLimit":10,"scaleX":1,"scaleY":1,"angle":0,"flipX":false,"flipY":false,"opacity":1,"shadow":null,"visible":true,"clipTo":null,"backgroundColor":"","fillRule":"nonzero","globalCompositeOperation":"source-over","transformMatrix":null,"skewX":0,"skewY":0,"crossOrigin":"","alignX":"none","alignY":"none","meetOrSlice":"meet","src":"http://files.wikifab.org/7/7b/Le_petit_robot_%C3%A9ducatif_SCOTT_by_La_Machinerie_robot-scott.jpg","filters":[],"resizeFilters":[]},{"type":"polyline","originX":"left","originY":"top","left":20,"top":20,"width":10,"height":90,"fill":"rgba(255,0,0,0)","stroke":"red","strokeWidth":3,"strokeDashArray":null,"strokeLineCap":"butt","strokeLineJoin":"miter","strokeMiterLimit":10,"scaleX":1,"scaleY":1,"angle":-90,"flipX":false,"flipY":false,"opacity":1,"shadow":null,"visible":true,"clipTo":null,"backgroundColor":"","fillRule":"nonzero","globalCompositeOperation":"source-over","transformMatrix":null,"skewX":0,"skewY":0,"points":[{"x":30,"y":30},{"x":30,"y":120},{"x":25,"y":110},{"x":30,"y":120},{"x":35,"y":110}]}]}';
@@ -92,12 +95,14 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 	ext_imageAnnotator.Editor.prototype.addEditListeners = function() {
 		var canvas = this.canvas;
+
+		function objectMoved(o) {
+			o.line1 && o.line1.setP1(o.left, o.top);
+			o.line2 && o.line2.setP2(o.left, o.top);
+		}
 		this.canvas.on('object:moving', function(e) {
 			var p = e.target;
-			// p.line1 && p.line1.set({ 'x1': p.left, 'y1': p.top });
-			// p.line2 && p.line2.set({ 'x2': p.left, 'y2': p.top });
-			p.line1 && p.line1.setP1(p.left, p.top);
-			p.line2 && p.line2.setP2(p.left, p.top);
+			objectMoved(p);
 			canvas.renderAll();
 		});
 	}
@@ -370,14 +375,6 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		this.canvas.add(line);
 
 		var canvas = this.canvas;
-		this.canvas.on('object:moving', function(e) {
-		    var p = e.target;
-		    //p.line1 && p.line1.set({ 'x1': p.left, 'y1': p.top });
-		    //p.line2 && p.line2.set({ 'x2': p.left, 'y2': p.top });
-		    p.line1 && p.line1.setP1( p.left,  p.top );
-		    p.line2 && p.line2.setP2( p.left,  p.top );
-		    canvas.renderAll();
-		  });
 
 		return;
 
