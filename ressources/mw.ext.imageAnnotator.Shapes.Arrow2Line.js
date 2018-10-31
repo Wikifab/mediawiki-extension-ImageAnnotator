@@ -33,7 +33,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 	     */
 	    initialize: function(options) {
 
-	      var points = [50,50, 50, 150];
+	      var points = [50,50, 150, 50];
 
 	      if(options['left'] && options['x1']) {
 	    	  points[0] = options['left'] + options['x1'];

@@ -53,7 +53,8 @@
     background-image: url(images/circle.png);
 }
 
-.mw-ia-popup-toolbar .editorButton.arrow {
+.mw-ia-popup-toolbar .editorButton.arrow,
+.mw-ia-popup-toolbar .editorButton.arrow2 {
     background-image: url(images/arrow.png);
 }
 

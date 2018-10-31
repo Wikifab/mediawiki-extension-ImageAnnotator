@@ -34,7 +34,6 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 				{'type':'div', 'name':'colors'},
 				{'type':'square', 'parent':'tools'},
 				{'type':'circle', 'parent':'tools'},
-				{'type':'arrow', 'parent':'tools'},
 				{'type':'arrow2', 'parent':'tools'},
 				{'type':'text', 'parent':'tools'},
 				{'type':'del', 'parent':'tools'},
@@ -103,6 +102,17 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		this.canvas.on('object:moving', function(e) {
 			var p = e.target;
 			objectMoved(p);
+			canvas.renderAll();
+		});
+		this.canvas.on('object:removed', function(e) {
+			var p = e.target;
+			if (p.line1) {
+				canvas.remove(p.line1);
+			}
+			if (p.line2) {
+				canvas.remove(p.line2);
+			}
+			// TODO : remove also the other circle
 			canvas.renderAll();
 		});
 	}
@@ -459,12 +469,23 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		  });
 	}
 
+	ext_imageAnnotator.Editor.prototype.getActiveObject = function () {
+		var obj = this.canvas.getActiveObject();
+		if (obj.line1) {
+			obj = obj.line1;
+		}
+		if (obj.line2) {
+			obj = obj.line2;
+		}
+		return obj;
+	}
+
 	ext_imageAnnotator.Editor.prototype.setColor = function (color) {
 		this.currentColor = color;
-		if(this.canvas.getActiveObject()) {
-			this.canvas.getActiveObject().set('stroke', this.currentColor);
-			if (this.canvas.getActiveObject().get('fill') != 'rgba(255,0,0,0)') {
-				this.canvas.getActiveObject().set('fill', this.currentColor);
+		if(this.getActiveObject()) {
+			this.getActiveObject().set('stroke', this.currentColor);
+			if (this.getActiveObject().get('fill') != 'rgba(255,0,0,0)') {
+				this.getActiveObject().set('fill', this.currentColor);
 			}
 			this.canvas.renderAll();
 		}
