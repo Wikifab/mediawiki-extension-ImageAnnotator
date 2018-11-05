@@ -51,6 +51,7 @@
 				"ressources/mw.ext.imageAnnotator.Shapes.Arrow2Arrow.js",
 				"ressources/mw.ext.imageAnnotator.Shapes.Arrow2Circle.js",
 				"ressources/mw.ext.imageAnnotator.Shapes.Arrow2Line.js",
+				"ressources/mw.ext.imageAnnotator.Shapes.NumberedBullet.js",
 				"ressources/mw.ext.imageAnnotator.Editor.js",
 				"ressources/mw.ext.imageAnnotator.EditorPopup.js",
 				"ressources/mw.ext.imageAnnotator.EditLink.js",

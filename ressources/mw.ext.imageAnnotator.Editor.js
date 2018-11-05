@@ -36,11 +36,14 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 				{'type':'circle', 'parent':'tools'},
 				{'type':'arrow2', 'parent':'tools'},
 				{'type':'text', 'parent':'tools'},
+				{'type':'numberedbullet', 'parent':'tools'},
 				{'type':'del', 'parent':'tools'},
 				{'type':'color', 'color':'black', 'parent':'colors'},
 				{'type':'color', 'color':'white', 'parent':'colors'},
 				{'type':'color', 'color':'blue', 'parent':'colors'},
-				{'type':'color', 'color':'red', 'parent':'colors'}
+				{'type':'color', 'color':'red', 'parent':'colors'},
+				{'type':'color', 'color':'yellow', 'parent':'colors'},
+				{'type':'color', 'color':'green', 'parent':'colors'}
 			];
 
 		if (canvasId) {
@@ -144,7 +147,8 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			'wfarrow',
 			'wfarrow2',
 			'wfarrow2circle',
-			'wfarrow2line'
+			'wfarrow2line',
+			'wfnumberedbullet'
 		]
 
 		for (var x = 0; x < data['objects'].length; x++) {
@@ -182,10 +186,11 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 					var objectToload = this.specificsObjectsToLoad[x];
 					var arrow = new ext_imageAnnotator.shapes.Wfarrow2(objectToload);
 					this.canvas.add(arrow);
-				} else if (this.specificsObjectsToLoad[x].type == 'wfarrow2circle') {
-					/*var objectToload = this.specificsObjectsToLoad[x];
-					var arrow = new ext_imageAnnotator.shapes.Wfarrow2Circle(objectToload);
-					this.canvas.add(arrow);*/
+				} else if (this.specificsObjectsToLoad[x].type == 'wfnumberedbullet') {
+					var objectToload = this.specificsObjectsToLoad[x];
+					// load group without inside shapes, they will be recreated in constructor
+					var arrow = new ext_imageAnnotator.shapes.WfNumberedBullet([],objectToload);
+					this.canvas.add(arrow);
 				} else if (this.specificsObjectsToLoad[x].type == 'wfarrow2line') {
 					var objectToload = this.specificsObjectsToLoad[x];
 					var line = new ext_imageAnnotator.shapes.Wfarrow2Line(objectToload);
@@ -364,6 +369,45 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		return;
 	}
 
+	ext_imageAnnotator.Editor.prototype.getNextBulletNumber = function() {
+		var objects = this.canvas.getObjects();
+
+		var number = 1;
+		var numbers = [];
+
+		// get the smallest number wich do not exists yet :
+		objects.forEach(function(item) {
+			if(item.type == 'wfnumberedbullet') {
+				numbers[item.number] = item.number;
+				if (number == item.number) {
+					number = number + 1;
+					while (typeof numbers[number] !== 'undefined') {
+						number = number + 1;
+					}
+				}
+			}
+		});
+
+		return number;
+	}
+
+	ext_imageAnnotator.Editor.prototype.addNumberedBullet = function (size) {
+
+		var number = this.getNextBulletNumber();
+		var line = new ext_imageAnnotator.shapes.WfNumberedBullet(
+				[],
+				{
+					left: 120,
+					top: 120,
+					number: number,
+					stroke:this.currentColor,
+				}
+		);
+
+		this.canvas.add(line);
+		return;
+	}
+
 	ext_imageAnnotator.Editor.prototype.getActiveObject = function () {
 		var obj = this.canvas.getActiveObject();
 		if (obj.line1) {
@@ -497,6 +541,12 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		    case 'text':
 		    	button.click(function() {
 					editor.addText();
+					return false;
+				});
+		        break;
+		    case 'numberedbullet':
+		    	button.click(function() {
+					editor.addNumberedBullet();
 					return false;
 				});
 		        break;

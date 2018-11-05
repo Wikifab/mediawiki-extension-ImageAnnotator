@@ -66,6 +66,9 @@
 .mw-ia-popup-toolbar .editorButton.text {
     background-image: url(images/text.png);
 }
+.mw-ia-popup-toolbar .editorButton.numberedbullet {
+    background-image: url(images/numberedbullet.png);
+}
 
 .mw-ia-popup-toolbar .editorButton.black {
     background-color: #000000;
