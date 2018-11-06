@@ -31,8 +31,28 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 				  originY: 'center'
 				});
 
+
+		   var textColor = this.getTextColor(color);
+
+			var text = new fabric.Text('' + this.number, {
+			  fontSize: 14,
+			  originX: 'center',
+			  originY: 'center',
+			  fontFamily: 'arial',
+			  fill: textColor
+			});
+
+			this.circleObj = circle;
+			this.textObj = text;
+
+			objects.push(circle);
+			objects.push(text);
+			this.callSuper('initialize', objects, optionsopt, isAlreadyGroupedopt);
+	   },
+
+	   getTextColor: function(fillColor) {
 		   var textColor = 'rgba(0,0,0,255)';
-		   switch (color) {
+		   switch (fillColor) {
 			   case	"black":
 				   textColor = 'rgba(255,255,255,255)';
 				   break;
@@ -43,19 +63,17 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 				   textColor = 'rgba(0,0,0,255)';
 			   	break;
 		   }
+		   return textColor;
+	   },
 
-
-			var text = new fabric.Text('' + this.number, {
-			  fontSize: 14,
-			  originX: 'center',
-			  originY: 'center',
-			  fontFamily: 'arial',
-			  fill: textColor
-			});
-
-			objects.push(circle);
-			objects.push(text);
-			this.callSuper('initialize', objects, optionsopt, isAlreadyGroupedopt);
+	   set: function(key, value) {
+		   if( key == 'stroke') {
+			   // update circle color when change object color
+			   this.circleObj.set('fill', value);
+			   var textColor = this.getTextColor(value);
+			   this.textObj.set('fill', textColor);
+		   }
+		   return this.callSuper('set', key, value);
 	   },
 
 	   render: function(ctx) {
