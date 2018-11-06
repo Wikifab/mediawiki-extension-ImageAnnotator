@@ -22,6 +22,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		}
 		this.isStatic = editable ? false : true;
 		this.image = image;
+		console.log(image);
 		this.content = content;
 		this.canvasElement = null;
 		this.options = options;
@@ -32,6 +33,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		var toolbarConfig = [
 				{'type':'div', 'name':'tools'},
 				{'type':'div', 'name':'colors'},
+				{'type':'crop', 'parent':'tools'},
 				{'type':'square', 'parent':'tools'},
 				{'type':'circle', 'parent':'tools'},
 				{'type':'arrow2', 'parent':'tools'},
@@ -445,6 +447,15 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		}
 	}
 
+
+	ext_imageAnnotator.Editor.prototype.startCrop = function () {
+		if(this.canvas.getActiveObject()) {
+
+			this.canvas.remove(this.canvas.getActiveObject());
+		}
+	}
+
+
 	ext_imageAnnotator.Editor.prototype.moveSelection =  function (dLeft, dTop) {
 		if(this.canvas.getActiveObject()) {
 
@@ -501,6 +512,12 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		button.attr('alt',tooltip);
 
 		switch (type) {
+		    case 'crop':
+		    	button.click(function() {
+					editor.startCrop();
+					return false;
+				});
+		        break;
 		    case 'color':
 		    	var color = label;
 		    	button.click(function() {

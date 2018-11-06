@@ -1,14 +1,22 @@
+/**
+ * this script is the start point of all JS actions
+ *
+ * on edit page, this script look for every class "editableImageDataInput",
+ * it create an editor class un each of them, and add a button to open the editor,
+ * it also watch even of adding or removing image to add/remove corresponding editor
+ *
+ * on view pages, it will simply launch the editor class to display annotations
+ */
+
 
 ext_imageAnnotator = ext_imageAnnotator || {};
 
-
-
 //$(document).ready(function (mw, ext_imageAnnotator ) {
 ( function ( $, mw , ext_imageAnnotator) {
-	
+
 	var editLinkRegister = ext_imageAnnotator.getEditLinkRegister();
-	
-	
+
+
 	function isValidImageType(image) {
 		if( ! image || image.length == 0) {
 			return false;
@@ -16,21 +24,21 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 		return true;
 	}
 
-	// edition : 
+	// edition :
 	$('.editableImageDataInput').each(function () {
-		
-		//find target Image : 
+
+		//find target Image :
 		var targetInputName = $(this).attr('data-targetname');
-		
-		//find imagePreview : 
+
+		//find imagePreview :
 
 		var imageInput = $("input[name='"+targetInputName + "']");
 		var imageInputId = imageInput.attr('id');
 		var imagePreview = $("#" +imageInputId + "_imagepreview");
-		
+
 		// correct img size :
 		imagePreview.find('img').width("100%");
-		
+
 		var canvasId = null;//imageInputId + "_overlaycanvas";
 		var content = $(this).val();
 		var image = imagePreview.find('img');
@@ -42,39 +50,39 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 
 		// load static canvas
 		var staticEditor = new ext_imageAnnotator.Editor( imagePreview, canvasId = null, content, image ) ;
-		
+
 		var editLink = new ext_imageAnnotator.EditLink( imagePreview, this, image, staticEditor);
-		
+
 		editLinkRegister.registerEditLink(editLink, $(this).attr('name'));
-		
+
 	});
 
 	mw.hook('pmg.secondaryGallery.itemRemoved').add( function(li) {
 		editLinkRegister.removeEditLinkInput(li);
-		
+
 	});
 	mw.hook('pmg.secondaryGallery.itemChanged').add( function(input, li) {
-		
+
 		//the input is the image input, we must get the data input :
-		//find target Image : 
+		//find target Image :
 		var inputName = $(input).attr('name');
-		
+
 		var dataInput = $("input[data-targetname='"+inputName + "']");
 
 		editLinkRegister.updateEditLinkInput (li, $(dataInput).attr('name')) ;
-		
+
 	});
-	
-	
+
+
 	mw.hook('pmg.secondaryGallery.newImageAdded').add( function(imageInput,li) {
-		
+
 		// hook to add edit link on image dropped on step :
-		
+
 		// TODO : this doesn't work, see why !
-		//find target Image : 
+		//find target Image :
 		//var targetInputName = $(this).attr('data-targetname');
-		
-		//find imagePreview : 
+
+		//find imagePreview :
 
 		//var imageInput = $("input[name='"+targetInputName + "']");
 		var targetInputName = $(imageInput).attr('name');
@@ -82,10 +90,10 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 		var imageInputId = $(imageInput).attr('id');
 		var imagePreview = $(li).find('.pfImagePreviewWrapper');
 		var buttonBar = $(li).find('.file-buttonbar');
-		
+
 		// correct img size :
 		imagePreview.find('img').width("100%");
-		
+
 		var canvasId = null;//imageInputId + "_overlaycanvas";
 		var content = $(dataInput).val();
 		var image = imagePreview.find('img');
@@ -97,14 +105,14 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 
 		// load static canvas
 		var staticEditor = new ext_imageAnnotator.Editor( imagePreview, canvasId = null, content, image ) ;
-		
+
 		var editLink = new ext_imageAnnotator.EditLink( buttonBar, dataInput, image, staticEditor);
-		
+
 		editLinkRegister.registerEditLink(editLink, $(dataInput).attr('name'));
-		
+
 	});
-	
-	
+
+
 	// display image annotation on view page :
 	$('.annotatedImageContainer').each(function () {
 		var annotatedContent = $(this).find('.annotatedcontent').attr('data-annotatedcontent');
