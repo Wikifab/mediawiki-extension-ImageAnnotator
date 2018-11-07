@@ -22,10 +22,10 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		}
 		this.isStatic = editable ? false : true;
 		this.image = image;
-		console.log(image);
 		this.content = content;
 		this.canvasElement = null;
 		this.options = options;
+		this.isCropMode = options && options['cropMode'] ? true : false;
 
 		// default params :
 		this.currentColor = 'red';
@@ -33,7 +33,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		var toolbarConfig = [
 				{'type':'div', 'name':'tools'},
 				{'type':'div', 'name':'colors'},
-				{'type':'crop', 'parent':'tools'},
+				//{'type':'crop', 'parent':'tools'},
 				{'type':'square', 'parent':'tools'},
 				{'type':'circle', 'parent':'tools'},
 				{'type':'arrow2', 'parent':'tools'},
@@ -47,6 +47,14 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 				{'type':'color', 'color':'yellow', 'parent':'colors'},
 				{'type':'color', 'color':'green', 'parent':'colors'}
 			];
+
+		if (this.isCropMode) {
+			toolbarConfig = [
+				{'type':'div', 'name':'tools'},
+				{'type':'div', 'name':'colors'},
+				{'type':'cropzone', 'parent':'tools'}
+			]
+		}
 
 		if (canvasId) {
 			this.canvasId = canvasId;
@@ -396,10 +404,12 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 	ext_imageAnnotator.Editor.prototype.addNumberedBullet = function (size) {
 
 		var number = this.getNextBulletNumber();
+
+		var left = 70 + (number % 10) * 30;
 		var line = new ext_imageAnnotator.shapes.WfNumberedBullet(
 				[],
 				{
-					left: 120,
+					left: left,
 					top: 120,
 					number: number,
 					stroke:this.currentColor,
@@ -408,6 +418,22 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 		this.canvas.add(line);
 		return;
+	}
+
+	ext_imageAnnotator.Editor.prototype.addCropZone = function() {
+
+		//var circle = new ext_imageAnnotator.shapes.Circle({
+		var circle = new ext_imageAnnotator.shapes.CropZone({
+			top: 60,
+			left: 60,
+			height:300,
+			width:400,
+			maxPositionX: this.canvasElement.attr('width'),
+			maxPositionY: this.canvasElement.attr('height')
+		});
+
+		this.canvas.add(circle);
+		this.canvas.setActiveObject(circle);
 	}
 
 	ext_imageAnnotator.Editor.prototype.getActiveObject = function () {
@@ -449,10 +475,27 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 
 	ext_imageAnnotator.Editor.prototype.startCrop = function () {
-		if(this.canvas.getActiveObject()) {
 
-			this.canvas.remove(this.canvas.getActiveObject());
-		}
+
+		new ext_imageAnnotator.CropPopup(this, this.image, '' );
+
+		return;
+
+		var height = this.canvasElement.attr('height');
+		var width = this.canvasElement.attr('width');
+
+		var imgInstance = new fabric.Image(this.image[0], {
+			  left: 10,
+			  top: 10,
+			  //opacity: 1
+			});
+
+		var scale = Math.max(height/imgInstance.height,width/imgInstance.width);
+		imgInstance.scale(scale);
+
+		this.canvas.add(imgInstance);
+		imgInstance.sendToBack();
+		this.canvas.renderAll();
 	}
 
 
@@ -516,6 +559,12 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		    	button.click(function() {
 					editor.startCrop();
 					return false;
+				});
+		        break;
+		    case 'cropzone':
+		    	button.click(function() {
+		    		editor.addCropZone();
+		    		return false;
 				});
 		        break;
 		    case 'color':
