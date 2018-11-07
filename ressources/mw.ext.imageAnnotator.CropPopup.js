@@ -13,11 +13,13 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 	 * @param {jQuery} container container to put editor in it
 	 * @param {string} [content='']
 	 */
-	ext_imageAnnotator.CropPopup = function (editLink, image, content ) {
+	ext_imageAnnotator.CropPopup = function (editLink, image, content, cropCallback ) {
 		this.editLink = editLink;
 		this.initPopup();
 		this.image = image;
 		this.content = content;
+		console.log(cropCallback);
+		this.cropCallback = cropCallback;
 
 
 		this.clonedImage = $(image).clone();
@@ -46,6 +48,7 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 		$(this.imagediv).css("background-size", "100% 100%");
 		this.clonedImage.hide();
 
+		this.editor.addCropZone();
 
 		// add cancel button
 		this.buttonbar.append($('<button >' +mw.message( 'imageannotator-button-cancel' ).text() + '</button>').addClass('cancelButton').click(function () {
@@ -56,7 +59,7 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 		}));
 
 		// add save button
-		this.buttonbar.append($('<button>' +mw.message( 'imageannotator-button-save' ).text() + '</button>').addClass('saveButton').click(function () {
+		this.buttonbar.append($('<button>' +mw.message( 'imageannotator-button-crop' ).text() + '</button>').addClass('saveButton').click(function () {
 			setTimeout(function () {
 				cropPopup.save();
 			}, 10);
@@ -111,7 +114,11 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 	 * save modifications into original input
 	 */
 	ext_imageAnnotator.CropPopup.prototype.save = function () {
-		this.editLink.updateData(this.editor.getJson());
+
+		var cropPositions = this.editor.getCropPosition();
+
+		this.cropCallback[1].call(this.cropCallback[0], cropPositions);
+
 		$('#mw-ia-croppopup-div').popup('hide');
 
 	}

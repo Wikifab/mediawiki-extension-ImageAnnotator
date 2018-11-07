@@ -13,6 +13,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 	ext_imageAnnotator.shapes.CropZone = fabric.util.createClass(fabric.Rect, {
 
+		type: 'cropzone',
 		fill: 'rgba(0, 0, 0, 0)',
 		lockRotation: true,
 		hasRotatingPoint: false,

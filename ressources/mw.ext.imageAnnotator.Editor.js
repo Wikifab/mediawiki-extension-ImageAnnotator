@@ -52,8 +52,8 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			toolbarConfig = [
 				{'type':'div', 'name':'tools'},
 				{'type':'div', 'name':'colors'},
-				{'type':'cropzone', 'parent':'tools'}
-			]
+				//{'type':'cropzone', 'parent':'tools'}
+			];
 		}
 
 		if (canvasId) {
@@ -103,6 +103,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			this.addToolbarDyn(toolbarConfig);
 		}
 		this.addEditListeners();
+
 	}
 
 	ext_imageAnnotator.Editor.prototype.addEditListeners = function() {
@@ -422,14 +423,23 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 	ext_imageAnnotator.Editor.prototype.addCropZone = function() {
 
+
+		// canvas dim :
+		var canvasWidth = ext_imageAnnotator.standardWidth;
+		var canvasHeight = ext_imageAnnotator.standardWidth
+							* parseInt(this.canvasElement.attr('height'))
+							/ parseInt(this.canvasElement.attr('width'));
+
+
 		//var circle = new ext_imageAnnotator.shapes.Circle({
 		var circle = new ext_imageAnnotator.shapes.CropZone({
 			top: 60,
 			left: 60,
 			height:300,
 			width:400,
-			maxPositionX: this.canvasElement.attr('width'),
-			maxPositionY: this.canvasElement.attr('height')
+			lockUniScaling: true,
+			maxPositionX: canvasWidth,
+			maxPositionY: canvasHeight
 		});
 
 		this.canvas.add(circle);
@@ -473,29 +483,75 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		}
 	}
 
-
 	ext_imageAnnotator.Editor.prototype.startCrop = function () {
+		new ext_imageAnnotator.CropPopup(this, this.image, '', [this, this.applyCrop ] );
+	}
 
+	/**
+	 * this must be called after a crop is done,
+	 * to insert image according to the crop
+	 */
+	ext_imageAnnotator.Editor.prototype.applyCrop = function (cropPosition) {
 
-		new ext_imageAnnotator.CropPopup(this, this.image, '' );
+		console.log('applyCrop');
+		console.log(cropPosition);
 
-		return;
+		// calc invert position (coordinate to positionnate image cropped behind canvas)
+		cropPosition.scale =  ext_imageAnnotator.standardWidth / (cropPosition.cropzonewidth * cropPosition.cropzonescaleX);
+		cropPosition.top = - cropPosition.cropzonetop * cropPosition.scale;
+		cropPosition.left = - cropPosition.cropzoneleft * cropPosition.scale;
 
-		var height = this.canvasElement.attr('height');
-		var width = this.canvasElement.attr('width');
+		var height = 400; //this.canvasElement.attr('height');
+		var width = 200; //this.canvasElement.attr('width');
 
 		var imgInstance = new fabric.Image(this.image[0], {
-			  left: 10,
-			  top: 10,
-			  //opacity: 1
+			  left: cropPosition.left,
+			  top: cropPosition.top,
+			  opacity: 0.8
 			});
 
-		var scale = Math.max(height/imgInstance.height,width/imgInstance.width);
+		console.log([imgInstance.height, imgInstance.width]);
+		console.log(cropPosition);
+
+		// scale to set image size to canvas width :
+		var scale = ext_imageAnnotator.standardWidth / imgInstance.width;
+		// change scale according to crop:
+		scale = scale * cropPosition.scale ;
+		// apply scale :
 		imgInstance.scale(scale);
 
 		this.canvas.add(imgInstance);
-		imgInstance.sendToBack();
+		//imgInstance.sendToBack();
 		this.canvas.renderAll();
+	}
+
+	/*
+	 * this return cropZone position, (called in the cropeditor into the cropPopup)
+	 * it's based on the reference width (ext_imageAnnotator.standardWidth = 600)
+	 */
+	ext_imageAnnotator.Editor.prototype.getCropPosition = function () {
+
+		var objects = this.canvas.getObjects();
+
+		var number = 1;
+		var result = [];
+
+		// get the smallest number wich do not exists yet :
+		objects.forEach(function(item) {
+			console.log('foreach object');
+			console.log(item.type);
+			if (item.type == 'cropzone') {
+				result.cropzoneleft = item.left;
+				result.cropzonetop = item.top;
+				result.cropzonewidth = item.width;
+				result.cropzoneheight = item.height;
+				result.cropzonescaleX = item.scaleX;
+				result.cropzonescaleY = item.scaleY;
+
+			}
+		});
+
+		return result;
 	}
 
 
