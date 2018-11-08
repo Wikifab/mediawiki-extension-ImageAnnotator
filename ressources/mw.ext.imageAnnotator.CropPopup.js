@@ -13,12 +13,12 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 	 * @param {jQuery} container container to put editor in it
 	 * @param {string} [content='']
 	 */
-	ext_imageAnnotator.CropPopup = function (editLink, image, content, cropCallback ) {
+	ext_imageAnnotator.CropPopup = function (editLink, image, cropPosition, cropCallback ) {
 		this.editLink = editLink;
 		this.initPopup();
 		this.image = image;
-		this.content = content;
-		console.log(cropCallback);
+		this.cropPosition = cropPosition;
+		this.content = '';
 		this.cropCallback = cropCallback;
 
 
@@ -48,7 +48,7 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 		$(this.imagediv).css("background-size", "100% 100%");
 		this.clonedImage.hide();
 
-		this.editor.addCropZone();
+		this.editor.addCropZone(this.cropPosition);
 
 		// add cancel button
 		this.buttonbar.append($('<button >' +mw.message( 'imageannotator-button-cancel' ).text() + '</button>').addClass('cancelButton').click(function () {

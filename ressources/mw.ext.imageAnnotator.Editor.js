@@ -421,8 +421,17 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		return;
 	}
 
-	ext_imageAnnotator.Editor.prototype.addCropZone = function() {
+	ext_imageAnnotator.Editor.prototype.addCropZone = function(cropPosition) {
 
+		if ( ! cropPosition.cropzonetop) {
+			cropPosition = {};
+			cropPosition.cropzonetop = 60;
+			cropPosition.cropzoneleft = 60;
+			cropPosition.cropzoneheight = 300;
+			cropPosition.cropzonewidth = 400;
+			cropPosition.cropzonescaleX = 1;
+			cropPosition.cropzonescaleY = 1;
+		}
 
 		// canvas dim :
 		var canvasWidth = ext_imageAnnotator.standardWidth;
@@ -430,18 +439,18 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 							* parseInt(this.canvasElement.attr('height'))
 							/ parseInt(this.canvasElement.attr('width'));
 
-
 		//var circle = new ext_imageAnnotator.shapes.Circle({
 		var circle = new ext_imageAnnotator.shapes.CropZone({
-			top: 60,
-			left: 60,
-			height:300,
-			width:400,
+			top: cropPosition.cropzonetop,
+			left: cropPosition.cropzoneleft,
+			height: cropPosition.cropzoneheight,
+			width: cropPosition.cropzonewidth,
+			scaleX: cropPosition.cropzonescaleX,
+			scaleY: cropPosition.cropzonescaleY,
 			lockUniScaling: true,
 			maxPositionX: canvasWidth,
 			maxPositionY: canvasHeight
 		});
-
 		this.canvas.add(circle);
 		this.canvas.setActiveObject(circle);
 	}
@@ -483,8 +492,53 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		}
 	}
 
+	/*
+	 * this return croped image position, (called in the original editor)
+	 * this is the invert function of getCropPosition
+	 */
+	ext_imageAnnotator.Editor.prototype.getCropedImagePosition = function () {
+
+		var objects = this.canvas.getObjects();
+
+		var number = 1;
+		var result = [];
+
+		//whe admit that there is only one image object possible : the cropped source image
+		objects.forEach(function(item) {
+			if (item.type == 'image') {
+				result.top = item.get('top');
+				result.left = item.get('left');
+				result.width = item.get('width');
+				result.height = item.get('height');
+				result.scaleX = item.get('scaleX');
+				result.scaleY = item.get('scaleY');
+
+				var DefaultScale = ext_imageAnnotator.standardWidth / item.width;
+
+				result.cropzonewidth = 400;
+				result.cropzoneheight = 300;
+
+				result.relativescale = result.scaleX / DefaultScale;
+				// result.relativescale =  ext_imageAnnotator.standardWidth / (result.cropzonewidth * result.cropzonescaleX);
+
+				result.cropzonescaleX = ext_imageAnnotator.standardWidth  / (result.cropzonewidth * result.relativescale );
+				result.cropzonescaleY =result.cropzonescaleX;
+
+				result.cropzonetop = - result.top / result.relativescale;
+				result.cropzoneleft = - result.left / result.relativescale;
+
+			}
+		});
+
+		return result;
+	}
+
 	ext_imageAnnotator.Editor.prototype.startCrop = function () {
-		new ext_imageAnnotator.CropPopup(this, this.image, '', [this, this.applyCrop ] );
+
+		// if existing crop, load object :
+		var cropPosition = this.getCropedImagePosition();
+
+		new ext_imageAnnotator.CropPopup(this, this.image, cropPosition, [this, this.applyCrop ] );
 	}
 
 	/**
@@ -493,13 +547,10 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 	 */
 	ext_imageAnnotator.Editor.prototype.applyCrop = function (cropPosition) {
 
-		console.log('applyCrop');
-		console.log(cropPosition);
-
 		// calc invert position (coordinate to positionnate image cropped behind canvas)
-		cropPosition.scale =  ext_imageAnnotator.standardWidth / (cropPosition.cropzonewidth * cropPosition.cropzonescaleX);
-		cropPosition.top = - cropPosition.cropzonetop * cropPosition.scale;
-		cropPosition.left = - cropPosition.cropzoneleft * cropPosition.scale;
+		cropPosition.relativescale =  ext_imageAnnotator.standardWidth / (cropPosition.cropzonewidth * cropPosition.cropzonescaleX);
+		cropPosition.top = - cropPosition.cropzonetop * cropPosition.relativescale ;
+		cropPosition.left = - cropPosition.cropzoneleft * cropPosition.relativescale;
 
 		var height = 400; //this.canvasElement.attr('height');
 		var width = 200; //this.canvasElement.attr('width');
@@ -507,27 +558,37 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		var imgInstance = new fabric.Image(this.image[0], {
 			  left: cropPosition.left,
 			  top: cropPosition.top,
-			  opacity: 0.8
+			  //opacity: 0.8,
+			  hasControls: false,
+			  selectable: false
 			});
-
-		console.log([imgInstance.height, imgInstance.width]);
-		console.log(cropPosition);
 
 		// scale to set image size to canvas width :
 		var scale = ext_imageAnnotator.standardWidth / imgInstance.width;
 		// change scale according to crop:
-		scale = scale * cropPosition.scale ;
+		scale = scale * cropPosition.relativescale ;
 		// apply scale :
 		imgInstance.scale(scale);
 
+
+		var canvas = this.canvas;
+		// remove previous images
+		var objects = this.canvas.getObjects();
+		objects.forEach(function(item) {
+			if (item.type == 'image') {
+				canvas.remove(item);
+			}
+		});
+
 		this.canvas.add(imgInstance);
-		//imgInstance.sendToBack();
+		imgInstance.sendToBack();
 		this.canvas.renderAll();
 	}
 
 	/*
 	 * this return cropZone position, (called in the cropeditor into the cropPopup)
 	 * it's based on the reference width (ext_imageAnnotator.standardWidth = 600)
+	 * this is the invert function of getCropedImagePosition
 	 */
 	ext_imageAnnotator.Editor.prototype.getCropPosition = function () {
 
@@ -538,8 +599,6 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 		// get the smallest number wich do not exists yet :
 		objects.forEach(function(item) {
-			console.log('foreach object');
-			console.log(item.type);
 			if (item.type == 'cropzone') {
 				result.cropzoneleft = item.left;
 				result.cropzonetop = item.top;
