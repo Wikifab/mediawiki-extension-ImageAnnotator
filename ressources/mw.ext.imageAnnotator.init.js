@@ -124,7 +124,7 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 				// it trigger an exception if so
 				var jsonObject = jQuery.parseJSON(annotatedContent);
 				// we add editor only for existing images
-				var staticEditor = new ext_imageAnnotator.Editor( this, canvasId = null, annotatedContent, image ) ;
+				var staticEditor = new ext_imageAnnotator.Editor( $(this).find('a'), canvasId = null, annotatedContent, image ) ;
 				$(this).find('a').css('display','inline-block');
 			}
 			catch(e) {
@@ -135,6 +135,5 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 	});
 
 }( jQuery, mediaWiki , ext_imageAnnotator) );
-
 
 

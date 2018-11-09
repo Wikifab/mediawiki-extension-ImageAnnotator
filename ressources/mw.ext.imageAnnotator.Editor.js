@@ -21,6 +21,8 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			return;
 		}
 		this.isStatic = editable ? false : true;
+		// if auto width is true, it apply a zoom to adjust canvas size
+		this.isAutoWidth = this.isStatic;
 		this.image = image;
 		this.content = content;
 		this.canvasElement = null;
@@ -33,7 +35,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		var toolbarConfig = [
 				{'type':'div', 'name':'tools'},
 				{'type':'div', 'name':'colors'},
-				//{'type':'crop', 'parent':'tools'},
+				{'type':'crop', 'parent':'tools'},
 				{'type':'square', 'parent':'tools'},
 				{'type':'circle', 'parent':'tools'},
 				{'type':'arrow2', 'parent':'tools'},
@@ -61,6 +63,12 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		} else {
 			this.canvasId = 'ia_canvas_' + ext_imageAnnotator.canvasNextId;
 			this.canvasElement = $("<canvas>").attr('id', this.canvasId ).css('border','1px solid #EEE');
+
+			// set container position to absolut to be the positionning ref
+			this.container.css('position','absolute');
+			this.canvasElement.css('position','absolute');
+			this.canvasElement.css('top','0');
+			this.canvasElement.css('left','0');
 			// .attr('width', '300').attr('height', '200')
 			if (image) {
 
@@ -134,6 +142,19 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 	ext_imageAnnotator.Editor.prototype.updateSize= function () {
 		var width = ext_imageAnnotator.standardWidth;
 		var height = Math.round($(this.image).height() * width / $(this.image).width());
+
+		console.log('update size');
+
+		if (this.isAutoWidth) {
+			var realwidth = $(this.image).width();
+			var realHeight = Math.round(height * realwidth / width);
+			console.log([width,height]);
+			console.log([realwidth,realHeight]);
+			width = realwidth;
+			height = realHeight;
+		}
+
+
 		this.canvasElement.attr('width', width);
 		this.canvasElement.attr('height', height);
 		if (this.canvas) {
@@ -219,9 +240,6 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 	}
 
 
-
-
-
 	ext_imageAnnotator.Editor.prototype.updateData = function (content) {
 		var editor = this;
 
@@ -236,6 +254,14 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 					// add specifics objects not loaded by fabric
 					editor.loadSpecificsObjects();
 
+					var objects = editor.canvas.getObjects();
+					//whe admit that there is only one image object possible : the cropped source image
+					objects.forEach(function(item) {
+						if (item.type == 'image') {
+							item.set('selectable',false);
+						}
+					});
+
 					//set width and height :
 					var obj = JSON.parse(content);
 					if (typeof obj.width !== 'undefined' ) {
@@ -246,7 +272,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 					}
 					editor.canvas.renderAll();
 					if ( editor.isStatic) {
-						editor.placeOverSourceImage();
+						//editor.placeOverSourceImage();
 					}
 				});
 			} catch (e) {
@@ -827,10 +853,11 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 	 */
 	ext_imageAnnotator.Editor.prototype.placeOverSourceImage = function ( noredim) {
 
-		return this.exportOverSourceImage();
+		return this.copyCanvasOverSourceImage();
 	}
 	/**
 	 * this function generate an img div with svg content of canvas, and put it over the source image
+	 * this works well only if there isn't image element inside canvas (occurs when cropped image is defined in it)
 	 */
 	ext_imageAnnotator.Editor.prototype.exportOverSourceImage = function () {
 
@@ -851,6 +878,53 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		$('#'+this.canvasId).hide();
 	}
 
+
+	ext_imageAnnotator.Editor.callCount = 0;
+	/**
+	 * this function generate a canvas div with data copied, and put it over the source image
+	 * this replace exportOverSourceImage function
+	 */
+	ext_imageAnnotator.Editor.prototype.copyCanvasOverSourceImage = function () {
+
+		console.log(this.getSVG());
+		if(this.overlayImg) {
+			$(this.overlayImg).remove();
+		}
+		ext_imageAnnotator.Editor.callCount++;
+		console.log(ext_imageAnnotator.Editor.callCount);
+		if (ext_imageAnnotator.Editor.callCount > 20) {
+			return;
+		}
+		if ( this.isStatic ) {
+			return;
+		}
+		if ( this.image && this.content) {
+
+			// display it only if content, (some browsers doesn't like empty images)
+			this.overlayImg = $('<div>').attr('class','annotationlayer');
+
+			// positioning
+			$(this.image).parent().css({ position:'relative'});
+			$(this.overlayImg).insertAfter(this.image);
+			$(this.overlayImg).css({ width:'100%'});
+
+			$(this.overlayImg).css({position:'absolute', width:'100%', height:'auto', top: 0, left: 0});
+
+			try {
+				// check that this is json (not json when field doesn't exist)
+				// it trigger an exception if so
+				var jsonObject = jQuery.parseJSON(this.content);
+				// we add editor only for existing images
+				var staticEditor = new ext_imageAnnotator.Editor( this.overlayImg, null, this.content, this.image, false ) ;
+				$(this).find('a').css('display','inline-block');
+			}
+			catch(e) {
+				console.log('Error : ' );
+				console.log(e);
+				return;
+			}
+		}
+	}
 
 })(jQuery, mediaWiki, fabric, ext_imageAnnotator);
 
