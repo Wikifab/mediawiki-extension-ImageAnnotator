@@ -33,7 +33,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		var toolbarConfig = [
 				{'type':'div', 'name':'tools'},
 				{'type':'div', 'name':'colors'},
-				//{'type':'crop', 'parent':'tools'},
+				{'type':'crop', 'parent':'tools'},
 				{'type':'square', 'parent':'tools'},
 				{'type':'circle', 'parent':'tools'},
 				{'type':'arrow2', 'parent':'tools'},
