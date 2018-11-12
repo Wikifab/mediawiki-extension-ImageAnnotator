@@ -21,10 +21,30 @@ class Hooks {
 				'ext.imageannotator.editor'
 		] );
 
-		$out = '<div class="annotatedImageContainer">' . $image
-			. '<div class="annotatedcontent" data-annotatedcontent=\''.$annotatedContent.'\'> </div></div>';
 
-		return $out;
+		$useBackendGeneration = true;
+
+		if ($useBackendGeneration  ) {
+			// using backend generation (for image including cropped images)
+			// image must have been generated before (during edition)
+			$annotatedImage = new AnnotatedImage($image, $annotatedContent);
+			if ($annotatedImage->exists() && $annotatedImage->hasCroppedImage()) {
+				$out = '<div><img src="' . $annotatedImage->getImgUrl() . '"/> </div>';
+			} else {
+				// if image doesn't exists, fallback on default behaviour
+				// if has cropped image,us svg default behaviour because there is no image behind transparency
+				$out = '<div class="annotatedImageContainer">' . $image
+				. '<div class="annotatedcontent" data-annotatedcontent=\''.$annotatedContent.'\'> </div></div>';
+				return $out;
+			}
+			return array( $out, 'noparse' => true, 'isHTML' => true );
+
+		} else {
+			// using js frontside generation :
+			$out = '<div class="annotatedImageContainer">' . $image
+				. '<div class="annotatedcontent" data-annotatedcontent=\''.$annotatedContent.'\'> </div></div>';
+			return $out;
+		}
 	}
 
 

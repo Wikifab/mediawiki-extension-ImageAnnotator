@@ -90,6 +90,7 @@
 	},
 	"AutoloadClasses": {
 		"ImageAnnotator\\ApiImageAnnotatorThumb": "includes/ApiImageAnnotatorThumb.php",
+		"ImageAnnotator\\AnnotatedImage": "includes/AnnotatedImage.php",
 		"ImageAnnotator\\Hooks": "includes/Hooks.php",
 		"ImageAnnotator\\InputEditableImage": "includes/InputEditableImage.php"
 	},

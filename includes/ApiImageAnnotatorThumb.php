@@ -34,17 +34,22 @@ class ApiImageAnnotatorThumb extends \ApiBase {
 		return false;
 	}
 
+	/**
+	 *
+	 * @param string $image full url of source image
+	 * @return array
+	 */
 	protected function getImageInfo($image) {
 		global $wgResourceBasePath;
 		// TODO : use real repo url instead of wgRessouceBasePAth
 
-		$regexp1 = $wgResourceBasePath.'/images/thumb/([a-z0-9]+)/([a-z0-9]{2})/([^/]+)$';
+		$regexp1 = $wgResourceBasePath.'/images/([a-z0-9]+)/([a-z0-9]{2})/([^/]+)$';
 		$regexp1 = str_replace('/','\/', $regexp1);
 		$regexp2 = $wgResourceBasePath.'/images/thumb/([a-z0-9]+)/([a-z0-9]{2})/([^/]+)/([^/]+)$';
 		$regexp2 = str_replace('/','\/', $regexp2);
 
 
-		if (preg_match($wgResourceBasePath.'/images/([a-z]+)/([a-z]{2})/([^/]{2})', $image, $matches)) {
+		if (preg_match('/' . $regexp1 . '/', $image, $matches)) {
 			// image original
 			return [
 					'imgUrl' => $image,
@@ -64,6 +69,14 @@ class ApiImageAnnotatorThumb extends \ApiBase {
 		}
 	}
 
+	/**
+	 * @deprecated use class AnnotatedImage instead
+	 *
+	 * @param unknown $imageInfo
+	 * @param unknown $size
+	 * @param unknown $hash
+	 * @return string[]
+	 */
 	protected function getOutFilename ($imageInfo, $size, $hash) {
 		global $wgUploadDirectory, $wgResourceBasePath;
 		$outfilename = 'ia-' . $hash ."-{$size}px-".$imageInfo['filename'] . '.png';
@@ -113,12 +126,14 @@ class ApiImageAnnotatorThumb extends \ApiBase {
 		// convert to png :
 		// TODO : determine png size according to request
 		$width = 800;
-		$cmd = "inkscape -z -f '$svgInFile' -w $width --export-png='$fileOut'";
+		$cmd = "inkscape -z -f '$svgInFile' -w $width --export-background-opacity=0,0 --export-png='$fileOut'";
 
 
 		mkdir(dirname($fileOut), 0755, true);
 
 		exec($cmd, $output, $execCode);
+
+		unlink($svgInFile);
 
 		if($execCode == 0) {
 			// success
@@ -131,7 +146,7 @@ class ApiImageAnnotatorThumb extends \ApiBase {
 
 		return [
 				'success' => false,
-				'message' => 'error while executing svg conversion command ' . $cmd
+				'message' => 'error while executing svg conversion command '
 		];
 	}
 
