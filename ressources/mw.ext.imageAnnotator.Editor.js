@@ -829,15 +829,77 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 		return this.exportOverSourceImage();
 	}
+
+	ext_imageAnnotator.Editor.prototype.generateThumbUsingAPI = function () {
+		// fonction to do second request to execute follow action
+
+		var editor = this;
+
+		function setOverlayImage(url) {
+			// display it only if content, (some browsers doesn't like empty images)
+			editor.overlayImg = $('<img>').attr('class','annotationlayer').attr('src', url);
+			// positioning
+			$(editor.image).parent().css({ position:'relative'});
+			$(editor.overlayImg).insertAfter(editor.image);
+			$(editor.overlayImg).css({ width:'100%', position:'absolute', top:0, left : 0});
+		}
+
+		function convertQuery(jsondata) {
+			var token = jsondata.query.tokens.csrftoken;
+			$.ajax({
+				type: "POST",
+				url: mw.util.wikiScript('api'),
+				data: {
+					action:'iaThumbs',
+					format:'json',
+					token: token,
+					image: editor.image.attr('src'),
+					jsondata: editor.getJson(),
+					svgdata: editor.getSVG()
+				},
+			    dataType: 'json',
+			    success: function (jsondata) {
+
+			    	if (jsondata.iaThumbs.success == 1) {
+			    		setOverlayImage(jsondata.iaThumbs.image)
+
+			    	} else {
+			    		console.log('Fail to generate annotatedImage');
+			    		console.log(jsondata);
+			    	}
+			}});
+		};
+
+		// first request to get token
+		$.ajax({
+			type: "GET",
+			url: mw.util.wikiScript('api'),
+			data: { action:'query', format:'json',  meta: 'tokens', type:'csrf'},
+		    dataType: 'json',
+		    success: convertQuery
+		});
+	}
+
+
 	/**
 	 * this function generate an img div with svg content of canvas, and put it over the source image
 	 */
 	ext_imageAnnotator.Editor.prototype.exportOverSourceImage = function () {
-
 		if(this.overlayImg) {
 			$(this.overlayImg).remove();
 		}
-		if (this.content) {
+		if (! this.content) {
+			$('#'+this.canvasId).hide();
+			return
+		};
+
+		// TODO : config this in extension configuration vars :
+		// if thumbModeApiConvert is true,
+		// then thumb of annotated image is generated using APIs
+		// else it use fabricJS to convert it (in SVG), but this won't works for cropping images
+		var thumbModeApiConvert = true;
+
+		if (!thumbModeApiConvert) {
 			// display it only if content, (some browsers doesn't like empty images)
 			this.overlayImg = $('<img>').attr('class','annotationlayer').attr('src', "data:image/svg+xml;utf8," + this.getSVG());
 
@@ -847,6 +909,8 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			$(this.overlayImg).css({ width:'100%'});
 
 			$(this.overlayImg).css({position:'absolute', width:'100%', height:'auto', top: 0, left: 0});
+		} else {
+			this.generateThumbUsingAPI();
 		}
 		$('#'+this.canvasId).hide();
 	}

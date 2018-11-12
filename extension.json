@@ -29,6 +29,9 @@
 	"ExtensionMessagesFiles": {
 		"ImageAnnotatorMagic": "ImageAnnotator.i18n.php"
 	},
+	"APIModules": {
+		"iaThumbs": "ImageAnnotator\\ApiImageAnnotatorThumb"
+	},
 	"Hooks": {
 	    "BeforePageDisplay": [
 			"ImageAnnotator\\Hooks::onBeforePageDisplay"
@@ -86,6 +89,7 @@
 		"remoteExtPath": "ImageAnnotator"
 	},
 	"AutoloadClasses": {
+		"ImageAnnotator\\ApiImageAnnotatorThumb": "includes/ApiImageAnnotatorThumb.php",
 		"ImageAnnotator\\Hooks": "includes/Hooks.php",
 		"ImageAnnotator\\InputEditableImage": "includes/InputEditableImage.php"
 	},
