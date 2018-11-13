@@ -113,13 +113,25 @@ class AnnotatedImage {
 	}
 	public function getPageUrl() {
 
+		return $this->getImgUrl();
+
+		/*
+		 * this wa to set link to image page, but not works well with mediaviewer
 		if ($this->file) {
 			return $this->file->getUrl();
-		}
+		}*/
 	}
 
 	public function makeHtmlImageLink($parser) {
-		$out = '<img class="annotationlayer" src="'. $this->getImgUrl() . '"/>';
+		$imgDim = '';
+
+		// if dimention are set into annotated content, set it for multimediaviewer
+		$jsonData = json_decode($this->annotatedContent);
+		if ($jsonData && $jsonData->height && $jsonData->width) {
+			$imgDim = ' data-file-width="'.$jsonData->width.'" data-file-height="'.$jsonData->height.'" ';
+		}
+
+		$out = '<img class="annotationlayer" ' . $imgDim  . ' src="'. $this->getImgUrl() . '"/>';
 		$out = "<a class='image' href=". $this->getPageUrl() ." >$out</a>";
 		/*
 			'<a href="/wiki/Fichier:Test_de_tuto_LB_Final.jpg" class="image" title="annotation:Modèle:Main Picture annotation}"
