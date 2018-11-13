@@ -111,5 +111,33 @@ class AnnotatedImage {
 			return $r['fileurl'];
 		}
 	}
+	public function getPageUrl() {
+
+		if ($this->file) {
+			return $this->file->getUrl();
+		}
+	}
+
+	public function makeHtmlImageLink($parser) {
+		$out = '<img class="annotationlayer" src="'. $this->getImgUrl() . '"/>';
+		$out = "<a class='image' href=". $this->getPageUrl() ." >$out</a>";
+		/*
+			'<a href="/wiki/Fichier:Test_de_tuto_LB_Final.jpg" class="image" title="annotation:Modèle:Main Picture annotation}"
+			style="display: inline-block; position: relative;">
+			<img alt="annotation:Modèle:Main Picture annotation}"
+			src="/w/images/thumb/7/7a/Test_de_tuto_LB_Final.jpg/800px-Test_de_tuto_LB_Final.jpg"
+			class="thumbborder"
+			srcset="/w/images/7/7a/Test_de_tuto_LB_Final.jpg 1.5x"
+			data-file-width="1200"
+			data-file-height="900"
+			width="800"
+			height="600">
+			<img class="annotationlayer" src="/w/images/thumb/7/7a/Test_de_tuto_LB_Final.jpg/ia-ceb9d8e5c28d6c7e7cb2e9e350aa3fa2-px-Test_de_tuto_LB_Final.jpg.png" style="width: 100%; position: absolute; top: 0px; left: 0px;">
+			</a>';
+			*/
+		return $out;
+
+
+	}
 
 }

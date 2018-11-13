@@ -30,6 +30,8 @@ class Hooks {
 			$annotatedImage = new AnnotatedImage($image, $annotatedContent);
 			if ($annotatedImage->exists() && $annotatedImage->hasCroppedImage()) {
 				$out = '<div><img src="' . $annotatedImage->getImgUrl() . '"/> </div>';
+				$out = $annotatedImage->makeHtmlImageLink($input);
+				return array( $out, 'noparse' => true, 'isHTML' => true );
 			} else {
 				// if image doesn't exists, fallback on default behaviour
 				// if has cropped image,us svg default behaviour because there is no image behind transparency
@@ -46,7 +48,6 @@ class Hooks {
 			return $out;
 		}
 	}
-
 
 	public static function onBeforePageDisplay( &$oOutputPage, &$oSkin ) {
 		$oOutputPage->addModules( 'ext.imageannotator.editor' );
