@@ -133,10 +133,21 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 	ext_imageAnnotator.Editor.prototype.updateSize= function () {
 		var width = ext_imageAnnotator.standardWidth;
-		var height = Math.round($(this.image).height() * width / $(this.image).width());
+		var baseHeight = $(this.image).height();
+		var baseWidth = $(this.image).width();
+		// if there is a cropped image, use cropped dim as base dim :
+		var cropedImage = this.getCropedImagePosition();
+		if (cropedImage && cropedImage.height) {
+			baseHeight = cropedImage.height;
+			baseWidth = cropedImage.width;
+		}
+
+		var height = Math.round(baseHeight * width / baseWidth);
 		this.canvasElement.attr('width', width);
 		this.canvasElement.attr('height', height);
 		if (this.canvas) {
+			//this.canvas.setWidth( width);
+			//this.canvas.setHeight( height);
 			this.canvas.renderAll();
 		}
 	}
@@ -218,10 +229,6 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		return ;
 	}
 
-
-
-
-
 	ext_imageAnnotator.Editor.prototype.updateData = function (content) {
 		var editor = this;
 
@@ -243,6 +250,11 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 					}
 					if (typeof obj.height !== 'undefined' ) {
 						editor.canvasElement.attr('height', obj.height);
+					}
+					// apply ratio :
+					if (typeof obj.width !== 'undefined' && typeof obj.height !== 'undefined' ) {
+						var h = editor.canvas.getWidth() * obj.height / obj.width;
+						editor.canvas.setHeight(h);
 					}
 					editor.canvas.renderAll();
 					if ( editor.isStatic) {
@@ -498,6 +510,9 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 	 */
 	ext_imageAnnotator.Editor.prototype.getCropedImagePosition = function () {
 
+		if (typeof this.canvas === "undefined") {
+			return [];
+		}
 		var objects = this.canvas.getObjects();
 
 		var number = 1;
@@ -552,9 +567,6 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		cropPosition.top = - cropPosition.cropzonetop * cropPosition.relativescale ;
 		cropPosition.left = - cropPosition.cropzoneleft * cropPosition.relativescale;
 
-		var height = 400; //this.canvasElement.attr('height');
-		var width = 200; //this.canvasElement.attr('width');
-
 		var imgInstance = new fabric.Image(this.image[0], {
 			  left: cropPosition.left,
 			  top: cropPosition.top,
@@ -579,9 +591,19 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 				canvas.remove(item);
 			}
 		});
-
+		// add new image cropped :
 		this.canvas.add(imgInstance);
 		imgInstance.sendToBack();
+
+		// resize canvas to fit cropped ratio
+		//var width = parseInt(this.canvasElement.attr('width'));
+		//var height = parseInt(this.canvasElement.attr('height'));
+
+		var width = ext_imageAnnotator.standardWidth;
+		var newHeight = cropPosition.cropzoneheight * width / cropPosition.cropzonewidth;
+		this.canvas.setWidth(width);
+		this.canvas.setHeight(newHeight);
+
 		this.canvas.renderAll();
 	}
 
@@ -592,6 +614,9 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 	 */
 	ext_imageAnnotator.Editor.prototype.getCropPosition = function () {
 
+		if (typeof this.canvas === "undefined") {
+			return [];
+		}
 		var objects = this.canvas.getObjects();
 
 		var number = 1;
@@ -803,8 +828,10 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 	ext_imageAnnotator.Editor.prototype.getJson = function () {
 		var objectData = this.canvas.toObject();
 		// we add height and width information :
-		objectData.height = this.canvasElement.attr('height');
-		objectData.width = this.canvasElement.attr('width');
+		objectData.height = this.canvas.getHeight();
+		objectData.width = this.canvas.getWidth();
+		//objectData.height = this.canvasElement.attr('height');
+		//objectData.width = this.canvasElement.attr('width');
 
 		var json = JSON.stringify(objectData);
 		// to avoid conflict with  '}}' used by semantic form, wa add spaces between multiples '{' or '}':
@@ -816,7 +843,6 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		return json;
 	}
 	ext_imageAnnotator.Editor.prototype.getSVG = function () {
-
 		return this.canvas.toSVG();
 	}
 	ext_imageAnnotator.Editor.prototype.replaceSourceImageBySVG = function () {

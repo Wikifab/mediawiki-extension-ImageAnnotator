@@ -45,6 +45,9 @@
 	background-color: #eaecf0;
 }
 
+.mw-ia-popup-toolbar .editorButton.crop {
+    background-image: url(images/crop.png);
+}
 .mw-ia-popup-toolbar .editorButton.square {
     background-image: url(images/square.png);
 }

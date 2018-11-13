@@ -7,6 +7,7 @@
     "imageAnnotator-desc": "enable to add annotations over images",
     "imageannotator-button-save": "Save",
     "imageannotator-button-cancel": "Cancel",
+    "imageannotator-button-crop": "Crop",
     "imageannotator-toolbar-square-label": "Square",
     "imageannotator-toolbar-circle-label": "Circle",
     "imageannotator-toolbar-arrow-label": "Arrow",
