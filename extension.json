@@ -71,6 +71,7 @@
 			"messages": [
 			    "imageannotator-button-save",
 			    "imageannotator-button-cancel",
+			    "imageannotator-button-crop",
 			    "imageannotator-toolbar-square-label",
 			    "imageannotator-toolbar-circle-label",
 			    "imageannotator-toolbar-arrow-label",
