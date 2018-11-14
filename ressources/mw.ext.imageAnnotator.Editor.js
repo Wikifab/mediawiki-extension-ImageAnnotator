@@ -229,6 +229,18 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		return ;
 	}
 
+	ext_imageAnnotator.Editor.prototype.lockBackImage = function (content) {
+
+		var objects = this.canvas.getObjects();
+
+		objects.forEach(function(item) {
+			if(item.type == 'image') {
+				item.selectable=false;
+				item.hasControls =false;
+			}
+		});
+	}
+
 	ext_imageAnnotator.Editor.prototype.updateData = function (content) {
 		var editor = this;
 
@@ -256,6 +268,9 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 						var h = editor.canvas.getWidth() * obj.height / obj.width;
 						editor.canvas.setHeight(h);
 					}
+					// disable cropped image edition
+					editor.lockBackImage();
+
 					editor.canvas.renderAll();
 					if ( editor.isStatic) {
 						editor.placeOverSourceImage();
