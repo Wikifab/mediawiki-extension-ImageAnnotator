@@ -126,6 +126,12 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			if (p.line2) {
 				canvas.remove(p.line2);
 			}
+			if (p.c1) {
+				canvas.remove(p.c1);
+			}
+			if (p.c2) {
+				canvas.remove(p.c2);
+			}
 			// TODO : remove also the other circle
 			canvas.renderAll();
 		});
@@ -383,6 +389,9 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			radius : 8,
 			line2 : line,
 		});
+
+		line.c1 = c;
+		line.c2 = c2;
 
 		this.canvas.add(c);
 		this.canvas.add(c2);
