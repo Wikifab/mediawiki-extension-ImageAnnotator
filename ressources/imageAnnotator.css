@@ -48,6 +48,15 @@
 .mw-ia-popup-toolbar .editorButton.crop {
     background-image: url(images/crop.png);
 }
+.mw-ia-popup-toolbar .editorButton.f1_1 {
+    background-image: url(images/f1_1.png);
+}
+.mw-ia-popup-toolbar .editorButton.f4_3 {
+    background-image: url(images/f4_3.png);
+}
+.mw-ia-popup-toolbar .editorButton.f16_9 {
+    background-image: url(images/f16_9.png);
+}
 .mw-ia-popup-toolbar .editorButton.square {
     background-image: url(images/square.png);
 }

@@ -52,6 +52,9 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			toolbarConfig = [
 				{'type':'div', 'name':'tools'},
 				{'type':'div', 'name':'colors'},
+				{'type':'format', 'format':'1_1', 'parent':'tools'},
+				{'type':'format', 'format':'4_3', 'parent':'tools'},
+				{'type':'format', 'format':'16_9', 'parent':'tools'},
 				//{'type':'cropzone', 'parent':'tools'}
 			];
 		}
@@ -514,6 +517,36 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		this.setActiveColorbutton();
 	}
 
+	ext_imageAnnotator.Editor.prototype.setFormat = function (format) {
+
+		var objects = this.canvas.getObjects();
+		var canvas = this.canvas;
+
+		objects.forEach(function(item) {
+			if (item.type == 'cropzone') {
+				var width = item.get('width');
+				var height = item.get('height');
+				switch (format) {
+					case '1_1':
+						height = width;
+						break;
+					case '4_3':
+						height = width * 3 / 4;
+						break;
+					case '16_9':
+						height = width * 9 / 16;
+						break;
+					default :
+						console.log ('unknownd format');
+						break;
+				}
+				item.height = height;
+			}
+		});
+		canvas.renderAll();
+
+	}
+
 	ext_imageAnnotator.Editor.prototype.setActiveColorbutton = function () {
 
 		// change css class on buttons :
@@ -711,6 +744,9 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		if (type == 'color') {
 			label = params['color'];
 		}
+		if (type == 'format') {
+			label = 'f' + params['format'];
+		}
 		if (type =='div') {
 			return this.addToolbarDiv(params);
 		}
@@ -729,6 +765,13 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		    	button.click(function() {
 		    		editor.addCropZone();
 		    		return false;
+				});
+		        break;
+		    case 'format':
+		    	var format = label;
+		    	button.click(function() {
+					editor.setFormat(params['format']);
+					return false;
 				});
 		        break;
 		    case 'color':
