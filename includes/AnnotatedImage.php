@@ -25,7 +25,9 @@ class AnnotatedImage {
 		}
 		$this->annotatedContent = $annotatedContent;
 		$this->file = wfLocalFile(\Title::newFromDBkey('File:' . $this->imageName));
-		$this->sourceImageUrl = $this->file->getFullUrl();
+		if ($this->file ) {
+			$this->sourceImageUrl = $this->file->getFullUrl();
+		}
 	}
 
 	protected function getHash() {
