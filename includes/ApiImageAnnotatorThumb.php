@@ -117,6 +117,20 @@ class ApiImageAnnotatorThumb extends \ApiBase {
 		$url = $fileIncluded['imgUrl'];
 		$relativeFileName = $wgUploadDirectory . '/' . $fileIncluded['hashdir']. '/' .  $fileIncluded['filename'];
 
+
+		// TODO : if file path as a quote (') in it, it cause trouble during svg conversion
+		// we must copy the file to a temp path without quote
+
+		$useTempSourceImageFile = false;
+		if (strpos($relativeFileName, "'") !== false) {
+			$useTempSourceImageFile = true;
+			$tmpSourceFileName = $hash. '-' .  $fileIncluded['filename'];
+			$tmpSourceFileName = str_replace("'", '_', $tmpSourceFileName);
+			$tmpSourceFilePath = $tmpDir . "/" . $tmpSourceFileName;
+			copy($relativeFileName, $tmpSourceFilePath);
+			$relativeFileName = $tmpSourceFilePath;
+		}
+
 		$svg = str_replace($url, $relativeFileName, $svg);
 
 		//create svg tmp file
@@ -134,6 +148,9 @@ class ApiImageAnnotatorThumb extends \ApiBase {
 		exec($cmd, $output, $execCode);
 
 		unlink($svgInFile);
+		if($useTempSourceImageFile) {
+			unlink($tmpSourceFilePath);
+		}
 
 		if($execCode == 0) {
 			// success

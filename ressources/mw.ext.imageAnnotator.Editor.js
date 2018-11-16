@@ -66,7 +66,6 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			this.canvasElement = $("<canvas>").attr('id', this.canvasId ).css('border','1px solid #EEE');
 			// .attr('width', '300').attr('height', '200')
 			if (image) {
-
 				editor.updateSize();
 				//if image not loaded, with recalc size after load :
 				$(image)
