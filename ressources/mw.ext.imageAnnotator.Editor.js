@@ -609,7 +609,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		// if existing crop, load object :
 		var cropPosition = this.getCropedImagePosition();
 
-		new ext_imageAnnotator.CropPopup(this, this.image, cropPosition, [this, this.applyCrop ] );
+		new ext_imageAnnotator.CropPopup(this, this.image, cropPosition, [this, this.applyCrop ], $('#mw-ia-popup-div') );
 	}
 
 	/**

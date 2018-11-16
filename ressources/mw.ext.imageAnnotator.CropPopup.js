@@ -13,24 +13,37 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 	 * @param {jQuery} container container to put editor in it
 	 * @param {string} [content='']
 	 */
-	ext_imageAnnotator.CropPopup = function (editLink, image, cropPosition, cropCallback ) {
+	ext_imageAnnotator.CropPopup = function (editLink, image, cropPosition, cropCallback, sourcePopup ) {
 		this.editLink = editLink;
 		this.initPopup();
 		this.image = image;
 		this.cropPosition = cropPosition;
 		this.content = '';
+		this.sourcePopup = sourcePopup;
 		this.cropCallback = cropCallback;
 
 
 		this.clonedImage = $(image).clone();
 		this.clonedImage.appendTo(this.imagediv);
 
+		if (sourcePopup) {
+			$('#mw-ia-croppopup-div').popup({
+				onclose: function( event, ui ) {
+					sourcePopup.show();
+				}
+			});
+			sourcePopup.hide();
+		}
+
 		$('#mw-ia-croppopup-div').popup('show');
+
 		this.launchEditor();
+
 	}
 
 	ext_imageAnnotator.CropPopup.prototype.hide = function() {
 		$('#mw-ia-croppopup-div').popup('hide');
+		this.sourcePopup.show();
 	}
 
 	ext_imageAnnotator.CropPopup.prototype.launchEditor = function () {
@@ -119,7 +132,7 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 
 		this.cropCallback[1].call(this.cropCallback[0], cropPositions);
 
-		$('#mw-ia-croppopup-div').popup('hide');
+		this.hide();
 
 	}
 
