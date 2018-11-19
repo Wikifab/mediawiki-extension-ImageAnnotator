@@ -140,7 +140,7 @@ class ApiImageAnnotatorThumb extends \ApiBase {
 		// convert to png :
 		// TODO : determine png size according to request
 		$width = 800;
-		$cmd = "inkscape -z -f '$svgInFile' -w $width --export-background-opacity=0,0 --export-png='$fileOut'";
+		$cmd = "inkscape -z -f '". addslashes ($svgInFile) ."' -w $width --export-background-opacity=0,0 --export-png='". addslashes ($fileOut) ."'";
 
 
 		mkdir(dirname($fileOut), 0755, true);
