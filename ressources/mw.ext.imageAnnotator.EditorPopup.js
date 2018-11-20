@@ -110,7 +110,9 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 	 * save modifications into original input
 	 */
 	ext_imageAnnotator.EditorPopup.prototype.save = function () {
-		this.editLink.updateData(this.editor.getJson());
+		var jsonData = this.editor.getJson();
+		this.editor.generateThumbUsingAPI(jsonData);
+		this.editLink.updateData(jsonData);
 		$('#mw-ia-popup-div').popup('hide');
 
 	}

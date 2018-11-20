@@ -922,7 +922,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		return this.exportOverSourceImage();
 	}
 
-	ext_imageAnnotator.Editor.prototype.generateThumbUsingAPI = function () {
+	ext_imageAnnotator.Editor.prototype.generateThumbUsingAPI = function (jsoncontent) {
 		// fonction to do second request to execute follow action
 
 		var editor = this;
@@ -937,6 +937,9 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		}
 
 		function convertQuery(jsondata) {
+			if( ! jsoncontent) {
+				jsoncontent = editor.getJson();
+			}
 			var token = jsondata.query.tokens.csrftoken;
 			$.ajax({
 				type: "POST",
@@ -946,7 +949,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 					format:'json',
 					token: token,
 					image: editor.image.attr('src'),
-					jsondata: editor.getJson(),
+					jsondata: jsoncontent,
 					svgdata: editor.getSVG()
 				},
 			    dataType: 'json',
