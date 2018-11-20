@@ -168,12 +168,20 @@ class ApiImageAnnotatorThumb extends \ApiBase {
 	}
 
 	public function execute() {
+		global $wgServer;
 		$params = $this->extractRequestParams ();
 		$image = $params ['image'];
 		$jsondata = $params ['jsondata'];
 		$svgdata = $params['svgdata'];
 
 		$result = 'not implemented';
+
+
+		if (substr($image,0,1) == '/') {
+			// if image is a relative url, add the domain :
+			$image = $wgServer . $image;
+			// this should not occur if url is fully given into api params
+		}
 
 		// TODO : check in bdd if result already builded
 
