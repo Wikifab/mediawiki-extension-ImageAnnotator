@@ -20,6 +20,9 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		minScaleLimit: 0.2,
 		lockScalingFlip: true,
 
+		// if false, center of crop must be in area, if true, all cropzone must be inside area
+		positionLimitStrict: true,
+
 
 	    initialize: function(options) {
 
@@ -44,9 +47,14 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		 */
 		_set: function(key, value) {
 
+
 			if (key == "left") {
 				var min = - this.width * this.scaleX / 2;
 				var max = parseInt(this.maxPositionX) - this.width * this.scaleX / 2;
+				if (this.positionLimitStrict) {
+					min = 0;
+					max = parseInt(this.maxPositionX) - this.width * this.scaleX ;
+				}
 				if (value > max) {
 					value = max;
 				}
@@ -57,11 +65,25 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			if (key == "top") {
 				var min = - this.height * this.scaleY / 2;
 				var max = this.maxPositionY - this.height * this.scaleY / 2;
+				if (this.positionLimitStrict) {
+					min = 0;
+					max = parseInt(this.maxPositionY) - this.height * this.scaleY ;
+				}
 				if (value > max) {
 					value = max;
 				}
 				if (value < min) {
 					value = min;
+				}
+			}
+			if (key == "scaleX" || key == 'scaleY') {
+				// limit scale to not allow crop size bigger than image
+				var maxScaleX = this.maxPositionX / this.width;
+				var maxScaleY = this.maxPositionY / this.height;
+				this.maxScale = Math.min(maxScaleX,maxScaleY);
+
+				if (value > this.maxScale) {
+					value = this.maxScale;
 				}
 			}
 			this.callSuper('_set', key, value);
