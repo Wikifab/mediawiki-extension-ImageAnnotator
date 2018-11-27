@@ -111,7 +111,9 @@ class ApiImageAnnotatorThumb extends \ApiBase {
 		$subDir = 'fel';
 
 		$tmpDir = $wgUploadDirectory . '/imagesAnnotationTemp/' . $subDir;
-		mkdir($tmpDir, 0755, true);
+		if (!file_exists($tmpDir)) {
+			mkdir($tmpDir, 0755, true);
+		}
 
 		// replace url by relative filepath in svg data
 		$url = $fileIncluded['imgUrl'];
@@ -173,6 +175,7 @@ class ApiImageAnnotatorThumb extends \ApiBase {
 		$image = $params ['image'];
 		$jsondata = $params ['jsondata'];
 		$svgdata = $params['svgdata'];
+		$size = '';
 
 		$result = 'not implemented';
 
