@@ -144,8 +144,9 @@ class ApiImageAnnotatorThumb extends \ApiBase {
 		$width = 800;
 		$cmd = "inkscape -z -f ". escapeshellarg ($svgInFile) ." -w $width --export-background-opacity=0,0 --export-png=". escapeshellarg ($fileOut) ."";
 
-
-		mkdir(dirname($fileOut), 0755, true);
+		if (!file_exists(dirname($fileOut))) {
+			mkdir(dirname($fileOut), 0755, true);
+		}
 
 		exec($cmd, $output, $execCode);
 
