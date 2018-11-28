@@ -159,7 +159,7 @@ class ApiImageAnnotatorThumb extends \ApiBase {
 			// success
 			return [
 					'success' => true,
-					'fileout' => $outFile,
+					'fileout' => $fileOut,
 					$fileIncluded
 			];
 		}
