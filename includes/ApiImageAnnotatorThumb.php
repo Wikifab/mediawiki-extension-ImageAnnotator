@@ -150,7 +150,9 @@ class ApiImageAnnotatorThumb extends \ApiBase {
 
 		exec($cmd, $output, $execCode);
 
-		unlink($svgInFile);
+		// for a strange reason, unlink trigger a warning saying that file doesn't exists
+		// so add @ to hide this error
+		@unlink($svgInFile);
 		if($useTempSourceImageFile) {
 			unlink($tmpSourceFilePath);
 		}
