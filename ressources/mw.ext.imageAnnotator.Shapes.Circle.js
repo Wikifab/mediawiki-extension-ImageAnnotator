@@ -9,6 +9,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 	ext_imageAnnotator.shapes.Wfcircle = fabric.util.createClass(fabric.Circle, {
 	   shapeName: 'wfcircle',
 	   type: 'wfcircle',
+	   strokeWidthOriginal: 3,
 	   strokeWidth: 3,
 	   borderWidth: 4,
 	   padding: 5,
@@ -27,20 +28,13 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 	   outlineWidth: 1,
 	   outlineStyle: '#FFF',
 
-	   _stroke: function(ctx) {
-	      var myScale = this.scaleX;
-	      function scaleU(x) { return x / myScale; }
-	      ctx.lineWidth = scaleU(this.borderWidth + this.outlineWidth);
-	      ctx.strokeStyle = this.outlineStyle;
-	      ctx.stroke();
-
-	      ctx.lineWidth = scaleU(this.borderWidth - this.outlineWidth);
-	      ctx.strokeStyle = this.stroke;
-	      ctx.stroke();
+	   _stroke: function() {
+	      this.strokeWidth = this.strokeWidthOriginal / this.scaleX;
 	   },
 
 	   render: function(ctx) {
-	      this._limitSize();
+		  this._limitSize();
+		  this._stroke();
 	      this.callSuper('render', ctx);
 	   },
 

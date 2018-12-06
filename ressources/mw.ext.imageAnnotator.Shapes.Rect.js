@@ -9,6 +9,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 	ext_imageAnnotator.shapes.Wfrect = fabric.util.createClass(fabric.Rect, {
 	   shapeName: 'wfrect',
 	   type: 'wfrect',
+	   strokeWidthOriginal: 3,
 	   strokeWidth: 3,
 	   borderWidth: 4,
 	   padding: 5,
@@ -26,6 +27,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 	   render: function(ctx) {
 	      this._limitSize();
+	      this._stroke();
 	      this.callSuper('render', ctx);
 	   },
 
@@ -39,6 +41,15 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 	      var radius = Math.sqrt(xdiff * xdiff + ydiff * ydiff);
 	      this.scaleToWidth(radius * 2);
 	      this.setCoords();
+	   },
+
+
+	   /***
+	    * auto adjust line size according to scale
+	    */
+	   _stroke: function() {
+		  var scale = this.scaleX + this.scaleY / 2;
+	      this.strokeWidth = this.strokeWidthOriginal / scale;
 	   },
 
 	   /**
