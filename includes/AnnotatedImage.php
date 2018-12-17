@@ -12,10 +12,12 @@ class AnnotatedImage {
 
 	protected $imageName;
 	protected $annotatedContent;
+	protected $imageTitle;
 	protected $file;
+	protected $size;
 	protected $sourceImageUrl;
 
-	public function __construct($image, $annotatedContent) {
+	public function __construct($image, $annotatedContent, $size = 600) {
 
 		if (preg_match('/\[\[File:([^\|\]]+)(\|.*)?\]\]/',$image, $matches)) {
 			$this->imageName = $matches[1];
@@ -23,15 +25,51 @@ class AnnotatedImage {
 			$this->imageName = null;
 			return;
 		}
+		$this->size = $size;
 		$this->annotatedContent = $annotatedContent;
-		$this->file = wfLocalFile(\Title::newFromDBkey('File:' . $this->imageName));
+		$this->imageTitle = \Title::newFromDBkey('File:' . $this->imageName);
+		$this->file = wfLocalFile($this->imageTitle);
 		if ($this->file ) {
 			$this->sourceImageUrl = $this->file->getFullUrl();
 		}
 	}
 
-	protected function getHash() {
+	public function getHash() {
+		$a1 = $this->annotatedContent;
+		$a2 = trim($this->annotatedContent);
 		return md5($this->annotatedContent);
+	}
+
+	/**
+	 * get source image Title
+	 * @return Title|NULL
+	 */
+	public function getImageTitle() {
+		return $this->imageTitle;
+	}
+
+	/**
+	 * get source image name
+	 * @return string
+	 */
+	public function getImageName() {
+		return $this->imageName;
+	}
+
+	/**
+	 * get annotated content in json
+	 * @return string
+	 */
+	public function getJsonAnnotatedContent() {
+		return $this->annotatedContent;
+	}
+
+	/**
+	 * get size of generated image
+	 * @return int
+	 */
+	public function getSize() {
+		return $this->size;
 	}
 
 	/**

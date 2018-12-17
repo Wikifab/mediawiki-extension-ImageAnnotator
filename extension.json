@@ -41,6 +41,9 @@
 		],
 		"FormEdit::showEditForm:initial": [
 			"ImageAnnotator\\Hooks::start"
+		],
+		"LoadExtensionSchemaUpdates": [
+			"ImageAnnotator\\DbUpdater::dbUpdate"
 		]
 	},
 	"ResourceModules": {
@@ -92,6 +95,8 @@
 	"AutoloadClasses": {
 		"ImageAnnotator\\ApiImageAnnotatorThumb": "includes/ApiImageAnnotatorThumb.php",
 		"ImageAnnotator\\AnnotatedImage": "includes/AnnotatedImage.php",
+		"ImageAnnotator\\AnnotatedImageDatabase": "includes/AnnotatedImageDatabase.php",
+		"ImageAnnotator\\DbUpdater": "includes/DbUpdater.php",
 		"ImageAnnotator\\Hooks": "includes/Hooks.php",
 		"ImageAnnotator\\InputEditableImage": "includes/InputEditableImage.php"
 	},

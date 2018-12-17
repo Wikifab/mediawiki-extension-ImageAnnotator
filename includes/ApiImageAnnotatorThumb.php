@@ -158,6 +158,17 @@ class ApiImageAnnotatorThumb extends \ApiBase {
 		}
 
 		if($execCode == 0) {
+
+			$annotatedImageRow = AnnotatedImageDatabase::getInstance()->getByFileHashSize($fileIncluded['filename'],$hash);
+
+			if($annotatedImageRow) {
+				AnnotatedImageDatabase::getInstance()->markGenerated($annotatedImageRow);
+			}
+
+			return ['success' => false,
+				'message' => print_r($annotatedImageRow, true)
+
+			];
 			// success
 			return [
 					'success' => true,
@@ -203,12 +214,17 @@ class ApiImageAnnotatorThumb extends \ApiBase {
 		]
 		*/
 
+		$annotatedImage = new AnnotatedImage('[[File:'.$imageInfo['filename'].']]', $jsondata);
+
 		// determine output filename
-		$hash = md5($jsondata);
+		//$hash = md5($jsondata);
+		$hash = $annotatedImage->getHash();
 		$fileOutputPaths = $this->getOutFilename ($imageInfo, $size, $hash);
 
 		$fileOut = $fileOutputPaths['filepath'];
 		$fileUrl = $fileOutputPaths['fileurl'];
+
+		AnnotatedImageDatabase::getInstance()->insertNew($annotatedImage, $svgdata);
 
 		// TODO : convert svg to png
 		$convertResult = $this->svgToPngConvert($svgdata, $imageInfo, $fileOut, $hash);
