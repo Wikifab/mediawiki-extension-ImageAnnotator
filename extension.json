@@ -41,7 +41,10 @@
 		],
 		"FormEdit::showEditForm:initial": [
 			"ImageAnnotator\\Hooks::start"
-		]
+		],
+		"SemanticJsonExportBeforeSerializePage": [
+		 	"ImageAnnotator\\Hooks::onSemanticJsonExportBeforeSerializePage"
+		 ]
 	},
 	"ResourceModules": {
 		"ext.imageannotator.editor": {

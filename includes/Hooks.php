@@ -68,4 +68,34 @@ class Hooks {
 				'ext.imageannotator.editor'
 		] );
 	}
+
+	/**
+	 * recursive function to add annotated img url in an array,
+	 * for each key '*_annotation'
+	 *
+	 * @param array $data
+	 */
+	private static function addAnnotatedImageInData(&$data) {
+		foreach ($data as $key => $value) {
+			if (is_array($value)) {
+				self::addAnnotatedImageInData($data[$key]);
+			} else {
+				if (preg_match('/_annotation$/', $key) && $value) {
+					// add annotatedImageurl :
+					$sourceImgKey = str_replace('_annotation', '', $key);
+					if(isset($data[$sourceImgKey])) {
+						$sourceImg = $data[$sourceImgKey];
+						$image = "[[File:" . $sourceImg ."]]";
+						$annotatedImage = new AnnotatedImage($image, $value);
+						$data[$sourceImgKey . '_annotatedImageUrl'] = $annotatedImage->getImgUrl();
+					}
+				}
+			}
+		}
+	}
+
+	public static function onSemanticJsonExportBeforeSerializePage($title, &$data) {
+
+		self::addAnnotatedImageInData($data);
+	}
 }
