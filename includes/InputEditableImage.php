@@ -68,7 +68,31 @@ class InputEditableImage extends \PFFormInput {
 		];
 		$text = \Html::input( $input_name, $cur_value, 'hidden', $inputAttrs );
 
+		$text .= self::getCustomPicsHtml();
+
 		return $text;
 
+	}
+
+	public static function getCustomPicsHtml() {
+
+		$customsPics = CustomsAnnotation::getCustomsPictures();
+
+		$r = "<div class='ia-custompics-container'>\n";
+
+		foreach ($customsPics as $picName) {
+			$idName = preg_replace('/[^a-zA-Z0-9]+/', '-', $picName);
+			$classname = 'ia-custompics-' . $idName;
+			$imageObj = wfFindFile( $picName );
+			if (!$imageObj) {
+				continue;
+			}
+			$url = $imageObj->getFullUrl();
+			$r .= "	<img class='ia-custompics $classname ' data-imgid='$picName' src='$url'/>\n";
+		}
+		//$r .= "	<img class='ia-custompics ia-custompics-test ' data-imgid='test' src='/test.png'/>\n";
+		//$r .= "	<img class='ia-custompics ia-custompics-1188 ' data-imgid='1188' src='/1188.png'/>\n";
+		$r .= "</div>";
+		return $r;
 	}
 }

@@ -53,6 +53,7 @@
 				"ressources/jquery.popup.overlay.1.7.13.js",
 				"ressources/mw.ext.imageAnnotator.Shapes.Circle.js",
 				"ressources/mw.ext.imageAnnotator.Shapes.CropZone.js",
+				"ressources/mw.ext.imageAnnotator.Shapes.CustomPic.js",
 				"ressources/mw.ext.imageAnnotator.Shapes.Rect.js",
 				"ressources/mw.ext.imageAnnotator.Shapes.Arrow.js",
 				"ressources/mw.ext.imageAnnotator.Shapes.Arrow2Arrow.js",
@@ -95,6 +96,7 @@
 	"AutoloadClasses": {
 		"ImageAnnotator\\ApiImageAnnotatorThumb": "includes/ApiImageAnnotatorThumb.php",
 		"ImageAnnotator\\AnnotatedImage": "includes/AnnotatedImage.php",
+		"ImageAnnotator\\CustomsAnnotation": "includes/CustomsAnnotation.php",
 		"ImageAnnotator\\Hooks": "includes/Hooks.php",
 		"ImageAnnotator\\InputEditableImage": "includes/InputEditableImage.php"
 	},

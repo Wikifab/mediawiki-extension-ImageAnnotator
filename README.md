@@ -41,3 +41,4 @@ It's important to set the target param, using the name of the image attribute. N
 # Credits
 
 This extension was written by Pierre Boutet.
+

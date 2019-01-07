@@ -40,6 +40,9 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 				{'type':'text', 'parent':'tools'},
 				{'type':'numberedbullet', 'parent':'tools'},
 				{'type':'del', 'parent':'tools'},
+				{'type':'dropdown', 'name':'customtools', 'parent':'tools'},
+				//{'type':'custompic', 'parent':'customtools'},
+				//{'type':'custompic', 'parent':'customtools'},
 				{'type':'color', 'color':'black', 'parent':'colors'},
 				{'type':'color', 'color':'white', 'parent':'colors'},
 				{'type':'color', 'color':'blue', 'parent':'colors'},
@@ -47,6 +50,8 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 				{'type':'color', 'color':'yellow', 'parent':'colors'},
 				{'type':'color', 'color':'green', 'parent':'colors'}
 			];
+
+		toolbarConfig = this.addToolBarCustomsPics(toolbarConfig);
 
 		if (this.isCropMode) {
 			toolbarConfig = [
@@ -106,6 +111,19 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		}
 		this.addEditListeners();
 
+	}
+
+	ext_imageAnnotator.Editor.prototype.addToolBarCustomsPics = function (toolbarConfig) {
+
+		var pictList = $('.ia-custompics-container').first();
+		pictList.find('.ia-custompics').each(function(index, item) {
+			var filename = $(item).attr('data-imgid');
+			var fileurl = $(item).attr('src');
+			var item = {'type':'custompic', 'parent':'customtools', 'filename':filename, 'fileurl':fileurl};
+			toolbarConfig.push(item);
+		});
+
+		return toolbarConfig;
 	}
 
 	ext_imageAnnotator.Editor.prototype.addEditListeners = function() {
@@ -178,7 +196,8 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			'wfarrow2',
 			'wfarrow2circle',
 			'wfarrow2line',
-			'wfnumberedbullet'
+			'wfnumberedbullet',
+			'wfcustompic'
 		]
 
 		for (var x = 0; x < data['objects'].length; x++) {
@@ -227,6 +246,12 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 					this.canvas.add(line);
 
 					this.addArrow2CirclesFromLine(line);
+				}else if (this.specificsObjectsToLoad[x].type == 'wfcustompic') {
+					var objectToload = this.specificsObjectsToLoad[x];
+					var line = new ext_imageAnnotator.shapes.Wfcustompic(objectToload);
+					this.canvas.add(line);
+
+					this.addArrow2CirclesFromLine(line);
 				} else {
 					console.log('unknown object');
 				}
@@ -243,8 +268,9 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 		objects.forEach(function(item) {
 			if(item.type == 'image') {
-				item.selectable=false;
-				item.hasControls =false;
+				console.log('lockBackImage must be re-enabled')
+				//item.selectable=false;
+				//item.hasControls =false;
 			}
 		});
 	}
@@ -456,6 +482,31 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		);
 
 		this.canvas.add(line);
+		return;
+	}
+
+	ext_imageAnnotator.Editor.prototype.addCustomPic = function (params) {
+
+
+		console.log('addCustomPic');
+		var imgElement = $('.ia-custompics-test').get(0);
+
+		var pic = new ext_imageAnnotator.shapes.Wfcustompic(imgElement,{
+		//var line = new ext_imageAnnotator.shapes.Wfarrow2Arrow([x,y,x2,y2], {
+			top: 100,
+			left: 100,
+		});
+		var pic2 = new fabric.Image(imgElement, {
+			  left: 200,
+			  top: 200
+			});
+
+
+		console.log(imgElement);
+		this.canvas.add(pic);
+		this.canvas.add(pic2);
+		console.log('addCustomPic END');
+
 		return;
 	}
 
@@ -736,6 +787,28 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		this.toolbar.append(div);
 	}
 
+	ext_imageAnnotator.Editor.prototype.addToolbarDropDown = function (params) {
+
+		var name = params['name'];
+		var container = $('<div>').addClass('dropdown-container');
+		var button = $('<button>' + '</button>').addClass('editorButton editorDropdown');
+		var div = $('<div>').addClass('editorToolbarArea').addClass('toolbarArea-'+name).addClass('ia-dropdown-menu');
+		this.toolbarDivs[name] = div;
+		button.click(function() {
+			div.toggle();
+			return false;
+		});
+
+		container.append(button);
+		container.append(div);
+		button.blur(function(){
+			div.hide();
+		});
+
+		// TODO ...
+		this.toolbar.append(container);
+	}
+
 	ext_imageAnnotator.Editor.prototype.addButton = function (type, params) {
 
 		var editor = this;
@@ -748,6 +821,13 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		}
 		if (type =='div') {
 			return this.addToolbarDiv(params);
+		}
+		if (type =='dropdown') {
+			return this.addToolbarDropDown(params);
+		}
+		if (type =='custompic') {
+			console.log(params);
+			// TODO : Add image into button
 		}
 		var tooltip = mw.message( 'imageannotator-toolbar-'+ label + '-label' ).text()
 		var button = $('<button>' + '</button>').addClass('editorButton').addClass(label);
@@ -819,6 +899,12 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		    case 'numberedbullet':
 		    	button.click(function() {
 					editor.addNumberedBullet();
+					return false;
+				});
+		        break;
+		    case 'custompic':
+		    	button.click(function() {
+					editor.addCustomPic(params);
 					return false;
 				});
 		        break;

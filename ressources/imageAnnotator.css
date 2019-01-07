@@ -81,6 +81,25 @@
 .mw-ia-popup-toolbar .editorButton.numberedbullet {
     background-image: url(images/numberedbullet.png);
 }
+.mw-ia-popup-toolbar .editorButton.editorDropdown {
+    background-image: url(images/down.png);
+}
+
+.mw-ia-popup-toolbar .dropdown-container {
+	position:relative;
+	display:inline-block;
+	width: 40px;
+}
+.mw-ia-popup-toolbar .ia-dropdown-menu {
+    position:absolute;
+    z-index:1001;
+    top:40px;
+    left:1px;
+    border: 1px solid #ccc;
+    background-color: #EEEEFF;
+    width: 40px;
+	display:block;
+}
 
 .mw-ia-popup-toolbar .editorButton.black {
     background-color: #000000;
