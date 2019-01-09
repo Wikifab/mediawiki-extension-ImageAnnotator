@@ -268,9 +268,8 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 		objects.forEach(function(item) {
 			if(item.type == 'image') {
-				console.log('lockBackImage must be re-enabled')
-				//item.selectable=false;
-				//item.hasControls =false;
+				item.selectable=false;
+				item.hasControls =false;
 			}
 		});
 	}
@@ -487,25 +486,20 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 	ext_imageAnnotator.Editor.prototype.addCustomPic = function (params) {
 
+		var filename = params['filename'];
+		var fileurl = params['fileurl'];
 
-		console.log('addCustomPic');
-		var imgElement = $('.ia-custompics-test').get(0);
+		var imgElement = $('.ia-custompics[data-imgid="'+filename + '"]').get(0);
 
 		var pic = new ext_imageAnnotator.shapes.Wfcustompic(imgElement,{
 		//var line = new ext_imageAnnotator.shapes.Wfarrow2Arrow([x,y,x2,y2], {
 			top: 100,
 			left: 100,
+			filename: params['filename'],
+			fileurl: params['fileurl']
 		});
-		var pic2 = new fabric.Image(imgElement, {
-			  left: 200,
-			  top: 200
-			});
 
-
-		console.log(imgElement);
 		this.canvas.add(pic);
-		this.canvas.add(pic2);
-		console.log('addCustomPic END');
 
 		return;
 	}
@@ -802,8 +796,13 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		container.append(button);
 		container.append(div);
 		button.blur(function(){
-			div.hide();
+			// we must hide dropdown,
+			// but only after click action on subdiv has been called
+			setTimeout(function(){
+				div.hide();
+			}, 200);
 		});
+		div.hide();
 
 		// TODO ...
 		this.toolbar.append(container);
@@ -825,13 +824,16 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		if (type =='dropdown') {
 			return this.addToolbarDropDown(params);
 		}
-		if (type =='custompic') {
-			console.log(params);
-			// TODO : Add image into button
-		}
 		var tooltip = mw.message( 'imageannotator-toolbar-'+ label + '-label' ).text()
 		var button = $('<button>' + '</button>').addClass('editorButton').addClass(label);
 		button.attr('alt',tooltip);
+		if (type =='custompic') {
+			var btnImg = $('<img>').attr('src',params['fileurl']);
+			btnImg.attr('width',40);
+			button.append(btnImg);
+
+			// TODO : use resized image
+		}
 
 		switch (type) {
 		    case 'crop':

@@ -40,6 +40,10 @@
     background-position: center;
     background-repeat: no-repeat;
 }
+.editorButton.custompic {
+	padding:0px;
+	text-align:center;
+}
 
 .mw-ia-popup-toolbar .editorButton:hover {
 	background-color: #eaecf0;

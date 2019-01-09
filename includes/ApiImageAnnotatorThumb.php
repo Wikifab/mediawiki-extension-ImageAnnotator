@@ -115,25 +115,46 @@ class ApiImageAnnotatorThumb extends \ApiBase {
 			mkdir($tmpDir, 0755, true);
 		}
 
-		// replace url by relative filepath in svg data
-		$url = $fileIncluded['imgUrl'];
-		$relativeFileName = $wgUploadDirectory . '/' . $fileIncluded['hashdir']. '/' .  $fileIncluded['filename'];
+		// replace ALL files url by relative filepath
+		$filesToReplaces = [];
+		$filesToReplaces[] = [
+				'filename' => $fileIncluded['filename'],
+				'url' => $fileIncluded['imgUrl'],
+				'path' => $wgUploadDirectory . '/' . $fileIncluded['hashdir']. '/' .  $fileIncluded['filename']
+		];
 
+		// get custom pictures :
+		$customsPics = CustomsAnnotation::getCustomsPictures();
 
-		// TODO : if file path as a quote (') in it, it cause trouble during svg conversion
-		// we must copy the file to a temp path without quote
+		foreach ($customsPics as $customsPic) {
+			$file = wfFindFile($customsPic);
 
-		$useTempSourceImageFile = false;
-		if (strpos($relativeFileName, "'") !== false) {
-			$useTempSourceImageFile = true;
-			$tmpSourceFileName = $hash. '-' .  $fileIncluded['filename'];
-			$tmpSourceFileName = str_replace("'", '_', $tmpSourceFileName);
-			$tmpSourceFilePath = $tmpDir . "/" . $tmpSourceFileName;
-			copy($relativeFileName, $tmpSourceFilePath);
-			$relativeFileName = $tmpSourceFilePath;
+			$path = $wgUploadDirectory . '/' . $file->getHashPath() .  $file->getName();
+			$filesToReplaces[] = [
+					'filename' => $file->getName(),
+					'url' => $file->getFullUrl(),
+					'path' => $path
+			];
 		}
 
-		$svg = str_replace($url, $relativeFileName, $svg);
+		$tempFiles = [];
+
+		foreach ($filesToReplaces as $fileToReplace) {
+			// replace file url by file's relative path :
+
+			// if file path as a quote (') in it, it cause trouble during svg conversion
+			// we must copy the file to a temp path without quote
+			if (strpos($fileToReplace['path'], "'") !== false) {
+				$tmpSourceFileName = $hash. '-' .  $fileToReplace['filename'];
+				$tmpSourceFileName = str_replace("'", '_', $tmpSourceFileName);
+				$tmpSourceFilePath = $tmpDir . "/" . $tmpSourceFileName;
+				copy($fileToReplace['path'], $tmpSourceFilePath);
+				$fileToReplace['path'] = $tmpSourceFilePath;
+				$tempFiles[] = $tmpSourceFilePath;
+			}
+
+			$svg = str_replace($fileToReplace['url'], $fileToReplace['path'], $svg);
+		}
 
 		//create svg tmp file
 		$svgInFile = $tmpDir . "/$hash.svg";
@@ -153,8 +174,8 @@ class ApiImageAnnotatorThumb extends \ApiBase {
 		// for a strange reason, unlink trigger a warning saying that file doesn't exists
 		// so add @ to hide this error
 		@unlink($svgInFile);
-		if($useTempSourceImageFile) {
-			unlink($tmpSourceFilePath);
+		foreach ($tempFiles as $$tempFile ) {
+			unlink($tempFile);
 		}
 
 		if($execCode == 0) {
