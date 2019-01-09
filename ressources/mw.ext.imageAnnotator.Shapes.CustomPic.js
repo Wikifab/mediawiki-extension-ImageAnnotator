@@ -12,6 +12,14 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 	   minSize: 10,
 	   maxSize: 200,
 
+	   borderWidth: 4,
+	   padding: 5,
+	   originX: 'center',
+	   originY: 'center',
+	   transparentCorners:false,
+	   borderColor: 'black',
+	   cornerColor: 'rgba(200,200,200,1)',
+
 	   type: 'wfcustompic',
 
 	   // the filename use to create icon
@@ -43,6 +51,9 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 				options['height'] = element['height'];
 				options['scaleX'] = element['scaleX'];
 				options['scaleY'] = element['scaleY'];
+				options['angle'] = element['angle'];
+				options['flipX'] = element['flipX'];
+				options['flipY'] = element['flipY'];
 
 				var imgElement = $('.ia-custompics[data-imgid="'+this.filename + '"]').get(0);
 				element = imgElement;
