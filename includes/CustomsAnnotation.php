@@ -44,7 +44,11 @@ class CustomsAnnotation {
 		$pageTitle = Title::newFromDBkey($pageName);
 		$wikiPage = new WikiPage($pageTitle);
 		$revision = $wikiPage->getRevision();
-		$content = $revision->getContent(Revision::RAW)->getNativeData();
+		if ( $revision) {
+			$content = $revision->getContent(Revision::RAW)->getNativeData();
+		} else {
+			$content = null;
+		}
 
 		if( ! $content) {
 			self::$result = [];
