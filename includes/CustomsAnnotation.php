@@ -38,7 +38,7 @@ class CustomsAnnotation {
 		// TODO : use Cache
 
 		// page where is stored all custom annotations :
-		$pageName ='CustomImages';
+		$pageName ='Dokit:CustomAnnotations';
 
 		// get Page Data :
 		$pageTitle = Title::newFromDBkey($pageName);
