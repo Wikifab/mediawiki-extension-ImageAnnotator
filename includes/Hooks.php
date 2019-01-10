@@ -28,7 +28,7 @@ class Hooks {
 			// using backend generation (for image including cropped images)
 			// image must have been generated before (during edition)
 			$annotatedImage = new AnnotatedImage($image, $annotatedContent);
-			if ($annotatedImage->exists() && $annotatedImage->hasCroppedImage()) {
+			if ($annotatedImage->exists()) {
 				$out = '<div><img src="' . $annotatedImage->getImgUrl() . '"/> </div>';
 				$out = $annotatedImage->makeHtmlImageLink($input);
 				return array( $out, 'noparse' => true, 'isHTML' => true );

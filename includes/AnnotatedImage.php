@@ -102,7 +102,8 @@ class AnnotatedImage {
 	}
 	public function exists() {
 		if ($this->imageName) {
-			return true;
+			$outimage = $this->getOutFilename();
+			return file_exists($outimage['filepath']);
 		}
 		return false;
 	}
