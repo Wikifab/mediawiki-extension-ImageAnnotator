@@ -740,7 +740,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		img.onload = function() {
 			var imgWidth = this.width;
 
-			var imgInstance = new fabric.Image(this.image[0], {
+			var imgInstance = new fabric.Image(editor.image[0], {
 				  left: 0,
 				  top: 0,
 				  //opacity: 0.8,
