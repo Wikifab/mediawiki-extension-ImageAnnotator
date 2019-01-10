@@ -301,6 +301,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 						var h = editor.canvas.getWidth() * obj.height / obj.width;
 						editor.canvas.setHeight(h);
 					}
+					editor.addBackground();
 					// disable cropped image edition
 					editor.lockBackImage();
 
@@ -314,6 +315,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 				console.log(e);
 			}
 		} else {
+			editor.addBackground();
 			editor.canvas.renderAll();
 			if ( editor.isStatic) {
 				editor.placeOverSourceImage();
@@ -706,6 +708,60 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		this.canvas.setHeight(newHeight);
 
 		this.canvas.renderAll();
+	}
+	ext_imageAnnotator.Editor.prototype.hasBackground = function () {
+		var objects = this.canvas.getObjects();
+
+		var number = 1;
+		var result = false;
+
+		// get the smallest number wich do not exists yet :
+		objects.forEach(function(item) {
+			if (item.type == 'image') {
+				result = true;
+			}
+		});
+
+		return result;
+	}
+
+	ext_imageAnnotator.Editor.prototype.addBackground = function () {
+
+		if(this.hasBackground()) {
+			return;
+		}
+		var editor = this;
+
+		var img = new Image();
+
+		// add image in background
+		// load image first to get img size
+
+		img.onload = function() {
+			var imgWidth = this.width;
+
+			var imgInstance = new fabric.Image(this.image[0], {
+				  left: 0,
+				  top: 0,
+				  //opacity: 0.8,
+				  hasControls: false,
+				  selectable: false
+			});
+
+			// scale to set image size to canvas width :
+			var scale = ext_imageAnnotator.standardWidth / imgWidth;
+			// apply scale :
+			imgInstance.scale(scale);
+
+			// add new image cropped :
+			editor.canvas.add(imgInstance);
+			imgInstance.sendToBack();
+
+			editor.canvas.renderAll();
+		}
+		img.src = $(this.image).attr('src');
+
+
 	}
 
 	/*
