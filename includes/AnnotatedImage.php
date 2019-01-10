@@ -53,17 +53,17 @@ class AnnotatedImage {
 		if (preg_match('/' . $regexp1 . '/', $image, $matches)) {
 			// image original
 			return [
-					'imgUrl' => $image,
+					'imgUrl' => urldecode($image),
 					'hashdir' => $matches[1] . '/' . $matches[2],
-					'filename' => $matches[3]
+					'filename' => urldecode($matches[3])
 			];
 		} else if (preg_match('/' . $regexp2 . '/', $image, $matches)) {
 			// image thumbs
 			return [
-					'imgUrl' => $image,
+					'imgUrl' => urldecode($image),
 					'hashdir' => $matches[1] . '/' . $matches[2],
-					'filename' => $matches[3],
-					'thumbfilename' => $matches[4]
+					'filename' => urldecode($matches[3]),
+					'thumbfilename' => urldecode($matches[4])
 			];
 		} else {
 			return false;
