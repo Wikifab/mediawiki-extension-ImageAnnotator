@@ -78,7 +78,7 @@ class InputEditableImage extends \PFFormInput {
 
 		$customsPics = CustomsAnnotation::getCustomsPictures();
 
-		$r = "<div class='ia-custompics-container'>\n";
+		$r = "<div class='ia-custompics-container' style='display:none;'>\n";
 
 		foreach ($customsPics as $picName) {
 			$idName = preg_replace('/[^a-zA-Z0-9]+/', '-', $picName);
