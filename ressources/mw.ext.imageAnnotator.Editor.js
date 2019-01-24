@@ -71,12 +71,13 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			this.canvasElement = $("<canvas>").attr('id', this.canvasId ).css('border','1px solid #EEE');
 			// .attr('width', '300').attr('height', '200')
 			if (image) {
-				editor.updateSize();
+
 				//if image not loaded, with recalc size after load :
 				$(image)
 				    .load(function() {
 				    	editor.updateSize();
 				    });
+				editor.updateSize();
 
 			}
 			this.container.append(this.canvasElement);
@@ -169,8 +170,11 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		}
 
 		var height = Math.round(baseHeight * width / baseWidth);
+
 		this.canvasElement.attr('width', width);
-		this.canvasElement.attr('height', height);
+		if (height > 0) {
+			this.canvasElement.attr('height', height);
+		}
 		if (this.canvas) {
 			//this.canvas.setWidth( width);
 			//this.canvas.setHeight( height);

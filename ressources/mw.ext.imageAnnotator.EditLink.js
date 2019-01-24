@@ -12,23 +12,23 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 	 * @constructor
 	 * @param {jQuery} container container to put editor in it
 	 * @param {jQuery} inputElement Where canvas data is registered
-	 * @param {jQuery} imageElement 
+	 * @param {jQuery} imageElement
 	 * @param {fabric.StaticCanvas} static editor, (make image param useless ?)
 	 */
 	ext_imageAnnotator.EditLink = function ( container, dataInput, image, staticEditor ) {
-		
+
 		editLinkCounter ++;
-		
+
 		this.editLinkId = editLinkCounter;
-		
-		
-		var editor = this; 
+
+
+		var editor = this;
 		this.container = container;
 		this.image = image;
 		this.staticEditor = staticEditor;
 		this.dataInput = dataInput;
 		this.content = $(this.dataInput).val();
-		
+
 		var button = $('<span class="image-button mw-ia-editButton"></span>').attr('id', this.getId());
 
 		button.click(function() {
@@ -39,32 +39,32 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 		});
 		this.container.append(button);
 	}
-	
+
 	ext_imageAnnotator.EditLink.prototype.getId = function () {
 		return 'iaEditLink' + this.editLinkId;
 	}
-	
+
 	/**
 	 * this function allow to change the dataInput linked to this button
 	 * for instance, if after reorder images elements, image is move into another input
-	 * 
+	 *
 	 * @param [Object] datainput
 	 */
 	ext_imageAnnotator.EditLink.prototype.updateDataInput = function (dataInput) {
 		this.dataInput = dataInput;
 		$(this.dataInput).val(this.content);
 	}
-	
+
 	ext_imageAnnotator.EditLink.prototype.openEditor = function () {
-		
+
 		this.popup = new ext_imageAnnotator.EditorPopup(this, this.image, $(this.dataInput).val() );
-		
+
 	}
-	
+
 	ext_imageAnnotator.EditLink.prototype.updateData = function (content) {
 		this.content = content;
 		$(this.dataInput).val(content)
-		
+
 		this.staticEditor.updateData(content);
 	}
 
