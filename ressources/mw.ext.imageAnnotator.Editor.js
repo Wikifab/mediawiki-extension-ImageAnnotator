@@ -312,6 +312,10 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 					editor.canvas.renderAll();
 					if ( editor.isStatic) {
 						editor.placeOverSourceImage();
+					} else {
+						// placeOverSourceImage() function call generateThumbUsingAPI
+						// so we call it only if not calling placeOverSourceImage
+						editor.generateThumbUsingAPI(this.content);
 					}
 				});
 			} catch (e) {

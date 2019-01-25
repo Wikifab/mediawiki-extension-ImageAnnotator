@@ -111,7 +111,6 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 	 */
 	ext_imageAnnotator.EditorPopup.prototype.save = function () {
 		var jsonData = this.editor.getJson();
-		this.editor.generateThumbUsingAPI(jsonData);
 		this.editLink.updateData(jsonData);
 		$('#mw-ia-popup-div').popup('hide');
 
