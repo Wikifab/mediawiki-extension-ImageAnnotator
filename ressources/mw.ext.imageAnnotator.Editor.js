@@ -313,10 +313,11 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 					if ( editor.isStatic) {
 						editor.placeOverSourceImage();
 					} else {
-						// placeOverSourceImage() function call generateThumbUsingAPI
-						// so we call it only if not calling placeOverSourceImage
-						editor.generateThumbUsingAPI(this.content);
+			           // placeOverSourceImage() function call generateThumbUsingAPI
+			           // so we call it only if not calling placeOverSourceImage
+			           editor.generateThumbUsingAPI(content);
 					}
+
 				});
 			} catch (e) {
 				console.log('Fail to load json content ');

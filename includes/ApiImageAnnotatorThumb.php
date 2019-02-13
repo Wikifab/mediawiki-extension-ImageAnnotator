@@ -58,8 +58,10 @@ class ApiImageAnnotatorThumb extends \ApiBase {
 			];
 		} else if (preg_match('/' . $regexp2 . '/', $image, $matches)) {
 			// image thumbs
+			$imgUrl = $wgResourceBasePath.'/images/'.$matches[1] . '/' . $matches[2].'/'.$matches[3];
 			return [
-					'imgUrl' => $image,
+					'imgUrl' => $imgUrl,
+					'thumbUrl' => $image,
 					'hashdir' => $matches[1] . '/' . $matches[2],
 					'filename' => urldecode ($matches[3]),
 					'thumbfilename' =>urldecode ( $matches[4])
@@ -96,12 +98,13 @@ class ApiImageAnnotatorThumb extends \ApiBase {
 	}
 
 	public function svgToPngConvert($svg, $fileIncluded, $fileOut, $hash) {
-		global $wgUploadDirectory;
+		global $wgUploadDirectory, $wgServer;
 
 		/*
 		$fileIncluded =
 		[
 			'imgUrl' =>	"http://demo-dokit.localtest.me/w/images/thumb/7/7a/Test_de_tuto_LB_Final.jpg/800px-Test_de_tuto_LB_Final.jpg"
+			'thumbUrl' =>	"http://...." // if defined
 			'hashdir' =>	"7/7a"
 			'filename' =>	"Test_de_tuto_LB_Final.jpg"
 			'thumbfilename' =>	"800px-Test_de_tuto_LB_Final.jpg"
@@ -119,9 +122,27 @@ class ApiImageAnnotatorThumb extends \ApiBase {
 		$filesToReplaces = [];
 		$filesToReplaces[] = [
 				'filename' => $fileIncluded['filename'],
+				'url' => $wgServer . $fileIncluded['imgUrl'],
+				'path' => $wgUploadDirectory . '/' . $fileIncluded['hashdir']. '/' .  $fileIncluded['filename']
+		];
+		$filesToReplaces[] = [
+				'filename' => $fileIncluded['filename'],
 				'url' => $fileIncluded['imgUrl'],
 				'path' => $wgUploadDirectory . '/' . $fileIncluded['hashdir']. '/' .  $fileIncluded['filename']
 		];
+		if(isset($fileIncluded['thumbUrl']) && $fileIncluded['thumbUrl'] ) {
+
+			$filesToReplaces[] = [
+					'filename' => $fileIncluded['filename'],
+					'url' => $wgServer .$fileIncluded['thumbUrl'],
+					'path' => $wgUploadDirectory . '/' . $fileIncluded['hashdir']. '/' .  $fileIncluded['filename']
+			];
+			$filesToReplaces[] = [
+					'filename' => $fileIncluded['filename'],
+					'url' => $fileIncluded['thumbUrl'],
+					'path' => $wgUploadDirectory . '/' . $fileIncluded['hashdir']. '/' .  $fileIncluded['filename']
+			];
+		}
 
 		// get custom pictures :
 		$customsPics = CustomsAnnotation::getCustomsPictures();
@@ -138,7 +159,6 @@ class ApiImageAnnotatorThumb extends \ApiBase {
 		}
 
 		$tempFiles = [];
-
 		foreach ($filesToReplaces as $fileToReplace) {
 			// replace file url by file's relative path :
 
@@ -152,8 +172,7 @@ class ApiImageAnnotatorThumb extends \ApiBase {
 				$fileToReplace['path'] = $tmpSourceFilePath;
 				$tempFiles[] = $tmpSourceFilePath;
 			}
-
-			$svg = str_replace($fileToReplace['url'], $fileToReplace['path'], $svg);
+			$svg = str_replace('"' . $fileToReplace['url'], '"' . $fileToReplace['path'], $svg);
 		}
 
 		//create svg tmp file
