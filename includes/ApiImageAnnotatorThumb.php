@@ -40,12 +40,12 @@ class ApiImageAnnotatorThumb extends \ApiBase {
 	 * @return array
 	 */
 	protected function getImageInfo($image) {
-		global $wgResourceBasePath;
+		global $wgUploadPath;
 		// TODO : use real repo url instead of wgRessouceBasePAth
 
-		$regexp1 = $wgResourceBasePath.'/images/([a-z0-9]+)/([a-z0-9]{2})/([^/]+)$';
+		$regexp1 = $wgUploadPath.'/([a-z0-9]+)/([a-z0-9]{2})/([^/]+)$';
 		$regexp1 = str_replace('/','\/', $regexp1);
-		$regexp2 = $wgResourceBasePath.'/images/thumb/([a-z0-9]+)/([a-z0-9]{2})/([^/]+)/([^/]+)$';
+		$regexp2 = $wgUploadPath.'/thumb/([a-z0-9]+)/([a-z0-9]{2})/([^/]+)/([^/]+)$';
 		$regexp2 = str_replace('/','\/', $regexp2);
 
 
@@ -58,7 +58,7 @@ class ApiImageAnnotatorThumb extends \ApiBase {
 			];
 		} else if (preg_match('/' . $regexp2 . '/', $image, $matches)) {
 			// image thumbs
-			$imgUrl = $wgResourceBasePath.'/images/'.$matches[1] . '/' . $matches[2].'/'.$matches[3];
+			$imgUrl = $wgUploadPath.'/'.$matches[1] . '/' . $matches[2].'/'.$matches[3];
 			return [
 					'imgUrl' => $imgUrl,
 					'thumbUrl' => $image,
@@ -80,14 +80,14 @@ class ApiImageAnnotatorThumb extends \ApiBase {
 	 * @return string[]
 	 */
 	protected function getOutFilename ($imageInfo, $size, $hash) {
-		global $wgUploadDirectory, $wgResourceBasePath;
+		global $wgUploadDirectory, $wgUploadPath;
 		$outfilename = 'ia-' . $hash ."-{$size}px-".$imageInfo['filename'] . '.png';
 
 		$subFilePath = 'thumb/' . $imageInfo['hashdir']
 				. '/' .  $imageInfo['filename']
 				. '/' . $outfilename;
 		$outfilepathname = $wgUploadDirectory .'/' . $subFilePath;
-		$outfileurl = $wgResourceBasePath .'/images/' . $subFilePath;
+ 		$outfileurl = $wgUploadPath .'/' . $subFilePath;
 
 
 		return [
@@ -172,7 +172,10 @@ class ApiImageAnnotatorThumb extends \ApiBase {
 				$fileToReplace['path'] = $tmpSourceFilePath;
 				$tempFiles[] = $tmpSourceFilePath;
 			}
-			$svg = str_replace('"' . $fileToReplace['url'], '"' . $fileToReplace['path'], $svg);
+			if ($fileToReplace['url']) {
+				// we should never have empty url, why this appends ?
+				$svg = str_replace('"' . $fileToReplace['url'], '"' . $fileToReplace['path'], $svg);
+			}
 		}
 
 		//create svg tmp file
