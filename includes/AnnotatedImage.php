@@ -40,14 +40,14 @@ class AnnotatedImage {
 	 * @return array
 	 */
 	protected function getImageInfo() {
-		global $wgResourceBasePath;
+		global $wgUploadPath;
 		// TODO : use real repo url instead of wgRessouceBasePAth
 
 		$image = $this->sourceImageUrl;
 
-		$regexp1 = $wgResourceBasePath.'/images/([a-z0-9]+)/([a-z0-9]{2})/([^/]+)$';
+		$regexp1 = $wgUploadPath.'/([a-z0-9]+)/([a-z0-9]{2})/([^/]+)$';
 		$regexp1 = str_replace('/','\/', $regexp1);
-		$regexp2 = $wgResourceBasePath.'/images/thumb/([a-z0-9]+)/([a-z0-9]{2})/([^/]+)/([^/]+)$';
+		$regexp2 = $wgUploadPath.'/thumb/([a-z0-9]+)/([a-z0-9]{2})/([^/]+)/([^/]+)$';
 		$regexp2 = str_replace('/','\/', $regexp2);
 
 		if (preg_match('/' . $regexp1 . '/', $image, $matches)) {
@@ -71,7 +71,7 @@ class AnnotatedImage {
 	}
 
 	protected function getOutFilename ( ) {
-		global $wgUploadDirectory, $wgResourceBasePath;
+		global $wgUploadDirectory, $wgUploadPath;
 
 		$imageInfo = $this->getImageInfo();
 		$hash = $this->getHash();
@@ -82,7 +82,7 @@ class AnnotatedImage {
 		. '/' .  $imageInfo['filename']
 		. '/' . $outfilename;
 		$outfilepathname = $wgUploadDirectory .'/' . $subFilePath;
-		$outfileurl = $wgResourceBasePath .'/images/' . $subFilePath;
+		$outfileurl = $wgUploadPath .'/' . $subFilePath;
 
 
 		return [
