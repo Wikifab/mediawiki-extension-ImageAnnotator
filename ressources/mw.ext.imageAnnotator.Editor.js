@@ -1075,18 +1075,20 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		return this.exportOverSourceImage();
 	}
 
-	ext_imageAnnotator.Editor.prototype.generateThumbUsingAPI = function (jsoncontent) {
+	ext_imageAnnotator.Editor.prototype.generateThumbUsingAPI = function (jsoncontent, callback) {
 		// fonction to do second request to execute follow action
 
 		var editor = this;
 
-		function setOverlayImage(url) {
-			// display it only if content, (some browsers doesn't like empty images)
-			editor.overlayImg = $('<img>').attr('class','annotationlayer').attr('src', url);
-			// positioning
-			$(editor.image).parent().css({ position:'relative'});
-			$(editor.overlayImg).insertAfter(editor.image);
-			$(editor.overlayImg).css({ width:'100%', position:'absolute', top:0, left : 0});
+		if ( ! callback) {
+			callback = function setOverlayImage(url) {
+				// display it only if content, (some browsers doesn't like empty images)
+				editor.overlayImg = $('<img>').attr('class','annotationlayer').attr('src', url);
+				// positioning
+				$(editor.image).parent().css({ position:'relative'});
+				$(editor.overlayImg).insertAfter(editor.image);
+				$(editor.overlayImg).css({ width:'100%', position:'absolute', top:0, left : 0});
+			}
 		}
 
 		function convertQuery(jsondata) {
@@ -1109,8 +1111,8 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			    success: function (jsondata) {
 
 			    	if (jsondata.iaThumbs.success == 1) {
-			    		setOverlayImage(jsondata.iaThumbs.image)
-
+			    		//setOverlayImage(jsondata.iaThumbs.image);
+			    		callback(jsondata.iaThumbs.image);
 			    	} else {
 			    		console.log('Fail to generate annotatedImage');
 			    		console.log(jsondata);

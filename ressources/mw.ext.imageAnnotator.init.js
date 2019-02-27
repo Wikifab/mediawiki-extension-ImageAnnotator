@@ -24,6 +24,17 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 		return true;
 	}
 
+	mw.ext_imageAnnotator = mw.ext_imageAnnotator || {};
+
+	/**
+	 * this enable an outside extension to call ImageAnnotator with this function
+	 */
+	mw.ext_imageAnnotator.createNewEditor = function (container, img, content, updateCallBack) {
+
+		this.popup = new ext_imageAnnotator.EditorBlock(container, img, content, updateCallBack );
+	}
+
+
 	// edition :
 	$('.editableImageDataInput').each(function () {
 

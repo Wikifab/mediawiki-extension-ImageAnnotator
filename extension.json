@@ -62,6 +62,7 @@
 				"ressources/mw.ext.imageAnnotator.Shapes.NumberedBullet.js",
 				"ressources/mw.ext.imageAnnotator.Editor.js",
 				"ressources/mw.ext.imageAnnotator.CropPopup.js",
+				"ressources/mw.ext.imageAnnotator.EditorBlock.js",
 				"ressources/mw.ext.imageAnnotator.EditorPopup.js",
 				"ressources/mw.ext.imageAnnotator.EditLink.js",
 				"ressources/mw.ext.imageAnnotator.EditLinkRegister.js",
