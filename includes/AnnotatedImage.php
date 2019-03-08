@@ -14,24 +14,89 @@ class AnnotatedImage {
 	protected $annotatedContent;
 	protected $file;
 	protected $sourceImageUrl;
+	protected $thumbFile;
 
 	public function __construct($image, $annotatedContent) {
 
+		$this->thumbFile = null;
+
+		//var_dump($image);
 		if (preg_match('/\[\[File:([^\|\]]+)(\|.*)?\]\]/',$image, $matches)) {
+			$this->imageName = $matches[1];
+		} else if(preg_match('/File:([^\|\]\[\\\{\}]+)$/',$image, $matches)) {
 			$this->imageName = $matches[1];
 		} else {
 			$this->imageName = null;
 			return;
 		}
+
 		$this->annotatedContent = $annotatedContent;
+
 		$this->file = wfLocalFile(\Title::newFromDBkey('File:' . $this->imageName));
 		if ($this->file ) {
 			$this->sourceImageUrl = $this->file->getFullUrl();
 		}
+
+		if ($annotatedContent && substr($annotatedContent, 0,1) != '{' ){
+			// if $annotatedContent is a hash, load from DB :
+			$this->loadFromBdd($annotatedContent);
+		}
+	}
+
+	public function loadFromBdd($hash) {
+		if( ! $hash) {
+			$hash = md5($this->annotatedContent);
+		}
+
+		$list = array();
+		$dbr = wfGetDB( DB_SLAVE );
+
+		$this->thumbFile = null;
+
+		if(!$this->file || ! $this->file->getTitle()) {
+			trigger_error('source File is not defined in ImageAnnotation', E_USER_WARNING);
+			return false;
+		}
+
+		$res = $dbr->select(
+				'annotatedimages',
+				array(
+					'ai_filename',
+					'ai_data_json',
+					'ai_data_svg',
+					'ai_thumbfile',
+				),
+				array(
+						'ai_page_id' => $this->file->getTitle()->getArticleID(),
+						'ai_hash' => $hash,
+				),
+				__METHOD__,
+				array()
+				);
+
+		$pages = array();
+		if ( $res->numRows() > 0 ) {
+			foreach ( $res as $row ) {
+				$this->imageName = $row->ai_filename;
+				$this->annotatedContent = $row->ai_data_json;
+				$this->file = wfLocalFile(\Title::newFromDBkey('File:' . $this->imageName));
+				if ($this->file ) {
+					$this->sourceImageUrl = $this->file->getFullUrl();
+				} else {
+					$this->sourceImageUrl = null;
+				}
+				$this->thumbFile = $row->ai_thumbfile;
+
+				$res->free();
+				return true;
+			}
+			$res->free();
+		}
+		return false;
 	}
 
 	protected function getHash() {
-		return md5($this->annotatedContent);
+		return md5(trim($this->annotatedContent));
 	}
 
 	/**
@@ -78,9 +143,14 @@ class AnnotatedImage {
 
 		$outfilename = 'ia-' . $hash ."-px-".$imageInfo['filename'] . '.png';
 
-		$subFilePath = 'thumb/' . $imageInfo['hashdir']
-		. '/' .  $imageInfo['filename']
-		. '/' . $outfilename;
+		if ($this->thumbFile ) {
+			$outfilename = basename($this->thumbFile);
+			$subFilePath = $this->thumbFile;
+		} else {
+			$subFilePath = 'thumb/' . $imageInfo['hashdir']
+			. '/' .  $imageInfo['filename']
+			. '/' . $outfilename;
+		}
 		$outfilepathname = $wgUploadDirectory .'/' . $subFilePath;
 		$outfileurl = $wgUploadPath .'/' . $subFilePath;
 
@@ -135,7 +205,8 @@ class AnnotatedImage {
 		}
 
 		$out = '<img class="annotationlayer" ' . $imgDim  . ' src="'. $this->getImgUrl() . '"/>';
-		$out = "<a class='image' href=". $this->getPageUrl() ." >$out</a>";
+		$out = "<a class='image' href=\"". $this->getPageUrl() ."\" >$out</a>";
+
 		/*
 			'<a href="/wiki/Fichier:Test_de_tuto_LB_Final.jpg" class="image" title="annotation:Modèle:Main Picture annotation}"
 			style="display: inline-block; position: relative;">

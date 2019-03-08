@@ -13,6 +13,14 @@ class Hooks {
 	}
 
 
+	/**
+	 * first verison of the parsing function :
+	 * the function use 2 param : the html image (generated with [[File:...]] ) and the jsonannotation
+	 * @param unknown $input
+	 * @param unknown $image
+	 * @param unknown $annotatedContent
+	 * @return boolean[]|string[]|string
+	 */
 	public static function annotatedImageParser( $input, $image, $annotatedContent) {
 		global $wgOut;
 
@@ -44,7 +52,58 @@ class Hooks {
 		} else {
 			// using js frontside generation :
 			$out = '<div class="annotatedImageContainer">' . $image
-				. '<div class="annotatedcontent" data-annotatedcontent=\''.$annotatedContent.'\'> </div></div>';
+			. '<div class="annotatedcontent" data-annotatedcontent=\''.$annotatedContent.'\'> </div></div>';
+			return $out;
+		}
+	}
+
+
+	/**
+	 * 2nd version of the parsing function :
+	 * the function use 2 param :
+	 * - the image name
+	 * -  the jsonannotation
+	 *
+	 * @param Parser $input
+	 * @param unknown $image
+	 * @param unknown $annotatedContent
+	 * @return boolean[]|string[]|string
+	 */
+	public static function annotatedImageLightParser( $input, $image) {
+
+
+		$annotatedContent = '';
+		$hash = null;
+		$args = func_get_args();
+		array_shift($args);
+		foreach ($args as $arg) {
+			if (substr($arg, 0,5) == 'hash:') {
+				$hash = substr($arg, 5);
+			}
+			if (substr($arg, 0,9) == 'jsondata:') {
+				$annotatedContent = substr($arg, 9);
+			}
+		}
+
+		// image must have been generated before (during edition)
+		if ($hash) {
+			$annotatedImage = new AnnotatedImage($image, $hash);
+		} else {
+			$annotatedImage = new AnnotatedImage($image, $annotatedContent);
+		}
+
+		//var_dump($annotatedImage->exists());
+		if ($annotatedImage->exists()) {
+			$out = '<div class="annotatedImageDiv"> <img src="' . $annotatedImage->getImgUrl() . '"/> </div>';
+			//$out = $annotatedImage->makeHtmlImageLink($input);
+			//return array( $out, 'isHTML' => true );
+			return array( $out, 'noparse' => true, 'isHTML' => true );
+		} else {
+			//var_dump($annotatedImage->getOutFilename());
+			//var_dump($annotatedImage);
+			// if image doesn't exists, fallback on default behaviour
+			// if has cropped image,us svg default behaviour because there is no image behind transparency
+			$out = '<div class="annotatedImageContainer">missing file</div>';
 			return $out;
 		}
 	}
@@ -55,9 +114,19 @@ class Hooks {
 	}
 
 
+	public static function onLoadExtensionSchemaUpdates( \DatabaseUpdater $updater ) {
+
+		$updater->addExtensionTable( 'annotatedimages',
+				__DIR__ . '/../sql/table.sql' );
+
+		return true;
+	}
+
+
 	public static function onParserFirstCallInit($parser) {
 
 		$parser->setFunctionHook( 'annotatedImage', array('ImageAnnotator\\Hooks', 'annotatedImageParser' ));
+		$parser->setFunctionHook( 'annotatedImageLight', array('ImageAnnotator\\Hooks', 'annotatedImageLightParser' ));
 	}
 
 	public static function start() {

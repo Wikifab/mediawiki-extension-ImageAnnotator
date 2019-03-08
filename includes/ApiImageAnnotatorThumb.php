@@ -92,6 +92,7 @@ class ApiImageAnnotatorThumb extends \ApiBase {
 
 		return [
 				'filename' => $outfilename,
+				'relative_filepath' => $subFilePath,
 				'filepath' => $outfilepathname,
 				'fileurl' => $outfileurl
 		];
@@ -252,6 +253,8 @@ class ApiImageAnnotatorThumb extends \ApiBase {
 
 		$fileOut = $fileOutputPaths['filepath'];
 		$fileUrl = $fileOutputPaths['fileurl'];
+		$fileOutRelative = $fileOutputPaths['relative_filepath'];
+
 
 		// TODO : convert svg to png
 		$convertResult = $this->svgToPngConvert($svgdata, $imageInfo, $fileOut, $hash);
@@ -261,9 +264,11 @@ class ApiImageAnnotatorThumb extends \ApiBase {
 
 		$r = [ ];
 		if ($convertResult['success']) {
+			$this->storeInDatabase($imageInfo['filename'], $hash, $jsondata, $svgdata, $fileOutRelative);
 			$r ['success'] = 1;
 			$r ['result'] = 'OK';
 			$r ['image'] = $fileUrl;
+			$r ['hash'] = $hash;
 		} else {
 			$r ['result'] = 'fail';
 			$r ['details'] = $convertResult['message'];
@@ -271,6 +276,30 @@ class ApiImageAnnotatorThumb extends \ApiBase {
 
 		$this->getResult ()->addValue ( null, $this->getModuleName (), $r );
 	}
+
+	public function storeInDatabase($fileName, $hash, $jsonData, $svgData, $thumbFile) {
+		$dbw = wfGetDB( DB_MASTER );
+		$rows = array();
+
+		$title = \Title::newFromDBkey('File:'  . $fileName);
+
+		$added = array();
+
+		$rows = [
+			'ai_page_id' => $title->getArticleID() ,
+			'ai_filename' => $fileName,
+			'ai_hash' => $hash,
+			'ai_data_json' => $jsonData,
+			'ai_data_svg' => $svgData,
+			'ai_thumbfile' => $thumbFile,
+		];
+
+		$dbw->insert( 'annotatedimages', $rows, __METHOD__, 'IGNORE' );
+
+	}
+
+
+
 	public function needsToken() {
 		return 'csrf';
 	}

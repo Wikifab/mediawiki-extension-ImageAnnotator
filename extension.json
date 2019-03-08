@@ -44,7 +44,8 @@
 		],
 		"SemanticJsonExportBeforeSerializePage": [
 		 	"ImageAnnotator\\Hooks::onSemanticJsonExportBeforeSerializePage"
-		 ]
+		 ],
+		 "LoadExtensionSchemaUpdates": "ImageAnnotator\\Hooks::onLoadExtensionSchemaUpdates"
 	},
 	"ResourceModules": {
 		"ext.imageannotator.editor": {
