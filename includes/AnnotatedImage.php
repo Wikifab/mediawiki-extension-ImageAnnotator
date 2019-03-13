@@ -162,6 +162,10 @@ class AnnotatedImage {
 		];
 	}
 
+	public function getAnnotatedContent() {
+		return $this->annotatedContent;
+	}
+
 	public function hasCroppedImage() {
 
 		if (strpos($this->annotatedContent, '"type":"image",') !== false) {
@@ -176,6 +180,12 @@ class AnnotatedImage {
 			return file_exists($outimage['filepath']);
 		}
 		return false;
+	}
+	public function getSourceImgUrl() {
+
+		if ($this->sourceImageUrl) {
+			return $this->sourceImageUrl;
+		}
 	}
 	public function getImgUrl() {
 

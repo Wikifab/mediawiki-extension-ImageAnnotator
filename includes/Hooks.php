@@ -69,8 +69,7 @@ class Hooks {
 	 * @param unknown $annotatedContent
 	 * @return boolean[]|string[]|string
 	 */
-	public static function annotatedImageLightParser( $input, $image) {
-
+	public static function annotatedImageLightParser( $input, $image, $jsondata, $hash ) {
 
 		$annotatedContent = '';
 		$hash = null;
@@ -79,8 +78,11 @@ class Hooks {
 		foreach ($args as $arg) {
 			if (substr($arg, 0,5) == 'hash:') {
 				$hash = substr($arg, 5);
-			}
-			if (substr($arg, 0,9) == 'jsondata:') {
+			} else if (substr($arg, 0,5) == 'hash=') {
+				$hash = substr($arg, 5);
+			} else if (substr($arg, 0,9) == 'jsondata=') {
+				$annotatedContent = substr($arg, 9);
+			} else if (substr($arg, 0,9) == 'jsondata:') {
 				$annotatedContent = substr($arg, 9);
 			}
 		}
@@ -88,13 +90,30 @@ class Hooks {
 		// image must have been generated before (during edition)
 		if ($hash) {
 			$annotatedImage = new AnnotatedImage($image, $hash);
+			$annotatedContent = $annotatedImage->getAnnotatedContent();
 		} else {
 			$annotatedImage = new AnnotatedImage($image, $annotatedContent);
 		}
 
+		if (! $annotatedImage->exists() && ! $annotatedContent) {
+
+			$srcImgUrl = $annotatedImage->getSourceImgUrl();
+			// TODO : add element such ass title, alt, caption, align, width, height, class...
+			$imgElement = '<img src="' . $annotatedImage->getSourceImgUrl() . '" data-resource="'.$image.'" data-sourceimage="'.addslashes($srcImgUrl).'" data-jsondata=\''. str_replace("'","\\'",$annotatedContent) .'\' />';
+			$imgWrapper = '<span >'.$imgElement.'</span>';
+			$out = '<div class="annotatedImageDiv" typeof="Image" >'.$imgWrapper.'</div>';
+			//$out = $annotatedImage->makeHtmlImageLink($input);
+			//return array( $out, 'isHTML' => true );
+			return array( $out, 'noparse' => true, 'isHTML' => true );
+		}
+
 		//var_dump($annotatedImage->exists());
 		if ($annotatedImage->exists()) {
-			$out = '<div class="annotatedImageDiv"> <img src="' . $annotatedImage->getImgUrl() . '"/> </div>';
+			$srcImgUrl = $annotatedImage->getSourceImgUrl();
+			// TODO : add element such ass title, alt, caption, align, width, height, class...
+			$imgElement = '<img src="' . $annotatedImage->getImgUrl() . '" data-resource="'.$image.'" data-sourceimage="'.addslashes($srcImgUrl).'" data-jsondata=\''. str_replace("'","\\'",$annotatedContent) .'\' />';
+			$imgWrapper = '<span >'.$imgElement.'</span>';
+			$out = '<div class="annotatedImageDiv" typeof="Image" >'.$imgWrapper.'</div>';
 			//$out = $annotatedImage->makeHtmlImageLink($input);
 			//return array( $out, 'isHTML' => true );
 			return array( $out, 'noparse' => true, 'isHTML' => true );

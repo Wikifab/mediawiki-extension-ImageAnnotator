@@ -1111,8 +1111,11 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			    success: function (jsondata) {
 
 			    	if (jsondata.iaThumbs.success == 1) {
+			    		console.log('store hash');
+			    		console.log(jsondata.iaThumbs.hash);
+			    		editor.hash = jsondata.iaThumbs.hash;
 			    		//setOverlayImage(jsondata.iaThumbs.image);
-			    		callback(jsondata.iaThumbs.image);
+			    		callback(jsondata.iaThumbs.image, jsondata.iaThumbs);
 			    	} else {
 			    		console.log('Fail to generate annotatedImage');
 			    		console.log(jsondata);
