@@ -51,6 +51,8 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 		this.clonedImage.hide();
 
 
+		console.log('launchEditor');
+		console.log(this.clonedImage);
 		// add cancel button
 		this.buttonbar.append($('<button >' +mw.message( 'imageannotator-button-cancel' ).text() + '</button>').addClass('cancelButton').click(function () {
 			setTimeout(function () {

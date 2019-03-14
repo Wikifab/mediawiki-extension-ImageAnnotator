@@ -75,6 +75,10 @@ class Hooks {
 		$hash = null;
 		$args = func_get_args();
 		array_shift($args);
+		// we add 'frameless' option, to be default
+		array_unshift($args, 'frameless');
+		array_unshift($args, 'link=');
+
 		foreach ($args as $arg) {
 			if (substr($arg, 0,5) == 'hash:') {
 				$hash = substr($arg, 5);
@@ -97,11 +101,15 @@ class Hooks {
 
 		if (! $annotatedImage->exists() && ! $annotatedContent) {
 
-			$srcImgUrl = $annotatedImage->getSourceImgUrl();
-			// TODO : add element such ass title, alt, caption, align, width, height, class...
-			$imgElement = '<img src="' . $annotatedImage->getSourceImgUrl() . '" data-resource="'.$image.'" data-sourceimage="'.addslashes($srcImgUrl).'" data-jsondata=\''. str_replace("'","\\'",$annotatedContent) .'\' />';
-			$imgWrapper = '<span >'.$imgElement.'</span>';
-			$out = '<div class="annotatedImageDiv" typeof="Image" >'.$imgWrapper.'</div>';
+			$fileTitle = \Title::newFromText($image, NS_FILE);
+			$file = wfFindFile( $fileTitle );
+			$srcImgUrl = $file->getFullUrl();;
+			$imageOptions = implode('|',$args);
+
+			$html = $input->makeImage( $fileTitle , $imageOptions);
+
+			$imgWrapper = '<span >'.$html.'</span>';
+			$out = '<div class="annotatedImageDiv" typeof="Image" data-resource="'.$image.'" data-sourceimage="'.addslashes($srcImgUrl).'">'.$imgWrapper.'</div>';
 			//$out = $annotatedImage->makeHtmlImageLink($input);
 			//return array( $out, 'isHTML' => true );
 			return array( $out, 'noparse' => true, 'isHTML' => true );
@@ -111,9 +119,9 @@ class Hooks {
 		if ($annotatedImage->exists()) {
 			$srcImgUrl = $annotatedImage->getSourceImgUrl();
 			// TODO : add element such ass title, alt, caption, align, width, height, class...
-			$imgElement = '<img src="' . $annotatedImage->getImgUrl() . '" data-resource="'.$image.'" data-sourceimage="'.addslashes($srcImgUrl).'" data-jsondata=\''. str_replace("'","\\'",$annotatedContent) .'\' />';
+			$imgElement = '<img src="' . $annotatedImage->getImgUrl() . '"  data-jsondata=\''. str_replace("'","\\'",$annotatedContent) .'\' />';
 			$imgWrapper = '<span >'.$imgElement.'</span>';
-			$out = '<div class="annotatedImageDiv" typeof="Image" >'.$imgWrapper.'</div>';
+			$out = '<div class="annotatedImageDiv" typeof="Image" data-resource="'.$image.'" data-sourceimage="'.addslashes($srcImgUrl).'">'.$imgWrapper.'</div>';
 			//$out = $annotatedImage->makeHtmlImageLink($input);
 			//return array( $out, 'isHTML' => true );
 			return array( $out, 'noparse' => true, 'isHTML' => true );

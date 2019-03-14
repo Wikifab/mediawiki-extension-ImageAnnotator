@@ -72,9 +72,14 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			// .attr('width', '300').attr('height', '200')
 			if (image) {
 
+				console.log('image in editor (construct):');
+				console.log(image);
+
 				//if image not loaded, with recalc size after load :
 				$(image)
 				    .load(function() {
+						console.log('image in editor (load):');
+						console.log(image);
 				    	editor.updateSize();
 				    });
 				editor.updateSize();
@@ -284,6 +289,8 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		this.content = content;
 		this.canvas.remove(this.canvas.getObjects());
 		if (content) {
+			console.log('editor.updateData');
+			console.log(content);
 			try {
 				// extract specifics objects to be loaded afterwards
 				content = editor.getSpecificsObjectsFromJson(content);
@@ -768,6 +775,8 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 			editor.canvas.renderAll();
 		}
+		console.log('editor.addBackground');
+		console.log($(this.image).attr('src'));
 		img.src = $(this.image).attr('src');
 
 
