@@ -20,11 +20,11 @@ class AnnotatedImage {
 
 		$this->thumbFile = null;
 
-		//var_dump($image);
-		if (preg_match('/\[\[File:([^\|\]]+)(\|.*)?\]\]/',$image, $matches)) {
-			$this->imageName = $matches[1];
-		} else if(preg_match('/File:([^\|\]\[\\\{\}]+)$/',$image, $matches)) {
-			$this->imageName = $matches[1];
+		//TODO : file and Fichier are hard code, set it to works with all language
+		if (preg_match('/\[\[(File|Fichier):([^\|\]]+)(\|.*)?\]\]/',$image, $matches)) {
+			$this->imageName = $matches[2];
+		} else if(preg_match('/(File|Fichier):([^\|\]\[\\\{\}]+)$/',$image, $matches)) {
+			$this->imageName = $matches[2];
 		} else {
 			$this->imageName = null;
 			return;

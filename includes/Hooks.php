@@ -69,7 +69,7 @@ class Hooks {
 	 * @param unknown $annotatedContent
 	 * @return boolean[]|string[]|string
 	 */
-	public static function annotatedImageLightParser( $input, $image, $jsondata, $hash ) {
+	public static function annotatedImageLightParser( $input, $image ) {
 
 		$annotatedContent = '';
 		$hash = null;
