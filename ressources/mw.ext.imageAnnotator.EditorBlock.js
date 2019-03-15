@@ -28,6 +28,19 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 
 
 		this.clonedImage = $(image).clone();
+
+		// check that image is an original size :
+		var imgSrc = this.clonedImage.attr('src');
+		var regex = new RegExp('/thumb/([a-z0-9A-Z])/([a-z0-9A-Z]{2})/([^/]+)/([^/]+)$');
+		if (imgSrc.match(regex)) {
+			console.log("EditorBlock construct");
+			console.log('Warning : image source should not be thumbnail, filename changed to original');
+			console.log(imgSrc);
+			imgSrc = imgSrc.replace(regex, '/$1/$2/$3');
+			this.clonedImage.attr("src",imgSrc);
+		}
+
+
 		this.clonedImage.appendTo(this.imagediv);
 
 		this.launchEditor();
