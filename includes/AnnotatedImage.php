@@ -12,6 +12,7 @@ class AnnotatedImage {
 
 	protected $imageName;
 	protected $annotatedContent;
+	protected $svgData;
 	protected $file;
 	protected $sourceImageUrl;
 	protected $thumbFile;
@@ -79,6 +80,7 @@ class AnnotatedImage {
 			foreach ( $res as $row ) {
 				$this->imageName = $row->ai_filename;
 				$this->annotatedContent = $row->ai_data_json;
+				$this->svgData = $row->ai_data_svg;
 				$this->file = wfLocalFile(\Title::newFromDBkey('File:' . $this->imageName));
 				if ($this->file ) {
 					$this->sourceImageUrl = $this->file->getFullUrl();
@@ -164,6 +166,9 @@ class AnnotatedImage {
 
 	public function getAnnotatedContent() {
 		return $this->annotatedContent;
+	}
+	public function getSvgData() {
+		return $this->svgData;
 	}
 
 	public function hasCroppedImage() {

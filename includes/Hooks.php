@@ -119,7 +119,7 @@ class Hooks {
 		if ($annotatedImage->exists()) {
 			$srcImgUrl = $annotatedImage->getSourceImgUrl();
 			// TODO : add element such ass title, alt, caption, align, width, height, class...
-			$imgElement = '<img src="' . $annotatedImage->getImgUrl() . '"  data-jsondata=\''. str_replace("'","\\'",$annotatedContent) .'\' />';
+			$imgElement = '<img src="' . urlencode($annotatedImage->getImgUrl()) . '"  data-jsondata=\''. str_replace("'","\\'",$annotatedContent) .'\' />';
 			$imgWrapper = '<span >'.$imgElement.'</span>';
 			$out = '<div class="annotatedImageDiv" typeof="Image" data-resource="'.$image.'" data-sourceimage="'.addslashes($srcImgUrl).'">'.$imgWrapper.'</div>';
 			//$out = $annotatedImage->makeHtmlImageLink($input);

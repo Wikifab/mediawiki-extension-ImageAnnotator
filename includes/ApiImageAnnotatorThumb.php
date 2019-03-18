@@ -39,7 +39,7 @@ class ApiImageAnnotatorThumb extends \ApiBase {
 	 * @param string $image full url of source image
 	 * @return array
 	 */
-	protected function getImageInfo($image) {
+	public  function getImageInfo($image) {
 		global $wgUploadPath;
 		// TODO : use real repo url instead of wgRessouceBasePAth
 
@@ -119,6 +119,10 @@ class ApiImageAnnotatorThumb extends \ApiBase {
 			mkdir($tmpDir, 0755, true);
 		}
 
+		// replace url encoded string of filename :
+		$svg = str_replace(urlencode($fileIncluded['filename']), $fileIncluded['filename'], $svg);
+
+
 		// replace ALL files url by relative filepath
 		$filesToReplaces = [];
 		$filesToReplaces[] = [
@@ -197,7 +201,7 @@ class ApiImageAnnotatorThumb extends \ApiBase {
 		// for a strange reason, unlink trigger a warning saying that file doesn't exists
 		// so add @ to hide this error
 		@unlink($svgInFile);
-		foreach ($tempFiles as $$tempFile ) {
+		foreach ($tempFiles as $tempFile ) {
 			unlink($tempFile);
 		}
 
