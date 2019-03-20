@@ -99,7 +99,7 @@ class Hooks {
 			$annotatedImage = new AnnotatedImage($image, $annotatedContent);
 		}
 
-		$caption = null;
+		$caption = '';
 
 		foreach ($args as $key => $arg) {
 
@@ -125,9 +125,7 @@ class Hooks {
 			$file = wfFindFile( $fileTitle );
 			$srcImgUrl = $file->getFullUrl();;
 			$imageOptions = implode('|',$args);
-			if($caption !== null) {
-				$imageOptions .= '|' . $caption;
-			}
+			$imageOptions .= '|' . $caption;
 
 			$html = $input->makeImage( $fileTitle , $imageOptions);
 
