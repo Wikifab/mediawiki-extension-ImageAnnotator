@@ -23,6 +23,10 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 		this.clonedImage = $(image).clone();
 		this.clonedImage.appendTo(this.imagediv);
 
+		$('#mw-ia-popup-div').popup({
+		  blur: false // do not close when clicking outside the popup
+		});
+
 		$('#mw-ia-popup-div').popup('show');
 		this.launchEditor();
 	}
