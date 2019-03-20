@@ -26,6 +26,11 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		this.canvasElement = null;
 		this.options = options;
 		this.isCropMode = options && options['cropMode'] ? true : false;
+		this.fixedHeight = options && options['fixedHeight'] ? options['fixedHeight']  : false;
+		this.fixedBackgroundLeft = 0; // left positionning of background, (if fixedHeight )
+		this.fixedBackgroundTop = 0; // top positionning of background, (if fixedHeight )
+		this.fixedBackgroundScale = 1; // scale = 1 mean backgroundwidth = standardWidth
+		this.originalCropPosition = false;
 
 		// default params :
 		this.currentColor = 'red';
@@ -39,7 +44,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 				{'type':'arrow2', 'parent':'tools'},
 				{'type':'text', 'parent':'tools'},
 				{'type':'numberedbullet', 'parent':'tools'},
-				{'type':'duplicate', 'parent':'tools'},
+				//{'type':'duplicate', 'parent':'tools'},
 				{'type':'del', 'parent':'tools'},
 				{'type':'dropdown', 'name':'customtools', 'parent':'tools'},
 				//{'type':'custompic', 'parent':'customtools'},
@@ -61,6 +66,8 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 				{'type':'format', 'format':'1_1', 'parent':'tools'},
 				{'type':'format', 'format':'4_3', 'parent':'tools'},
 				{'type':'format', 'format':'16_9', 'parent':'tools'},
+				//{'type':'zoom', 'zoom':'in', 'parent':'tools'},
+				//{'type':'zoom', 'zoom':'out', 'parent':'tools'},
 				//{'type':'cropzone', 'parent':'tools'}
 			];
 		}
@@ -72,15 +79,9 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			this.canvasElement = $("<canvas>").attr('id', this.canvasId ).css('border','1px solid #EEE');
 			// .attr('width', '300').attr('height', '200')
 			if (image) {
-
-				console.log('image in editor (construct):');
-				console.log(image);
-
 				//if image not loaded, with recalc size after load :
 				$(image)
 				    .load(function() {
-						console.log('image in editor (load):');
-						console.log(image);
 				    	editor.updateSize();
 				    });
 				editor.updateSize();
@@ -183,6 +184,10 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		}
 
 		var height = Math.round(baseHeight * width / baseWidth);
+
+		if (this.fixedHeight) {
+			height = this.fixedHeight;
+		}
 
 		this.canvasElement.attr('width', width);
 		if (height > 0) {
@@ -297,8 +302,6 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		this.content = content;
 		this.canvas.remove(this.canvas.getObjects());
 		if (content) {
-			console.log('editor.updateData');
-			console.log(content);
 			try {
 				// extract specifics objects to be loaded afterwards
 				content = editor.getSpecificsObjectsFromJson(content);
@@ -530,6 +533,30 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		return;
 	}
 
+	ext_imageAnnotator.Editor.prototype.setCropZonePosition = function (cropPosition) {
+		if (! this.cropZone) {
+			return;
+		}
+		if (this.fixedHeight) {
+			// invert of correction in getCropPosition
+			var correctedCrop = [];
+			correctedCrop.cropzoneleft = cropPosition.cropzoneleft * this.fixedBackgroundScale + this.fixedBackgroundLeft;
+			correctedCrop.cropzonetop = cropPosition.cropzonetop * this.fixedBackgroundScale + this.fixedBackgroundTop;
+			correctedCrop.cropzonewidth = cropPosition.cropzonewidth * this.fixedBackgroundScale;
+			correctedCrop.cropzoneheight = cropPosition.cropzoneheight * this.fixedBackgroundScale;
+			correctedCrop.cropzonescaleX = cropPosition.cropzonescaleX ;
+			correctedCrop.cropzonescaleY = cropPosition.cropzonescaleY ;
+			cropPosition = correctedCrop;
+		}
+
+		this.cropZone.top= cropPosition.cropzonetop;
+		this.cropZone.left = cropPosition.cropzoneleft;
+		this.cropZone.height = cropPosition.cropzoneheight;
+		this.cropZone.width = cropPosition.cropzonewidth;
+		this.cropZone.scaleX = cropPosition.cropzonescaleX;
+		this.cropZone.scaleY = cropPosition.cropzonescaleY;
+	}
+
 	ext_imageAnnotator.Editor.prototype.addCropZone = function(cropPosition) {
 
 		if ( ! cropPosition.cropzonetop) {
@@ -540,6 +567,21 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			cropPosition.cropzonewidth = 400;
 			cropPosition.cropzonescaleX = 1;
 			cropPosition.cropzonescaleY = 1;
+		}
+
+		this.originalCropPosition = cropPosition;
+
+		// if fixedHeight is set, adjust crop position to corrected background position
+		if (this.fixedHeight) {
+			// invert of correction in getCropPosition
+			var correctedCrop = [];
+			correctedCrop.cropzoneleft = cropPosition.cropzoneleft * this.fixedBackgroundScale + this.fixedBackgroundLeft;
+			correctedCrop.cropzonetop = cropPosition.cropzonetop * this.fixedBackgroundScale + this.fixedBackgroundTop;
+			correctedCrop.cropzonewidth = cropPosition.cropzonewidth * this.fixedBackgroundScale;
+			correctedCrop.cropzoneheight = cropPosition.cropzoneheight * this.fixedBackgroundScale;
+			correctedCrop.cropzonescaleX = cropPosition.cropzonescaleX ;
+			correctedCrop.cropzonescaleY = cropPosition.cropzonescaleY ;
+			cropPosition = correctedCrop;
 		}
 
 		// canvas dim :
@@ -562,6 +604,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		});
 		this.canvas.add(circle);
 		this.canvas.setActiveObject(circle);
+		this.cropZone = circle;
 	}
 
 	ext_imageAnnotator.Editor.prototype.getActiveObject = function () {
@@ -614,6 +657,14 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			}
 		});
 		canvas.renderAll();
+
+	}
+
+	ext_imageAnnotator.Editor.prototype.changeZoom = function (zoom) {
+
+		/**
+		 * not implemented yet
+		 */
 
 	}
 
@@ -794,6 +845,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 		img.onload = function() {
 			var imgWidth = this.width;
+			var imgHeight = this.height;
 
 			var imgInstance = new fabric.Image(editor.image[0], {
 				  left: 0,
@@ -805,6 +857,30 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 			// scale to set image size to canvas width :
 			var scale = ext_imageAnnotator.standardWidth / imgWidth;
+
+			editor.fixedBackgroundTop = 0;
+			editor.fixedBackgroundLeft = 0;
+			editor.fixedBackgroundScale = 1;
+
+			if (editor.fixedHeight) {
+				var scaleF = editor.fixedHeight / imgHeight;
+				if (scaleF < scale) {
+					// margin on right and left
+					editor.fixedBackgroundScale = scaleF / scale;
+					scale = scaleF;
+					var realWidth = imgWidth * scale;
+					editor.fixedBackgroundTop = 0;
+					editor.fixedBackgroundLeft = (ext_imageAnnotator.standardWidth - realWidth) / 2;
+				} else {
+					editor.fixedBackgroundScale = 1;
+					var realHeight = imgHeight * scale;
+					editor.fixedBackgroundTop = (editor.fixedHeight - realHeight) / 2;
+					editor.fixedBackgroundLeft = 0;
+					// margins on top and bottom
+				}
+			}
+			imgInstance.top = editor.fixedBackgroundTop;
+			imgInstance.left = editor.fixedBackgroundLeft;
 			// apply scale :
 			imgInstance.scale(scale);
 
@@ -812,10 +888,12 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			editor.canvas.add(imgInstance);
 			imgInstance.sendToBack();
 
+			editor.backgroundImage = imgInstance;
+
+			editor.setCropZonePosition(editor.originalCropPosition);
+
 			editor.canvas.renderAll();
 		}
-		console.log('editor.addBackground');
-		console.log($(this.image).attr('src'));
 		img.src = $(this.image).attr('src');
 
 
@@ -836,6 +914,10 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		var number = 1;
 		var result = [];
 
+		var editor = this;
+
+		// if this : fixed Height
+
 		// get the smallest number wich do not exists yet :
 		objects.forEach(function(item) {
 			if (item.type == 'cropzone') {
@@ -848,6 +930,17 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 			}
 		});
+
+		if (this.fixedHeight) {
+			var correctedResult = [];
+			correctedResult.cropzoneleft = (result.cropzoneleft - this.fixedBackgroundLeft) / this.fixedBackgroundScale;
+			correctedResult.cropzonetop = (result.cropzonetop - this.fixedBackgroundTop) / this.fixedBackgroundScale;
+			correctedResult.cropzonewidth = (result.cropzonewidth ) / this.fixedBackgroundScale;
+			correctedResult.cropzoneheight = (result.cropzoneheight ) / this.fixedBackgroundScale;
+			correctedResult.cropzonescaleX = result.cropzonescaleX ;
+			correctedResult.cropzonescaleY = result.cropzonescaleY ;
+			result = correctedResult;
+		}
 
 		return result;
 	}
@@ -931,6 +1024,9 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		if (type == 'format') {
 			label = 'f' + params['format'];
 		}
+		if (type == 'zoom') {
+			label = 'zoom' + params['format'];
+		}
 		if (type =='div') {
 			return this.addToolbarDiv(params);
 		}
@@ -965,6 +1061,13 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		    	var format = label;
 		    	button.click(function() {
 					editor.setFormat(params['format']);
+					return false;
+				});
+		        break;
+		    case 'zoom':
+		    	var zoom = label;
+		    	button.click(function() {
+					editor.changeZoom(params['zoom']);
 					return false;
 				});
 		        break;
@@ -1165,8 +1268,6 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			    success: function (jsondata) {
 
 			    	if (jsondata.iaThumbs.success == 1) {
-			    		console.log('store hash');
-			    		console.log(jsondata.iaThumbs.hash);
 			    		editor.hash = jsondata.iaThumbs.hash;
 			    		//setOverlayImage(jsondata.iaThumbs.image);
 			    		callback(jsondata.iaThumbs.image, jsondata.iaThumbs);

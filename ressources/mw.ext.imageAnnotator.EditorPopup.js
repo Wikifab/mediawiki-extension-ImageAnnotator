@@ -40,7 +40,7 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 		this.editor = new ext_imageAnnotator.Editor( this.imagediv, null, this.content, this.clonedImage, true, options );
 
 		$(this.imagediv).css('width', ext_imageAnnotator.standardWidth + 'px');
-		$(this.imagediv).css("background-image", "url('" + this.clonedImage.attr('src') +"')");
+		//$(this.imagediv).css("background-image", "url('" + this.clonedImage.attr('src') +"')");
 		$(this.imagediv).css("background-repeat", "no");
 		$(this.imagediv).css("background-size", "100% 100%");
 		this.clonedImage.hide();
