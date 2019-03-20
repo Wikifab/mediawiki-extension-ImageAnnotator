@@ -168,6 +168,13 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		var width = ext_imageAnnotator.standardWidth;
 		var baseHeight = $(this.image).height();
 		var baseWidth = $(this.image).width();
+
+		if(! baseHeight && this.image[0] != undefined && this.image[0].naturalHeight != undefined) {
+			// if image not loaded yet, height element size may be null
+			// then try to read 'naturalHeight' attribut
+			baseHeight = this.image[0].naturalHeight;
+			baseWidth = this.image[0].naturalWidth;
+		}
 		// if there is a cropped image, use cropped dim as base dim :
 		var cropedImage = this.getCropedImagePosition();
 		if (cropedImage && cropedImage.height) {
