@@ -99,6 +99,8 @@ class Hooks {
 			$annotatedImage = new AnnotatedImage($image, $annotatedContent);
 		}
 
+		$caption = null;
+
 		foreach ($args as $key => $arg) {
 
 			$exploded = explode('=', $arg);
@@ -112,6 +114,9 @@ class Hooks {
 			if (strpos($arg, 'type=') !== false) {
 				$args[$key] = str_replace('type=', '', $arg);
 			}
+			if (strpos($arg, 'caption=') !== false) {
+				$caption = str_replace('caption=', '', $arg);
+			}
 		}
 
 		if (! $annotatedImage->exists() && ! $annotatedContent) {
@@ -120,6 +125,9 @@ class Hooks {
 			$file = wfFindFile( $fileTitle );
 			$srcImgUrl = $file->getFullUrl();;
 			$imageOptions = implode('|',$args);
+			if($caption !== null) {
+				$imageOptions .= '|' . $caption;
+			}
 
 			$html = $input->makeImage( $fileTitle , $imageOptions);
 
@@ -136,6 +144,9 @@ class Hooks {
 			$file = wfFindFile( $fileTitle );
 			$srcImgUrl = $file->getFullUrl();;
 			$imageOptions = implode('|',$args);
+			if($caption !== null) {
+				$imageOptions .= '|' . $caption;
+			}
 			$srcImgUrl = $annotatedImage->getSourceImgUrl();
 			// TODO : add element such ass title, alt, caption, align, width, height, class...
 			$attributs = ' ';

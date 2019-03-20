@@ -39,6 +39,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 				{'type':'arrow2', 'parent':'tools'},
 				{'type':'text', 'parent':'tools'},
 				{'type':'numberedbullet', 'parent':'tools'},
+				{'type':'duplicate', 'parent':'tools'},
 				{'type':'del', 'parent':'tools'},
 				{'type':'dropdown', 'name':'customtools', 'parent':'tools'},
 				//{'type':'custompic', 'parent':'customtools'},
@@ -622,6 +623,37 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			this.canvas.remove(this.canvas.getActiveObject());
 		}
 	}
+	ext_imageAnnotator.Editor.prototype.duplicateSelection = function () {
+		if(this.canvas.getActiveObject()) {
+
+			var canvas = this.canvas;
+
+			canvas.getActiveObject().clone(function(clonedObj) {
+				canvas.discardActiveObject();
+				clonedObj.set({
+					left: clonedObj.left + 10,
+					top: clonedObj.top + 10,
+					evented: true,
+				});
+				if (clonedObj.type === 'activeSelection') {
+					console.log('clone selection');
+					// active selection needs a reference to the canvas.
+					clonedObj.canvas = canvas;
+					clonedObj.forEachObject(function(obj) {
+						canvas.add(obj);
+					});
+					// this should solve the unselectability
+					clonedObj.setCoords();
+				} else {
+					console.log('clone obj');
+					canvas.add(clonedObj);
+				}
+				//canvas.setActiveObject(clonedObj);
+				console.log('render after clone');
+				canvas.renderAll();
+			});
+		}
+	}
 
 	/*
 	 * this return croped image position, (called in the original editor)
@@ -957,6 +989,12 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		    case 'arrow2':
 		    	button.click(function() {
 					editor.addArrow2(100);
+					return false;
+				});
+		        break;
+		    case 'duplicate':
+		    	button.click(function() {
+					editor.duplicateSelection();
 					return false;
 				});
 		        break;
