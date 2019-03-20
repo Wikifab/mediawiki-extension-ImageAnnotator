@@ -49,8 +49,28 @@ class Hooks {
 		}
 	}
 
+	/**
+	 * initialize JavaScript
+	 *
+	 * @param OutputPage $output the OutputPage object
+	 */
+	private static function initJS( $output ) {
+
+		global $wgImageAnnotatorColors;
+
+		$imageAnnotatorParams = [];
+
+		if (isset($wgImageAnnotatorColors) && $wgImageAnnotatorColors)
+			$imageAnnotatorParams['imageAnnotatorColors'] = $wgImageAnnotatorColors;
+
+		$output->addJsConfigVars( 'ImageAnnotator', $imageAnnotatorParams );
+		$output->addModules( 'ext.imageannotator.editor' );
+	}
+
 	public static function onBeforePageDisplay( &$oOutputPage, &$oSkin ) {
-		$oOutputPage->addModules( 'ext.imageannotator.editor' );
+
+		self::initJS( $oOutputPage );
+
 		return true;
 	}
 
