@@ -112,6 +112,8 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		}
 		this.addEditListeners();
 
+		this.onKeyPress();
+
 	}
 
 	ext_imageAnnotator.Editor.prototype.addToolBarCustomsPics = function (toolbarConfig) {
@@ -1161,6 +1163,69 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			this.generateThumbUsingAPI();
 		}
 		$('#'+this.canvasId).hide();
+	}
+
+	ext_imageAnnotator.Editor.prototype.copyObject = function() {
+
+		var editor = this;
+		var activeObject = this.canvas.getActiveObject();
+		var clone =  fabric.util.object.clone(activeObject);
+
+		clone.top += 10;
+		clone.left += 10;
+
+		// invalidate cache
+		clone.stroke = "" + activeObject.stroke;
+		editor._clipboard = clone;
+
+	}
+
+	ext_imageAnnotator.Editor.prototype.pasteObject = function() {
+
+		var editor = this;
+		var clonedObj = fabric.util.object.clone(this._clipboard);
+
+		// invalidate cache
+		clonedObj.stroke = "" + this._clipboard.stroke;
+
+		editor.canvas.discardActiveObject();
+
+		if (clonedObj.type === 'activeSelection') {
+			// active selection needs a reference to the canvas.
+			clonedObj.canvas = editor.canvas;
+			clonedObj.forEachObject(function(obj) {
+				editor.canvas.add(obj);
+			});
+			// this should solve the unselectability
+			clonedObj.setCoords();
+		} else {
+			// TODO why does this throw Uncaught TypeError: this._render is not a function
+			editor.canvas.add(clonedObj);
+		}
+
+		this._clipboard.top += 10;
+		this._clipboard.left += 10;
+
+		editor.canvas.setActiveObject(clonedObj);
+		editor.canvas.requestRenderAll();
+	}
+
+	ext_imageAnnotator.Editor.prototype.onKeyPress = function() {
+
+		var editor = this;
+
+		function KeyPress(e) {
+
+            var evtobj = window.event? event : e;
+
+            // COPY
+            if (evtobj.keyCode == 67 && evtobj.ctrlKey) editor.copyObject(); 
+
+            // PASTE
+            if (evtobj.keyCode == 86 && evtobj.ctrlKey) editor.pasteObject();
+        }
+
+        document.onkeydown = KeyPress;
 	}
 
 

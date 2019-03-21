@@ -49,7 +49,7 @@
 	"ResourceModules": {
 		"ext.imageannotator.editor": {
 			"scripts": [
-				"ressources/fabric-2.4.2.min.js",
+				"ressources/fabric-2.4.6.min.js",
 				"ressources/jquery.popup.overlay.1.7.13.js",
 				"ressources/mw.ext.imageAnnotator.Shapes.Circle.js",
 				"ressources/mw.ext.imageAnnotator.Shapes.CropZone.js",
