@@ -98,30 +98,12 @@ class ApiImageAnnotatorThumb extends \ApiBase {
 		];
 	}
 
-	public function svgToPngConvert($svg, $fileIncluded, $fileOut, $hash) {
+
+	public function correctSvgIncludedRessourcePathBeforeConversion($svg, $fileIncluded, $hash, $tmpDir, &$tempFiles) {
 		global $wgUploadDirectory, $wgServer;
-
-		/*
-		$fileIncluded =
-		[
-			'imgUrl' =>	"http://demo-dokit.localtest.me/w/images/thumb/7/7a/Test_de_tuto_LB_Final.jpg/800px-Test_de_tuto_LB_Final.jpg"
-			'thumbUrl' =>	"http://...." // if defined
-			'hashdir' =>	"7/7a"
-			'filename' =>	"Test_de_tuto_LB_Final.jpg"
-			'thumbfilename' =>	"800px-Test_de_tuto_LB_Final.jpg"
-		]
-		*/
-
-		$subDir = 'fel';
-
-		$tmpDir = $wgUploadDirectory . '/imagesAnnotationTemp/' . $subDir;
-		if (!file_exists($tmpDir)) {
-			mkdir($tmpDir, 0755, true);
-		}
 
 		// replace url encoded string of filename :
 		$svg = str_replace(urlencode($fileIncluded['filename']), $fileIncluded['filename'], $svg);
-
 
 		// replace ALL files url by relative filepath
 		$filesToReplaces = [];
@@ -182,6 +164,35 @@ class ApiImageAnnotatorThumb extends \ApiBase {
 				$svg = str_replace('"' . $fileToReplace['url'], '"' . $fileToReplace['path'], $svg);
 			}
 		}
+
+		return $svg;
+
+	}
+
+	public function svgToPngConvert($svg, $fileIncluded, $fileOut, $hash) {
+		global $wgUploadDirectory, $wgServer;
+
+		/*
+		$fileIncluded =
+		[
+			'imgUrl' =>	"http://demo-dokit.localtest.me/w/images/thumb/7/7a/Test_de_tuto_LB_Final.jpg/800px-Test_de_tuto_LB_Final.jpg"
+			'thumbUrl' =>	"http://...." // if defined
+			'hashdir' =>	"7/7a"
+			'filename' =>	"Test_de_tuto_LB_Final.jpg"
+			'thumbfilename' =>	"800px-Test_de_tuto_LB_Final.jpg"
+		]
+		*/
+
+		$subDir = 'fel';
+
+		$tmpDir = $wgUploadDirectory . '/imagesAnnotationTemp/' . $subDir;
+		if (!file_exists($tmpDir)) {
+			mkdir($tmpDir, 0755, true);
+		}
+
+		$tempFiles = [];
+
+		$svg = $this->correctSvgIncludedRessourcePathBeforeConversion($svg, $fileIncluded, $hash, $tmpDir, $tempFiles);
 
 		//create svg tmp file
 		$svgInFile = $tmpDir . "/$hash.svg";
