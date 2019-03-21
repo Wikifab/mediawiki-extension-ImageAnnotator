@@ -16,7 +16,6 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 	   originX: 'center',
 	   originY: 'center',
 	   transparentCorners:false,
-	   statefullCache: true,
 		borderColor: 'black',
 		cornerColor: 'rgba(200,200,200,1)',
 

@@ -25,7 +25,6 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			lockScalingY: true,
 			lockMovementX: true,
 			lockMovementY: true,
-			statefullCache: true,
 			//borderColor: 'black',
 			//cornerColor: 'rgba(200,200,200,1)',
 

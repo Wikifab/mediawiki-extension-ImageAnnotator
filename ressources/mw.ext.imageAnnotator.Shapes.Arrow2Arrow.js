@@ -20,7 +20,6 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			selectable:false,
 			hasborder:false,
 			hasControls:false,
-			statefullCache: true,
 
 
 

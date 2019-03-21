@@ -25,6 +25,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		this.content = content;
 		this.canvasElement = null;
 		this.options = options;
+		this._clipboard = null;
 		this.isCropMode = options && options['cropMode'] ? true : false;
 
 		// default params :
@@ -1167,15 +1168,26 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 	ext_imageAnnotator.Editor.prototype.copyObject = function() {
 
+		// clone what are you copying since you
+		// may want copy and paste on different moment.
+		// and you do not want the changes happened
+		// later to reflect on the copy.
+
 		var editor = this;
 		var activeObject = this.canvas.getActiveObject();
+		// note : fabric.Object.clone() didn't work for some reason
+		// error thrown : this._render is not a function
+		// so, used fabric.util.object.clone instead
 		var clone =  fabric.util.object.clone(activeObject);
 
 		clone.top += 10;
 		clone.left += 10;
 
-		// invalidate cache
-		clone.stroke = "" + activeObject.stroke;
+		// so to ensure that each copied object has its own cache environment
+		clone._cacheCanvas = null;
+	    clone.cacheWidth = 0;
+	    clone.cacheHeight = 0;
+
 		editor._clipboard = clone;
 
 	}
@@ -1183,10 +1195,18 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 	ext_imageAnnotator.Editor.prototype.pasteObject = function() {
 
 		var editor = this;
+
+		// clone again, so you can do multiple copies.
+		
+		// note : fabric.Object.clone() didn't work for some reason
+		// error thrown : this._render is not a function
+		// so, used fabric.util.object.clone instead
 		var clonedObj = fabric.util.object.clone(this._clipboard);
 
-		// invalidate cache
-		clonedObj.stroke = "" + this._clipboard.stroke;
+		// so to ensure that each object has its own cache environment
+		clonedObj._cacheCanvas = null;
+	    clonedObj.cacheWidth = 0;
+	    clonedObj.cacheHeight = 0;
 
 		editor.canvas.discardActiveObject();
 
@@ -1199,7 +1219,6 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			// this should solve the unselectability
 			clonedObj.setCoords();
 		} else {
-			// TODO why does this throw Uncaught TypeError: this._render is not a function
 			editor.canvas.add(clonedObj);
 		}
 
