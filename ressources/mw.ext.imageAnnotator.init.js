@@ -29,9 +29,11 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 	/**
 	 * this enable an outside extension to call ImageAnnotator with this function
 	 */
-	mw.ext_imageAnnotator.createNewEditor = function (container, img, content, updateCallBack) {
+	mw.ext_imageAnnotator.createNewEditor = function (container, img, content, updateCallBack, options) {
 
-		this.popup = new ext_imageAnnotator.EditorBlock(container, img, content, updateCallBack );
+		this.popup = new ext_imageAnnotator.EditorBlock(container, img, content, updateCallBack, options );
+
+		return this.popup;
 	}
 
 

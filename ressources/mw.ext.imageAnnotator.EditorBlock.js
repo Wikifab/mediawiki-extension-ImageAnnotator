@@ -18,10 +18,11 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 	 * @param {jQuery} container container to put editor in it
 	 * @param {string} [content='']
 	 */
-	ext_imageAnnotator.EditorBlock = function (containerDiv, image, content, updateDataCallBack ) {
+	ext_imageAnnotator.EditorBlock = function (containerDiv, image, content, updateDataCallBack, options ) {
 
 		this.containerdiv = containerDiv;
 		this.updateDataCallBack = updateDataCallBack;
+		this.options = options;
 		this.initBlock();
 		this.image = image;
 		this.content = content;
@@ -46,9 +47,6 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 		this.launchEditor();
 	}
 
-	ext_imageAnnotator.EditorBlock.prototype.hide = function() {
-	}
-
 	ext_imageAnnotator.EditorBlock.prototype.launchEditor = function () {
 		var editorBlock = this;
 
@@ -66,21 +64,24 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 
 		console.log('launchEditor');
 		console.log(this.clonedImage);
-		// add cancel button
-		this.buttonbar.append($('<button >' +mw.message( 'imageannotator-button-cancel' ).text() + '</button>').addClass('cancelButton').click(function () {
-			setTimeout(function () {
-				editorBlock.hide();
-			}, 10);
-			return false;
-		}));
 
-		// add save button
-		this.buttonbar.append($('<button>' +mw.message( 'imageannotator-button-save' ).text() + '</button>').addClass('saveButton').click(function () {
-			setTimeout(function () {
-				editorBlock.save();
-			}, 10);
-			return false;
-		}));
+		if ( ! this.options || ! this.options['no-controlbar']) {
+			// add cancel button
+			this.buttonbar.append($('<button >' +mw.message( 'imageannotator-button-cancel' ).text() + '</button>').addClass('cancelButton').click(function () {
+				setTimeout(function () {
+					editorBlock.hide();
+				}, 10);
+				return false;
+			}));
+
+			// add save button
+			this.buttonbar.append($('<button>' +mw.message( 'imageannotator-button-save' ).text() + '</button>').addClass('saveButton').click(function () {
+				setTimeout(function () {
+					editorBlock.save();
+				}, 10);
+				return false;
+			}));
+		}
 
 	}
 
@@ -107,6 +108,16 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 
 		ext_imageAnnotator.EditorBlock_mainDiv = this.maindiv;
 	};
+
+
+
+	/**
+	 * cancel edition
+	 */
+	ext_imageAnnotator.EditorBlock.prototype.hide = function() {
+		// call an cancel action
+		console.log("EditorBlock.prototype.hide");
+	}
 
 	/**
 	 * save modifications into original input
