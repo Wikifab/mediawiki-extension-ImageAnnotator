@@ -19,7 +19,6 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 	   transparentCorners:false,
 	   borderColor: 'black',
 	   cornerColor: 'rgba(200,200,200,1)',
-	   statefullCache: true,
 
 	   type: 'wfcustompic',
 

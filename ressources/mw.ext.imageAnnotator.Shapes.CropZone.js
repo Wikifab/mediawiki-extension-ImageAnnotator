@@ -19,7 +19,6 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		hasRotatingPoint: false,
 		minScaleLimit: 0.2,
 		lockScalingFlip: true,
-		statefullCache: true,
 
 		// if false, center of crop must be in area, if true, all cropzone must be inside area
 		positionLimitStrict: true,
