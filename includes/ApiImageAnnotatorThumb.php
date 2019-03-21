@@ -104,6 +104,7 @@ class ApiImageAnnotatorThumb extends \ApiBase {
 
 		// replace url encoded string of filename :
 		$svg = str_replace(urlencode($fileIncluded['filename']), $fileIncluded['filename'], $svg);
+		$fileIncluded['imgUrl'] = str_replace(urlencode($fileIncluded['filename']), $fileIncluded['filename'], $fileIncluded['imgUrl']);
 
 		// replace ALL files url by relative filepath
 		$filesToReplaces = [];
