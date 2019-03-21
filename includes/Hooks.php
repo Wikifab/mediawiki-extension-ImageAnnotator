@@ -119,54 +119,38 @@ class Hooks {
 			}
 		}
 
-		if (! $annotatedImage->exists() && ! $annotatedContent) {
-
-			$fileTitle = \Title::newFromText($image, NS_FILE);
-			$file = wfFindFile( $fileTitle );
-			$srcImgUrl = $file->getFullUrl();;
-			$imageOptions = implode('|',$args);
-			$imageOptions .= '|' . $caption;
-
-			$html = $input->makeImage( $fileTitle , $imageOptions);
-
-			$imgWrapper = '<span >'.$html.'</span>';
-			$out = '<div class="annotatedImageDiv" typeof="Image" data-resource="'.$image.'" data-sourceimage="'.addslashes($srcImgUrl).'">'.$imgWrapper.'</div>';
-			//$out = $annotatedImage->makeHtmlImageLink($input);
-			//return array( $out, 'isHTML' => true );
-			return array( $out, 'noparse' => true, 'isHTML' => true );
-		}
-
-		//var_dump($annotatedImage->exists());
-		if ($annotatedImage->exists()) {
-			$fileTitle = \Title::newFromText($image, NS_FILE);
-			$file = wfFindFile( $fileTitle );
-			$srcImgUrl = $file->getFullUrl();;
-			$imageOptions = implode('|',$args);
-			if($caption !== null) {
-				$imageOptions .= '|' . $caption;
-			}
-			$srcImgUrl = $annotatedImage->getSourceImgUrl();
-			// TODO : add element such ass title, alt, caption, align, width, height, class...
-			$attributs = ' ';
-			$sourceImgElement = $input->makeImage( $fileTitle , $imageOptions);
-
-			// replace img source by img annotated image :
-			$imgElement = preg_replace('@src="([^"]+)"@', 'src="'.$annotatedImage->getImgUrl() . '"', $sourceImgElement);
-
-			//$imgElement = '<img src="' . $annotatedImage->getImgUrl() . '"  data-jsondata=\''. str_replace("'","\\'",$annotatedContent) .'\' />';
-			$imgWrapper = '<span >'.$imgElement.'</span>';
-			$out = '<div class="annotatedImageDiv" typeof="Image" data-resource="'.$image.'" data-sourceimage="'.addslashes($srcImgUrl).'">'.$imgWrapper.'</div>';
-			//$out = $annotatedImage->makeHtmlImageLink($input);
-			//return array( $out, 'isHTML' => true );
-			return array( $out, 'noparse' => true, 'isHTML' => true );
-		} else {
-			//var_dump($annotatedImage->getOutFilename());
-			//var_dump($annotatedImage);
-			// if image doesn't exists, fallback on default behaviour
-			// if has cropped image,us svg default behaviour because there is no image behind transparency
+		if (! $annotatedImage->exists() && $annotatedContent) {
 			$out = '<div class="annotatedImageContainer">missing file</div>';
 			return $out;
 		}
+		$fileTitle = \Title::newFromText($image, NS_FILE);
+		$file = wfFindFile( $fileTitle );
+		$srcImgUrl = $file->getFullUrl();
+		$imageOptions = implode('|',$args);
+		$imageOptions .= '|' . $caption;
+
+		$imgElement = $input->makeImage( $fileTitle , $imageOptions);
+
+		//var_dump($annotatedImage->exists());
+		if ($annotatedImage->exists()) {
+			$srcImgUrl = $annotatedImage->getSourceImgUrl();
+
+			// replace img source by img annotated image :
+			$imgElement = preg_replace('@src="([^"]+)"@', 'src="'.$annotatedImage->getImgUrl() . '"', $imgElement);
+
+			//$imgElement = '<img src="' . $annotatedImage->getImgUrl() . '"  data-jsondata=\''. str_replace("'","\\'",$annotatedContent) .'\' />';
+			$imgWrapper = '<span >'.$imgElement.'</span>';
+
+		}
+
+		// remove <a> tag in legend
+		$imgElement = preg_replace('@<div class="magnify"(.+)<\/div>@U', '', $imgElement);
+
+		$imgWrapper = '<span >'.$imgElement.'</span>';
+		$out = '<div class="annotatedImageDiv" typeof="Image" data-resource="'.$image.'" data-sourceimage="'.addslashes($srcImgUrl).'">'.$imgWrapper.'</div>';
+		//$out = $annotatedImage->makeHtmlImageLink($input);
+		//return array( $out, 'isHTML' => true );
+		return array( $out, 'noparse' => true, 'isHTML' => true );
 	}
 
 	public static function onBeforePageDisplay( &$oOutputPage, &$oSkin ) {
