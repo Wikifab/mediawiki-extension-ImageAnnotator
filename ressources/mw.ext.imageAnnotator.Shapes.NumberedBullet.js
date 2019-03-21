@@ -18,6 +18,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 	   lockScalingX: true,
 	   lockScalingY: true,
 	   hasControls: false,
+	   statefullCache: true,
 
 	   initialize: function(objects, optionsopt, isAlreadyGroupedopt) {
 

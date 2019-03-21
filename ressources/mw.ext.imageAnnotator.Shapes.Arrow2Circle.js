@@ -20,6 +20,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			    fill : '#aaa',
 			    stroke : '#666',
 				opacity:0.5,
+				statefullCache: true,
 
 				/**
 				 * Constructor
