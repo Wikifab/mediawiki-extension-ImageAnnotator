@@ -139,6 +139,21 @@ class Hooks {
 			// replace img source by img annotated image :
 			$imgElement = preg_replace('@src="([^"]+)"@', 'src="'.$annotatedImage->getImgUrl() . '"', $imgElement);
 
+			// if image has a height defined, we must change it by the height from annotated content :
+			if (preg_match('@ height="([0-9]+)"@', $imgElement, $matches)) {
+				$height = $matches[1];
+				preg_match('@ width="([0-9]+)"@', $imgElement, $matches);
+				$width = $matches[1];
+				$json = json_decode($annotatedImage->getAnnotatedContent(), true);
+				if ($json && $json['width'] && $json['height'] && $width) {
+					$newHeight = intval($json['height'] * $width / $json['width']);
+					$oldValue = ' height="'.$height.'"';
+					$newValue = ' height="'.$newHeight.'" data-height="'.$height.'"';
+					$imgElement = str_replace($oldValue, $newValue, $imgElement);
+				}
+			}
+
+
 			//$imgElement = '<img src="' . $annotatedImage->getImgUrl() . '"  data-jsondata=\''. str_replace("'","\\'",$annotatedContent) .'\' />';
 			$imgWrapper = '<span >'.$imgElement.'</span>';
 
