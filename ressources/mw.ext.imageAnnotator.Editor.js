@@ -1272,11 +1272,16 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		if ( ! callback) {
 			callback = function setOverlayImage(url) {
 				// display it only if content, (some browsers doesn't like empty images)
-				editor.overlayImg = $('<img>').attr('class','annotationlayer').attr('src', url);
+
+				var imgWidth = $(editor.image).attr('width');
+				var imgClass = $(editor.image).attr('class');
+				editor.overlayImg = $('<img>').attr('class','annotationlayer '+imgClass).attr('src', url);
 				// positioning
-				$(editor.image).parent().css({ position:'relative'});
+				//$(editor.image).parent().css({ position:'relative'});
 				$(editor.overlayImg).insertAfter(editor.image);
-				$(editor.overlayImg).css({ width:'100%', position:'absolute', top:0, left : 0});
+				$(editor.image).hide();
+				//$(editor.overlayImg).css({ width:imgWidth});
+				//$(editor.overlayImg).css({ width:'100%', position:'absolute', top:0, left : 0});
 			}
 		}
 
