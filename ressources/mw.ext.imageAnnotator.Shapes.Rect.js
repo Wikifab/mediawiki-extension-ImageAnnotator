@@ -18,12 +18,33 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		transparentCorners:false,
 		borderColor: 'black',
 		cornerColor: 'rgba(200,200,200,1)',
+		noScaleCache: true,
 
 	   // Min and Max size to enforce (false == no enforcement)
 	   minSize: 15,
 	   maxSize: 200,
 
 	   centerTransform: true,
+
+	   initialize(optionsopt) {
+
+	   	  this.on('scaling', function(e) {
+
+	   	  		var obj = this,
+	   	  		w = obj.width * obj.scaleX,
+	   	  		h = obj.height * obj.scaleY;
+
+	   	  		obj.set({
+	   	  			'height'	: h,
+	   	  			'width'		: w,
+	   	  			'scaleX'	: 1,
+	   	  			'scaleY'	: 1
+	   	  		});
+	   	  		
+			});
+
+	      this.callSuper('initialize', optionsopt);
+	   },
 
 	   render: function(ctx) {
 	      this._limitSize();
@@ -58,14 +79,14 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 	   _limitSize: function() {
 
 	      if (this.minSize !== false && this.width * this.scaleX < this.minSize) {
-	         this.scaleX = this.minSize / this.width;
+	         this.scaleX = (this.minSize / this.width);
 	      } else if (this.maxSize !== false && this.width * this.scaleX > this.maxSize) {
-	         this.scaleX = this.maxSize / this.width;
+	         this.scaleX = (this.maxSize / this.width); 
 	      }
 	      if (this.minSize !== false && this.height * this.scaleY < this.minSize) {
-	         this.scaleY = this.minSize / this.height;
-	      } else if (this.maxSize !== false && this.width * this.scaleY > this.maxSize) {
-	         this.scaleY = this.maxSize / this.height;
+	         this.scaleY = (this.minSize / this.height);
+	      } else if (this.maxSize !== false && this.height * this.scaleY > this.maxSize) {
+	         this.scaleY = (this.maxSize / this.height);
 	      }
 
 	      // change the stroke width to look same
