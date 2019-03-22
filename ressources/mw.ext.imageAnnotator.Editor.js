@@ -25,6 +25,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		this.content = content;
 		this.canvasElement = null;
 		this.options = options;
+		this._clipboard = null;
 		this.isCropMode = options && options['cropMode'] ? true : false;
 		this.fixedHeight = options && options['fixedHeight'] ? options['fixedHeight']  : false;
 		this.fixedBackgroundLeft = 0; // left positionning of background, (if fixedHeight )
@@ -140,6 +141,8 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			this.addToolbarDyn(toolbarConfig);
 		}
 		this.addEditListeners();
+
+		this.onKeyPress();
 
 	}
 
@@ -1350,6 +1353,87 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			this.generateThumbUsingAPI();
 		}
 		$('#'+this.canvasId).hide();
+	}
+
+	ext_imageAnnotator.Editor.prototype.copyObject = function() {
+
+		// clone what are you copying since you
+		// may want copy and paste on different moment.
+		// and you do not want the changes happened
+		// later to reflect on the copy.
+
+		var editor = this;
+		var activeObject = this.canvas.getActiveObject();
+		// note : fabric.Object.clone() didn't work for some reason
+		// error thrown : this._render is not a function
+		// so, used fabric.util.object.clone instead
+		var clone =  fabric.util.object.clone(activeObject);
+
+		clone.top += 10;
+		clone.left += 10;
+
+		// so to ensure that each copied object has its own cache environment
+		clone._cacheCanvas = null;
+	    clone.cacheWidth = 0;
+	    clone.cacheHeight = 0;
+
+		editor._clipboard = clone;
+
+	}
+
+	ext_imageAnnotator.Editor.prototype.pasteObject = function() {
+
+		var editor = this;
+
+		// clone again, so you can do multiple copies.
+		
+		// note : fabric.Object.clone() didn't work for some reason
+		// error thrown : this._render is not a function
+		// so, used fabric.util.object.clone instead
+		var clonedObj = fabric.util.object.clone(this._clipboard);
+
+		// so to ensure that each object has its own cache environment
+		clonedObj._cacheCanvas = null;
+	    clonedObj.cacheWidth = 0;
+	    clonedObj.cacheHeight = 0;
+
+		editor.canvas.discardActiveObject();
+
+		if (clonedObj.type === 'activeSelection') {
+			// active selection needs a reference to the canvas.
+			clonedObj.canvas = editor.canvas;
+			clonedObj.forEachObject(function(obj) {
+				editor.canvas.add(obj);
+			});
+			// this should solve the unselectability
+			clonedObj.setCoords();
+		} else {
+			editor.canvas.add(clonedObj);
+		}
+
+		this._clipboard.top += 10;
+		this._clipboard.left += 10;
+
+		editor.canvas.setActiveObject(clonedObj);
+		editor.canvas.requestRenderAll();
+	}
+
+	ext_imageAnnotator.Editor.prototype.onKeyPress = function() {
+
+		var editor = this;
+
+		function KeyPress(e) {
+
+            var evtobj = window.event? event : e;
+
+            // COPY
+            if (evtobj.keyCode == 67 && evtobj.ctrlKey) editor.copyObject(); 
+
+            // PASTE
+            if (evtobj.keyCode == 86 && evtobj.ctrlKey) editor.pasteObject();
+        }
+
+        document.onkeydown = KeyPress;
 	}
 
 
