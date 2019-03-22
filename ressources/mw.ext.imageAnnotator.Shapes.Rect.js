@@ -18,6 +18,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		transparentCorners:false,
 		borderColor: 'black',
 		cornerColor: 'rgba(200,200,200,1)',
+		noScaleCache: true,
 
 	   // Min and Max size to enforce (false == no enforcement)
 	   minSize: 15,
@@ -28,8 +29,6 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 	   initialize(optionsopt) {
 
 	   	  this.on('scaling', function(e) {
-
-	   	  	console.log("scaled");
 
 	   	  		var obj = this,
 	   	  		w = obj.width * obj.scaleX,
