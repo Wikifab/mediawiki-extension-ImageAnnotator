@@ -42,7 +42,6 @@ class AnnotatedImage {
 			// if $annotatedContent is a hash, load from DB :
 			$this->loadFromBdd($annotatedContent);
 		} else if($annotatedContent) {
-			var_dump(md5($annotatedContent));
 			$this->loadFromBdd(md5(trim($annotatedContent)));
 		}
 	}
