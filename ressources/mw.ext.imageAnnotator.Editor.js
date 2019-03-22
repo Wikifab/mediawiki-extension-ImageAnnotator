@@ -1279,10 +1279,12 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 				var imgWidth = $(editor.image).attr('width');
 				var imgClass = $(editor.image).attr('class');
 				editor.overlayImg = $('<img>').attr('class','annotationlayer '+imgClass).attr('src', url);
-				// positioning
-				//$(editor.image).parent().css({ position:'relative'});
+				
 				$(editor.overlayImg).insertAfter(editor.image);
 				$(editor.image).hide();
+				// positioning : this methode wa used chen backgound is not set within annotated layer
+				// sould we keep it for wikifab olds one ?
+				//$(editor.image).parent().css({ position:'relative'});
 				//$(editor.overlayImg).css({ width:imgWidth});
 				//$(editor.overlayImg).css({ width:'100%', position:'absolute', top:0, left : 0});
 			}
