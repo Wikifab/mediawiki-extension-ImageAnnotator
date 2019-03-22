@@ -35,6 +35,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		// default params :
 		this.currentColor = 'red';
 		this.toolbarDivs = {};
+
 		var toolbarConfig = [
 				{'type':'div', 'name':'tools'},
 				{'type':'div', 'name':'colors'},
@@ -46,9 +47,27 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 				{'type':'numberedbullet', 'parent':'tools'},
 				//{'type':'duplicate', 'parent':'tools'},
 				{'type':'del', 'parent':'tools'},
-				{'type':'dropdown', 'name':'customtools', 'parent':'tools'},
+				{'type':'dropdown', 'name':'customtools', 'parent':'tools'}
 				//{'type':'custompic', 'parent':'customtools'},
 				//{'type':'custompic', 'parent':'customtools'},
+			];
+
+		var colors = [];
+
+		if (mw.config.values.ImageAnnotator.imageAnnotatorColors) {
+
+			var imageAnnotatorColors = mw.config.values.ImageAnnotator.imageAnnotatorColors; 
+			
+			imageAnnotatorColors.forEach(function(color) {
+				colors.push({'type':'color', 'color': color, 'parent':'colors'});
+			});
+
+			if (imageAnnotatorColors[2])
+				this.currentColor = imageAnnotatorColors[2];
+
+		} else {
+
+			colors = [
 				{'type':'color', 'color':'black', 'parent':'colors'},
 				{'type':'color', 'color':'white', 'parent':'colors'},
 				{'type':'color', 'color':'blue', 'parent':'colors'},
@@ -56,6 +75,9 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 				{'type':'color', 'color':'yellow', 'parent':'colors'},
 				{'type':'color', 'color':'green', 'parent':'colors'}
 			];
+		}
+
+		toolbarConfig = toolbarConfig.concat(colors);
 
 		toolbarConfig = this.addToolBarCustomsPics(toolbarConfig);
 
@@ -621,6 +643,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 	ext_imageAnnotator.Editor.prototype.setColor = function (color) {
 		this.currentColor = color;
 		if(this.getActiveObject()) {
+			var activeObject = this.getActiveObject();
 			this.getActiveObject().set('stroke', this.currentColor);
 			if (this.getActiveObject().get('fill') != 'rgba(255,0,0,0)') {
 				this.getActiveObject().set('fill', this.currentColor);
@@ -672,7 +695,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 		// change css class on buttons :
 		$(this.toolbar).find('.toolbarArea-colors button').removeClass('active');
-		$(this.toolbar).find('.toolbarArea-colors button.'+this.currentColor).addClass('active');
+		$(this.toolbar).find('.toolbarArea-colors button.'+this.currentColor.replace('#', '')).addClass('active');
 	}
 
 	ext_imageAnnotator.Editor.prototype.delSelection = function () {
@@ -1018,8 +1041,9 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 		var editor = this;
 		var label  = type;
+
 		if (type == 'color') {
-			label = params['color'];
+			label = params['color'].replace('#',''); // strip the #
 		}
 		if (type == 'format') {
 			label = 'f' + params['format'];
@@ -1036,6 +1060,11 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		var tooltip = mw.message( 'imageannotator-toolbar-'+ label + '-label' ).text()
 		var button = $('<button>' + '</button>').addClass('editorButton').addClass(label);
 		button.attr('alt',tooltip);
+
+		if (type == 'color') {
+			button.css('background-color', params['color']);
+		}
+
 		if (type =='custompic') {
 			var btnImg = $('<img>').attr('src',params['fileurl']);
 			btnImg.attr('width',40);
@@ -1072,7 +1101,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 				});
 		        break;
 		    case 'color':
-		    	var color = label;
+		    	var color = params['color'];
 		    	button.click(function() {
 					editor.setColor(color);
 					return false;

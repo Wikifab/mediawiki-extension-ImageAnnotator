@@ -105,53 +105,7 @@
 	display:block;
 }
 
-.mw-ia-popup-toolbar .editorButton.black {
-    background-color: #000000;
-    margin: 3px 1px;
-    vertical-align: top;
-    border-radius: 5px;
-    border: 2px solid #f9f9f9;
-    height: 33px;
-}
-
-.mw-ia-popup-toolbar .editorButton.white {
-    background-color: #ffffff;
-    margin: 3px 1px;
-    vertical-align: top;
-    border-radius: 5px;
-    border: 2px solid #f9f9f9;
-    height: 33px;
-}
-
-.mw-ia-popup-toolbar .editorButton.red {
-    background-color: #ff0000;
-    margin: 3px 1px;
-    vertical-align: top;
-    border-radius: 5px;
-    border: 2px solid #f9f9f9;
-    height: 33px;
-}
-
-.mw-ia-popup-toolbar .editorButton.blue {
-    background-color: #0054ff;
-    margin: 3px 1px;
-    vertical-align: top;
-    border-radius: 5px;
-    border: 2px solid #f9f9f9;
-    height: 33px;
-}
-
-.mw-ia-popup-toolbar .editorButton.yellow {
-    background-color: #fff600;
-    margin: 3px 1px;
-    vertical-align: top;
-    border-radius: 5px;
-    border: 2px solid #f9f9f9;
-    height: 33px;
-}
-
-.mw-ia-popup-toolbar .editorButton.green {
-    background-color: #4ae40d;
+.mw-ia-popup-toolbar .editorButton {
     margin: 3px 1px;
     vertical-align: top;
     border-radius: 5px;
