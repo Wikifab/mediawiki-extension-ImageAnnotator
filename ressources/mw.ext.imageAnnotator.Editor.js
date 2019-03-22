@@ -1273,6 +1273,9 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			callback = function setOverlayImage(url) {
 				// display it only if content, (some browsers doesn't like empty images)
 
+				if (! editor.isStatic) {
+					return;
+				}
 				var imgWidth = $(editor.image).attr('width');
 				var imgClass = $(editor.image).attr('class');
 				editor.overlayImg = $('<img>').attr('class','annotationlayer '+imgClass).attr('src', url);

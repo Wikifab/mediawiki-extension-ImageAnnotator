@@ -32,7 +32,7 @@ class Hooks {
 
 		$useBackendGeneration = true;
 
-		if ($useBackendGeneration  ) {
+		if ($useBackendGeneration ) {
 			// using backend generation (for image including cropped images)
 			// image must have been generated before (during edition)
 			$annotatedImage = new AnnotatedImage($image, $annotatedContent);
