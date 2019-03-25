@@ -142,8 +142,6 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		}
 		this.addEditListeners();
 
-		this.onKeyPress();
-
 	}
 
 	ext_imageAnnotator.Editor.prototype.addToolBarCustomsPics = function (toolbarConfig) {
@@ -163,6 +161,11 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		var canvas = this.canvas;
 
 		function objectMoved(o) {
+			console.log("debug objectMoved");
+			console.log(o.line1);
+			console.log(o.line2);
+			console.log(o.left);
+			console.log(o.top);
 			o.line1 && o.line1.setP1(o.left, o.top);
 			o.line2 && o.line2.setP2(o.left, o.top);
 		}
@@ -269,34 +272,34 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 				if (this.specificsObjectsToLoad[x].type == 'wfcircle') {
 					var objectToload = this.specificsObjectsToLoad[x];
 					var circle = new ext_imageAnnotator.shapes.Wfcircle(objectToload);
-					this.canvas.add(circle);
+					circle.addToCanvas();
 				} else if (this.specificsObjectsToLoad[x].type == 'wfrect') {
 					var objectToload = this.specificsObjectsToLoad[x];
 					var circle = new ext_imageAnnotator.shapes.Wfrect(objectToload);
-					this.canvas.add(circle);
+					circle.addToCanvas();
 				} else if (this.specificsObjectsToLoad[x].type == 'wfarrow') {
 					var objectToload = this.specificsObjectsToLoad[x];
 					var circle = new ext_imageAnnotator.shapes.Wfarrow(objectToload);
-					this.canvas.add(circle);
+					circle.addToCanvas();
 				} else if (this.specificsObjectsToLoad[x].type == 'wfarrow2') {
 					var objectToload = this.specificsObjectsToLoad[x];
 					var arrow = new ext_imageAnnotator.shapes.Wfarrow2(objectToload);
-					this.canvas.add(arrow);
+					arrow.addToCanvas();
 				} else if (this.specificsObjectsToLoad[x].type == 'wfnumberedbullet') {
 					var objectToload = this.specificsObjectsToLoad[x];
 					// load group without inside shapes, they will be recreated in constructor
 					var arrow = new ext_imageAnnotator.shapes.WfNumberedBullet([],objectToload);
-					this.canvas.add(arrow);
+					arrow.addToCanvas();
 				} else if (this.specificsObjectsToLoad[x].type == 'wfarrow2line') {
 					var objectToload = this.specificsObjectsToLoad[x];
 					var line = new ext_imageAnnotator.shapes.Wfarrow2Line(objectToload);
-					this.canvas.add(line);
+					line.addToCanvas();
 
 					this.addArrow2CirclesFromLine(line);
 				}else if (this.specificsObjectsToLoad[x].type == 'wfcustompic') {
 					var objectToload = this.specificsObjectsToLoad[x];
 					var line = new ext_imageAnnotator.shapes.Wfcustompic(objectToload);
-					this.canvas.add(line);
+					line.addToCanvas();
 
 					this.addArrow2CirclesFromLine(line);
 				} else {
@@ -389,7 +392,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			stroke:this.currentColor,
 			fill: 'rgba(255,0,0,0)'
 		})
-		this.canvas.add(rect);
+		rect.addToCanvas();
 		this.canvas.setActiveObject(rect);
 	}
 
@@ -708,35 +711,10 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		}
 	}
 	ext_imageAnnotator.Editor.prototype.duplicateSelection = function () {
-		if(this.canvas.getActiveObject()) {
-
-			var canvas = this.canvas;
-
-			canvas.getActiveObject().clone(function(clonedObj) {
-				canvas.discardActiveObject();
-				clonedObj.set({
-					left: clonedObj.left + 10,
-					top: clonedObj.top + 10,
-					evented: true,
-				});
-				if (clonedObj.type === 'activeSelection') {
-					console.log('clone selection');
-					// active selection needs a reference to the canvas.
-					clonedObj.canvas = canvas;
-					clonedObj.forEachObject(function(obj) {
-						canvas.add(obj);
-					});
-					// this should solve the unselectability
-					clonedObj.setCoords();
-				} else {
-					console.log('clone obj');
-					canvas.add(clonedObj);
-				}
-				//canvas.setActiveObject(clonedObj);
-				console.log('render after clone');
-				canvas.renderAll();
-			});
-		}
+		
+		// copy and paste
+		this.copyObject();
+		this.pasteObject();
 	}
 
 	/*
@@ -1206,6 +1184,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 	 * handle keyPress actions
 	 */
 	ext_imageAnnotator.Editor.prototype.onKeyPress = function(e) {
+
 		switch (e.keyCode) {
 			case 46 :
 				// DELL
@@ -1224,6 +1203,12 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 				break;
 			case 40 : // DOWN
 				this.moveDown();
+				break;
+			case 67 : // COPY
+				if (e.ctrlKey) this.copyObject();
+				break;
+			case 86 : // PASTE
+				if (e.ctrlKey) this.pasteObject();
 				break;
 			default:
 				return true;
@@ -1374,20 +1359,31 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 		var editor = this;
 		var activeObject = this.canvas.getActiveObject();
+		console.log("activeObject");
+		console.log(activeObject);
 		// note : fabric.Object.clone() didn't work for some reason
 		// error thrown : this._render is not a function
 		// so, used fabric.util.object.clone instead
-		var clone =  fabric.util.object.clone(activeObject);
 
-		clone.top += 10;
-		clone.left += 10;
+		// if (activeObject.type == "wfarrow2circle") {
+		// 	console.log("type : " + activeObject.type); 
+		activeObject.clone(function (clonedObj) {
 
-		// so to ensure that each copied object has its own cache environment
-		clone._cacheCanvas = null;
-	    clone.cacheWidth = 0;
-	    clone.cacheHeight = 0;
+			clonedObj.top += 10;
+			clonedObj.left += 10;
 
-		editor._clipboard = clone;
+			// so to ensure that each copied object has its own cache environment
+			clonedObj._cacheCanvas = null;
+		    clonedObj.cacheWidth = 0;
+		    clonedObj.cacheHeight = 0;
+
+			editor._clipboard = clonedObj;
+		});
+		// } else {
+		// 	clone = fabric.util.object.clone(activeObject);
+		// }
+
+		
 
 	}
 
@@ -1400,7 +1396,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		// note : fabric.Object.clone() didn't work for some reason
 		// error thrown : this._render is not a function
 		// so, used fabric.util.object.clone instead
-		var clonedObj = fabric.util.object.clone(this._clipboard);
+		var clonedObj = this._clipboard;
 
 		// so to ensure that each object has its own cache environment
 		clonedObj._cacheCanvas = null;
@@ -1418,7 +1414,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			// this should solve the unselectability
 			clonedObj.setCoords();
 		} else {
-			editor.canvas.add(clonedObj);
+			clonedObj.addToCanvas();
 		}
 
 		this._clipboard.top += 10;
@@ -1426,24 +1422,6 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 		editor.canvas.setActiveObject(clonedObj);
 		editor.canvas.requestRenderAll();
-	}
-
-	ext_imageAnnotator.Editor.prototype.onKeyPress = function() {
-
-		var editor = this;
-
-		function KeyPress(e) {
-
-            var evtobj = window.event? event : e;
-
-            // COPY
-            if (evtobj.keyCode == 67 && evtobj.ctrlKey) editor.copyObject(); 
-
-            // PASTE
-            if (evtobj.keyCode == 86 && evtobj.ctrlKey) editor.pasteObject();
-        }
-
-        document.onkeydown = KeyPress;
 	}
 
 
