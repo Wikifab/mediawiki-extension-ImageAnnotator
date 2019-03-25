@@ -57,14 +57,15 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 		if (mw.config.values.ImageAnnotator.imageAnnotatorColors) {
 
-			var imageAnnotatorColors = mw.config.values.ImageAnnotator.imageAnnotatorColors; 
-			
+			var imageAnnotatorColors = mw.config.values.ImageAnnotator.imageAnnotatorColors;
+
 			imageAnnotatorColors.forEach(function(color) {
 				colors.push({'type':'color', 'color': color, 'parent':'colors'});
 			});
 
-			if (imageAnnotatorColors[2])
+			if (imageAnnotatorColors[2]) {
 				this.currentColor = imageAnnotatorColors[2];
+			}
 
 		} else {
 
@@ -142,7 +143,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		}
 		this.addEditListeners();
 
-		this.onKeyPress();
+		//this.onKeyPress();
 
 	}
 
@@ -217,6 +218,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		this.canvasElement.attr('width', width);
 		if (height > 0) {
 			this.canvasElement.attr('height', height);
+			this.canvas.setHeight(height);
 		}
 		if (this.canvas) {
 			//this.canvas.setWidth( width);
@@ -1279,7 +1281,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 				var imgWidth = $(editor.image).attr('width');
 				var imgClass = $(editor.image).attr('class');
 				editor.overlayImg = $('<img>').attr('class','annotationlayer '+imgClass).attr('src', url);
-				
+
 				$(editor.overlayImg).insertAfter(editor.image);
 				$(editor.image).hide();
 				// positioning : this methode wa used chen backgound is not set within annotated layer
@@ -1396,7 +1398,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		var editor = this;
 
 		// clone again, so you can do multiple copies.
-		
+
 		// note : fabric.Object.clone() didn't work for some reason
 		// error thrown : this._render is not a function
 		// so, used fabric.util.object.clone instead
@@ -1428,7 +1430,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		editor.canvas.requestRenderAll();
 	}
 
-	ext_imageAnnotator.Editor.prototype.onKeyPress = function() {
+	/*ext_imageAnnotator.Editor.prototype.onKeyPress = function() {
 
 		var editor = this;
 
@@ -1437,14 +1439,14 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
             var evtobj = window.event? event : e;
 
             // COPY
-            if (evtobj.keyCode == 67 && evtobj.ctrlKey) editor.copyObject(); 
+            if (evtobj.keyCode == 67 && evtobj.ctrlKey) editor.copyObject();
 
             // PASTE
             if (evtobj.keyCode == 86 && evtobj.ctrlKey) editor.pasteObject();
         }
 
-        document.onkeydown = KeyPress;
-	}
+        //document.onkeydown = KeyPress;
+	}*/
 
 
 })(jQuery, mediaWiki, fabric, ext_imageAnnotator);
