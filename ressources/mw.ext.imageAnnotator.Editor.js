@@ -218,11 +218,11 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		this.canvasElement.attr('width', width);
 		if (height > 0) {
 			this.canvasElement.attr('height', height);
-			this.canvas.setHeight(height);
 		}
 		if (this.canvas) {
 			//this.canvas.setWidth( width);
 			//this.canvas.setHeight( height);
+			this.canvas.setHeight(height);
 			this.canvas.renderAll();
 		}
 	}
