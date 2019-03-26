@@ -46,7 +46,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 				{'type':'arrow2', 'parent':'tools'},
 				{'type':'text', 'parent':'tools'},
 				{'type':'numberedbullet', 'parent':'tools'},
-				//{'type':'duplicate', 'parent':'tools'},
+				{'type':'duplicate', 'parent':'tools'},
 				{'type':'del', 'parent':'tools'},
 				{'type':'dropdown', 'name':'customtools', 'parent':'tools'}
 				//{'type':'custompic', 'parent':'customtools'},
@@ -161,11 +161,6 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		var canvas = this.canvas;
 
 		function objectMoved(o) {
-			console.log("debug objectMoved");
-			console.log(o.line1);
-			console.log(o.line2);
-			console.log(o.left);
-			console.log(o.top);
 			o.line1 && o.line1.setP1(o.left, o.top);
 			o.line2 && o.line2.setP2(o.left, o.top);
 		}
@@ -272,34 +267,34 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 				if (this.specificsObjectsToLoad[x].type == 'wfcircle') {
 					var objectToload = this.specificsObjectsToLoad[x];
 					var circle = new ext_imageAnnotator.shapes.Wfcircle(objectToload);
-					circle.addToCanvas();
+					circle.addToCanvas(this.canvas);
 				} else if (this.specificsObjectsToLoad[x].type == 'wfrect') {
 					var objectToload = this.specificsObjectsToLoad[x];
 					var circle = new ext_imageAnnotator.shapes.Wfrect(objectToload);
-					circle.addToCanvas();
+					circle.addToCanvas(this.canvas);
 				} else if (this.specificsObjectsToLoad[x].type == 'wfarrow') {
 					var objectToload = this.specificsObjectsToLoad[x];
 					var circle = new ext_imageAnnotator.shapes.Wfarrow(objectToload);
-					circle.addToCanvas();
+					circle.addToCanvas(this.canvas);
 				} else if (this.specificsObjectsToLoad[x].type == 'wfarrow2') {
 					var objectToload = this.specificsObjectsToLoad[x];
 					var arrow = new ext_imageAnnotator.shapes.Wfarrow2(objectToload);
-					arrow.addToCanvas();
+					arrow.addToCanvas(this.canvas);
 				} else if (this.specificsObjectsToLoad[x].type == 'wfnumberedbullet') {
 					var objectToload = this.specificsObjectsToLoad[x];
 					// load group without inside shapes, they will be recreated in constructor
 					var arrow = new ext_imageAnnotator.shapes.WfNumberedBullet([],objectToload);
-					arrow.addToCanvas();
+					arrow.addToCanvas(this.canvas);
 				} else if (this.specificsObjectsToLoad[x].type == 'wfarrow2line') {
 					var objectToload = this.specificsObjectsToLoad[x];
 					var line = new ext_imageAnnotator.shapes.Wfarrow2Line(objectToload);
-					line.addToCanvas();
+					line.addToCanvas(this.canvas);
 
 					this.addArrow2CirclesFromLine(line);
 				}else if (this.specificsObjectsToLoad[x].type == 'wfcustompic') {
 					var objectToload = this.specificsObjectsToLoad[x];
 					var line = new ext_imageAnnotator.shapes.Wfcustompic(objectToload);
-					line.addToCanvas();
+					line.addToCanvas(this.canvas);
 
 					this.addArrow2CirclesFromLine(line);
 				} else {
@@ -392,7 +387,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			stroke:this.currentColor,
 			fill: 'rgba(255,0,0,0)'
 		})
-		rect.addToCanvas();
+		rect.addToCanvas(this.canvas);
 		this.canvas.setActiveObject(rect);
 	}
 
@@ -414,7 +409,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			fill: 'rgba(255,0,0,0)'
 		});
 
-		this.canvas.add(circle);
+		circle.addToCanvas(this.canvas);
 		this.canvas.setActiveObject(circle);
 	}
 
@@ -436,7 +431,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			//lockUniScaling:true
 			//fill: 'rgba(255,0,0,0)' // transparent
 		});
-		this.canvas.add(text);
+		text.addToCanvas(this.canvas);
 		this.canvas.setActiveObject(text);
 	}
 
@@ -455,7 +450,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			top: 120,
 			angle: -90,
 		});
-		this.canvas.add(poly);
+		poly.addToCanvas(this.canvas);
 		this.canvas.setActiveObject(poly);
 	}
 
@@ -477,8 +472,8 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		line.c1 = c;
 		line.c2 = c2;
 
-		this.canvas.add(c);
-		this.canvas.add(c2);
+		c.addToCanvas(this.canvas);
+		c2.addToCanvas(this.canvas);
 	}
 
 	ext_imageAnnotator.Editor.prototype.addArrow2 = function (size) {
@@ -495,7 +490,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 		this.addArrow2CirclesFromLine(line);
 
-		this.canvas.add(line);
+		line.addToCanvas(this.canvas);
 
 		return;
 	}
@@ -537,7 +532,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 				}
 		);
 
-		this.canvas.add(line);
+		line.addToCanvas(this.canvas);
 		return;
 	}
 
@@ -556,7 +551,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			fileurl: params['fileurl']
 		});
 
-		this.canvas.add(pic);
+		pic.addToCanvas(this.canvas);
 
 		return;
 	}
@@ -630,7 +625,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			maxPositionX: canvasWidth,
 			maxPositionY: canvasHeight
 		});
-		this.canvas.add(circle);
+		circle.addToCanvas(this.canvas);
 		this.canvas.setActiveObject(circle);
 		this.cropZone = circle;
 	}
@@ -805,7 +800,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			}
 		});
 		// add new image cropped :
-		this.canvas.add(imgInstance);
+		imgInstance.addToCanvas(this.canvas);
 		imgInstance.sendToBack();
 
 		// resize canvas to fit cropped ratio
@@ -1359,29 +1354,24 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 		var editor = this;
 		var activeObject = this.canvas.getActiveObject();
-		console.log("activeObject");
-		console.log(activeObject);
+
 		// note : fabric.Object.clone() didn't work for some reason
 		// error thrown : this._render is not a function
 		// so, used fabric.util.object.clone instead
 
-		// if (activeObject.type == "wfarrow2circle") {
-		// 	console.log("type : " + activeObject.type); 
 		activeObject.clone(function (clonedObj) {
 
 			clonedObj.top += 10;
 			clonedObj.left += 10;
 
-			// so to ensure that each copied object has its own cache environment
-			clonedObj._cacheCanvas = null;
-		    clonedObj.cacheWidth = 0;
-		    clonedObj.cacheHeight = 0;
+			// for arrows
+			if (clonedObj.x1) clonedObj.x1 += 10;
+			if (clonedObj.x2) clonedObj.x2 += 10;
+			if (clonedObj.y1) clonedObj.y1 += 10;
+			if (clonedObj.y2) clonedObj.y2 += 10;
 
 			editor._clipboard = clonedObj;
 		});
-		// } else {
-		// 	clone = fabric.util.object.clone(activeObject);
-		// }
 
 		
 
@@ -1396,32 +1386,36 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		// note : fabric.Object.clone() didn't work for some reason
 		// error thrown : this._render is not a function
 		// so, used fabric.util.object.clone instead
-		var clonedObj = this._clipboard;
+		this._clipboard.clone(function (clonedObj) {
 
-		// so to ensure that each object has its own cache environment
-		clonedObj._cacheCanvas = null;
-	    clonedObj.cacheWidth = 0;
-	    clonedObj.cacheHeight = 0;
+			editor.canvas.discardActiveObject();
 
-		editor.canvas.discardActiveObject();
+			if (clonedObj.type === 'activeSelection') {
+				// active selection needs a reference to the canvas.
+				clonedObj.canvas = editor.canvas;
+				clonedObj.forEachObject(function(obj) {
+					obj.addToCanvas(editor.canvas);
+				});
+				// this should solve the unselectability
+				clonedObj.setCoords();
+			} else {
+				clonedObj.addToCanvas(editor.canvas);
+			}
 
-		if (clonedObj.type === 'activeSelection') {
-			// active selection needs a reference to the canvas.
-			clonedObj.canvas = editor.canvas;
-			clonedObj.forEachObject(function(obj) {
-				editor.canvas.add(obj);
-			});
-			// this should solve the unselectability
-			clonedObj.setCoords();
-		} else {
-			clonedObj.addToCanvas();
-		}
+			editor._clipboard.top += 10;
+			editor._clipboard.left += 10;
 
-		this._clipboard.top += 10;
-		this._clipboard.left += 10;
+			// for arrows
+			if (editor._clipboard.x1) editor._clipboard.x1 += 10;
+			if (editor._clipboard.x2) editor._clipboard.x2 += 10;
+			if (editor._clipboard.y1) editor._clipboard.y1 += 10;
+			if (editor._clipboard.y2) editor._clipboard.y2 += 10;
 
-		editor.canvas.setActiveObject(clonedObj);
-		editor.canvas.requestRenderAll();
+			editor.canvas.setActiveObject(clonedObj);
+			editor.canvas.requestRenderAll();
+		});
+
+		
 	}
 
 

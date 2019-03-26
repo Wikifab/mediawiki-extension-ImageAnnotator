@@ -50,7 +50,24 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			this.callSuper('initialize', objects, optionsopt, isAlreadyGroupedopt);
 	   },
 
+	   _clone: function (callback) {
+
+			var clone = fabric.util.object.clone(this);
+
+			this._clearCache();
+
+			// why does the function above fabric.util.object.clone(this) add
+			// a reference to the group in circleObj and textObj ?
+			if (clone.circleObj.group) delete clone.circleObj.group;
+			if (clone.textObj.group) delete clone.textObj.group;
+
+			if (typeof callback === "function") {
+			    callback(clone);
+			}
+		},
+
 	   getTextColor: function(fillColor) {
+
 		   var textColor = 'rgba(0,0,0,255)';
 		   switch (fillColor) {
 			   case	"black":
@@ -117,6 +134,13 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		   propertiesToInclude.push('number');
 		   return this.callSuper('toObject', propertiesToInclude);
 
+	   },
+	   _clearCache: function() {
+
+	   		this.callSuper('clearCache');
+
+	   		this.circleObj._clearCache();
+	   		this.textObj._clearCache();
 	   }
 	});
 

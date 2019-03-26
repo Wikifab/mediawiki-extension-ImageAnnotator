@@ -57,7 +57,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		   var result = this.callSuper('toSVG', reviver);
 		   this.type = type;
 		   return result;
-	   },
+	   }
 	});
 
 })(jQuery, mw, fabric, ext_imageAnnotator);

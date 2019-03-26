@@ -42,8 +42,10 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 						arrowLine = fabric.util.object.clone(this.line2);
 					}
 
-					// add the two circles
-					arrowLine.addArrow2Circles();
+					arrowLine._clearCache();
+
+					arrowLine.c1 = null;
+					arrowLine.c2 = null;
 
 					if (typeof callback === "function") {
 					    callback(arrowLine);
@@ -57,7 +59,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 				 */
 			   toSVG: function(reviver) {
 				   return '';
-			   },
+			   }
 
 
 			});

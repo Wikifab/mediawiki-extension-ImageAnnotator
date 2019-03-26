@@ -155,7 +155,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 	      return poly.toSVG();
 	    },
 
-	    addArrow2Circles: function () {
+	    _addArrow2Circles: function () {
 
 			var c1 = new ext_imageAnnotator.shapes.Wfarrow2Circle({
 				left : this.get('x1'),
@@ -175,11 +175,31 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			this.c2 = c2;
 		},
 
-		addToCanvas: function () {
+		clone: function (callback) {
 
-			this.canvas.add(this);
-			this.canvas.add(this.c1);
-			this.canvas.add(this.c2);
+			var clone = fabric.util.object.clone(this);
+
+			clone.c1 = null;
+			clone.c2 = null;
+
+			this._clearCache();
+
+			if (typeof callback === "function") {
+			    callback(clone);
+			}
+		},
+
+		addToCanvas: function (canvas) {
+
+			canvas.add(this);
+
+			if (!this.c1 && !this.c2) {
+				// add the two circles
+				this._addArrow2Circles();
+
+				canvas.add(this.c1);
+				canvas.add(this.c2);
+			}
 		}
 
 	});
