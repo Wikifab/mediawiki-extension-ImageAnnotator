@@ -1380,6 +1380,10 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 	ext_imageAnnotator.Editor.prototype.pasteObject = function() {
 
+		if (!this._clipboard) { // nothing to paste
+			return;
+		}
+
 		var editor = this;
 
 		// clone again, so you can do multiple copies.
