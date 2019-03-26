@@ -8,9 +8,13 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 	ext_imageAnnotator.shapes.Wftextbox = fabric.util.createClass(fabric.Textbox, {
 
-		clone: function () {
+		type: "wftextbox",
 
-			return new this.constructor(this.text, {
+		clone: function (callback) {
+
+			var clone;
+
+			clone = new ext_imageAnnotator.shapes.Wftextbox(this.text, {
 				originX: this.originX,
 				originY: this.originY,
 				top: this.top,
@@ -22,10 +26,19 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 				fill: this.fill,
 				borderColor: this.borderColor,
 				cornerColor: this.cornerColor,
-				transparentCorners: this.transparentCorners
+				transparentCorners: this.transparentCorners,
+				scaleX: this.scaleX,
+				scaleY: this.scaleY,
+				angle: this.angle,
+				height: this.height,
+				width: this.width
 				//lockUniScaling: this.lockUniScaling,
 				//fill: this.fill
 			});
+
+			if (typeof callback === "function") {
+			    callback(clone);
+			}
 		}
 	});
 
