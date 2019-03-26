@@ -27,6 +27,11 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		this.options = options;
 		this._clipboard = null;
 		this.isCropMode = options && options['cropMode'] ? true : false;
+		this.fixedHeight = options && options['fixedHeight'] ? options['fixedHeight']  : false;
+		this.fixedBackgroundLeft = 0; // left positionning of background, (if fixedHeight )
+		this.fixedBackgroundTop = 0; // top positionning of background, (if fixedHeight )
+		this.fixedBackgroundScale = 1; // scale = 1 mean backgroundwidth = standardWidth
+		this.originalCropPosition = false;
 
 		// default params :
 		this.currentColor = 'red';
@@ -41,6 +46,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 				{'type':'arrow2', 'parent':'tools'},
 				{'type':'text', 'parent':'tools'},
 				{'type':'numberedbullet', 'parent':'tools'},
+				{'type':'duplicate', 'parent':'tools'},
 				{'type':'del', 'parent':'tools'},
 				{'type':'dropdown', 'name':'customtools', 'parent':'tools'}
 				//{'type':'custompic', 'parent':'customtools'},
@@ -51,14 +57,15 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 		if (mw.config.values.ImageAnnotator.imageAnnotatorColors) {
 
-			var imageAnnotatorColors = mw.config.values.ImageAnnotator.imageAnnotatorColors; 
-			
+			var imageAnnotatorColors = mw.config.values.ImageAnnotator.imageAnnotatorColors;
+
 			imageAnnotatorColors.forEach(function(color) {
 				colors.push({'type':'color', 'color': color, 'parent':'colors'});
 			});
 
-			if (imageAnnotatorColors[2])
+			if (imageAnnotatorColors[2]) {
 				this.currentColor = imageAnnotatorColors[2];
+			}
 
 		} else {
 
@@ -83,6 +90,8 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 				{'type':'format', 'format':'1_1', 'parent':'tools'},
 				{'type':'format', 'format':'4_3', 'parent':'tools'},
 				{'type':'format', 'format':'16_9', 'parent':'tools'},
+				//{'type':'zoom', 'zoom':'in', 'parent':'tools'},
+				//{'type':'zoom', 'zoom':'out', 'parent':'tools'},
 				//{'type':'cropzone', 'parent':'tools'}
 			];
 		}
@@ -94,7 +103,6 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			this.canvasElement = $("<canvas>").attr('id', this.canvasId ).css('border','1px solid #EEE');
 			// .attr('width', '300').attr('height', '200')
 			if (image) {
-
 				//if image not loaded, with recalc size after load :
 				$(image)
 				    .load(function() {
@@ -134,9 +142,6 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			this.addToolbarDyn(toolbarConfig);
 		}
 		this.addEditListeners();
-
-		this.onKeyPress();
-
 	}
 
 	ext_imageAnnotator.Editor.prototype.addToolBarCustomsPics = function (toolbarConfig) {
@@ -187,6 +192,13 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		var width = ext_imageAnnotator.standardWidth;
 		var baseHeight = $(this.image).height();
 		var baseWidth = $(this.image).width();
+
+		if(! baseHeight && this.image[0] != undefined && this.image[0].naturalHeight != undefined) {
+			// if image not loaded yet, height element size may be null
+			// then try to read 'naturalHeight' attribut
+			baseHeight = this.image[0].naturalHeight;
+			baseWidth = this.image[0].naturalWidth;
+		}
 		// if there is a cropped image, use cropped dim as base dim :
 		var cropedImage = this.getCropedImagePosition();
 		if (cropedImage && cropedImage.height) {
@@ -196,6 +208,10 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 		var height = Math.round(baseHeight * width / baseWidth);
 
+		if (this.fixedHeight) {
+			height = this.fixedHeight;
+		}
+
 		this.canvasElement.attr('width', width);
 		if (height > 0) {
 			this.canvasElement.attr('height', height);
@@ -203,6 +219,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		if (this.canvas) {
 			//this.canvas.setWidth( width);
 			//this.canvas.setHeight( height);
+			this.canvas.setHeight(height);
 			this.canvas.renderAll();
 		}
 	}
@@ -251,34 +268,34 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 				if (this.specificsObjectsToLoad[x].type == 'wfcircle') {
 					var objectToload = this.specificsObjectsToLoad[x];
 					var circle = new ext_imageAnnotator.shapes.Wfcircle(objectToload);
-					this.canvas.add(circle);
+					circle.addToCanvas(this.canvas);
 				} else if (this.specificsObjectsToLoad[x].type == 'wfrect') {
 					var objectToload = this.specificsObjectsToLoad[x];
 					var circle = new ext_imageAnnotator.shapes.Wfrect(objectToload);
-					this.canvas.add(circle);
+					circle.addToCanvas(this.canvas);
 				} else if (this.specificsObjectsToLoad[x].type == 'wfarrow') {
 					var objectToload = this.specificsObjectsToLoad[x];
 					var circle = new ext_imageAnnotator.shapes.Wfarrow(objectToload);
-					this.canvas.add(circle);
+					circle.addToCanvas(this.canvas);
 				} else if (this.specificsObjectsToLoad[x].type == 'wfarrow2') {
 					var objectToload = this.specificsObjectsToLoad[x];
 					var arrow = new ext_imageAnnotator.shapes.Wfarrow2(objectToload);
-					this.canvas.add(arrow);
+					arrow.addToCanvas(this.canvas);
 				} else if (this.specificsObjectsToLoad[x].type == 'wfnumberedbullet') {
 					var objectToload = this.specificsObjectsToLoad[x];
 					// load group without inside shapes, they will be recreated in constructor
 					var arrow = new ext_imageAnnotator.shapes.WfNumberedBullet([],objectToload);
-					this.canvas.add(arrow);
+					arrow.addToCanvas(this.canvas);
 				} else if (this.specificsObjectsToLoad[x].type == 'wfarrow2line') {
 					var objectToload = this.specificsObjectsToLoad[x];
 					var line = new ext_imageAnnotator.shapes.Wfarrow2Line(objectToload);
-					this.canvas.add(line);
+					line.addToCanvas(this.canvas);
 
 					this.addArrow2CirclesFromLine(line);
 				}else if (this.specificsObjectsToLoad[x].type == 'wfcustompic') {
 					var objectToload = this.specificsObjectsToLoad[x];
 					var line = new ext_imageAnnotator.shapes.Wfcustompic(objectToload);
-					this.canvas.add(line);
+					line.addToCanvas(this.canvas);
 
 					this.addArrow2CirclesFromLine(line);
 				} else {
@@ -371,7 +388,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			stroke:this.currentColor,
 			fill: 'rgba(255,0,0,0)'
 		})
-		this.canvas.add(rect);
+		rect.addToCanvas(this.canvas);
 		this.canvas.setActiveObject(rect);
 	}
 
@@ -393,7 +410,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			fill: 'rgba(255,0,0,0)'
 		});
 
-		this.canvas.add(circle);
+		circle.addToCanvas(this.canvas);
 		this.canvas.setActiveObject(circle);
 	}
 
@@ -415,7 +432,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			//lockUniScaling:true
 			//fill: 'rgba(255,0,0,0)' // transparent
 		});
-		this.canvas.add(text);
+		text.addToCanvas(this.canvas);
 		this.canvas.setActiveObject(text);
 	}
 
@@ -434,7 +451,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			top: 120,
 			angle: -90,
 		});
-		this.canvas.add(poly);
+		poly.addToCanvas(this.canvas);
 		this.canvas.setActiveObject(poly);
 	}
 
@@ -456,8 +473,8 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		line.c1 = c;
 		line.c2 = c2;
 
-		this.canvas.add(c);
-		this.canvas.add(c2);
+		c.addToCanvas(this.canvas);
+		c2.addToCanvas(this.canvas);
 	}
 
 	ext_imageAnnotator.Editor.prototype.addArrow2 = function (size) {
@@ -474,7 +491,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 		this.addArrow2CirclesFromLine(line);
 
-		this.canvas.add(line);
+		line.addToCanvas(this.canvas);
 
 		return;
 	}
@@ -516,7 +533,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 				}
 		);
 
-		this.canvas.add(line);
+		line.addToCanvas(this.canvas);
 		return;
 	}
 
@@ -535,9 +552,33 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			fileurl: params['fileurl']
 		});
 
-		this.canvas.add(pic);
+		pic.addToCanvas(this.canvas);
 
 		return;
+	}
+
+	ext_imageAnnotator.Editor.prototype.setCropZonePosition = function (cropPosition) {
+		if (! this.cropZone) {
+			return;
+		}
+		if (this.fixedHeight) {
+			// invert of correction in getCropPosition
+			var correctedCrop = [];
+			correctedCrop.cropzoneleft = cropPosition.cropzoneleft * this.fixedBackgroundScale + this.fixedBackgroundLeft;
+			correctedCrop.cropzonetop = cropPosition.cropzonetop * this.fixedBackgroundScale + this.fixedBackgroundTop;
+			correctedCrop.cropzonewidth = cropPosition.cropzonewidth * this.fixedBackgroundScale;
+			correctedCrop.cropzoneheight = cropPosition.cropzoneheight * this.fixedBackgroundScale;
+			correctedCrop.cropzonescaleX = cropPosition.cropzonescaleX ;
+			correctedCrop.cropzonescaleY = cropPosition.cropzonescaleY ;
+			cropPosition = correctedCrop;
+		}
+
+		this.cropZone.top= cropPosition.cropzonetop;
+		this.cropZone.left = cropPosition.cropzoneleft;
+		this.cropZone.height = cropPosition.cropzoneheight;
+		this.cropZone.width = cropPosition.cropzonewidth;
+		this.cropZone.scaleX = cropPosition.cropzonescaleX;
+		this.cropZone.scaleY = cropPosition.cropzonescaleY;
 	}
 
 	ext_imageAnnotator.Editor.prototype.addCropZone = function(cropPosition) {
@@ -550,6 +591,21 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			cropPosition.cropzonewidth = 400;
 			cropPosition.cropzonescaleX = 1;
 			cropPosition.cropzonescaleY = 1;
+		}
+
+		this.originalCropPosition = cropPosition;
+
+		// if fixedHeight is set, adjust crop position to corrected background position
+		if (this.fixedHeight) {
+			// invert of correction in getCropPosition
+			var correctedCrop = [];
+			correctedCrop.cropzoneleft = cropPosition.cropzoneleft * this.fixedBackgroundScale + this.fixedBackgroundLeft;
+			correctedCrop.cropzonetop = cropPosition.cropzonetop * this.fixedBackgroundScale + this.fixedBackgroundTop;
+			correctedCrop.cropzonewidth = cropPosition.cropzonewidth * this.fixedBackgroundScale;
+			correctedCrop.cropzoneheight = cropPosition.cropzoneheight * this.fixedBackgroundScale;
+			correctedCrop.cropzonescaleX = cropPosition.cropzonescaleX ;
+			correctedCrop.cropzonescaleY = cropPosition.cropzonescaleY ;
+			cropPosition = correctedCrop;
 		}
 
 		// canvas dim :
@@ -570,8 +626,9 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			maxPositionX: canvasWidth,
 			maxPositionY: canvasHeight
 		});
-		this.canvas.add(circle);
+		circle.addToCanvas(this.canvas);
 		this.canvas.setActiveObject(circle);
+		this.cropZone = circle;
 	}
 
 	ext_imageAnnotator.Editor.prototype.getActiveObject = function () {
@@ -628,6 +685,14 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 	}
 
+	ext_imageAnnotator.Editor.prototype.changeZoom = function (zoom) {
+
+		/**
+		 * not implemented yet
+		 */
+
+	}
+
 	ext_imageAnnotator.Editor.prototype.setActiveColorbutton = function () {
 
 		// change css class on buttons :
@@ -640,6 +705,12 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 			this.canvas.remove(this.canvas.getActiveObject());
 		}
+	}
+	ext_imageAnnotator.Editor.prototype.duplicateSelection = function () {
+		
+		// copy and paste
+		this.copyObject();
+		this.pasteObject();
 	}
 
 	/*
@@ -730,7 +801,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			}
 		});
 		// add new image cropped :
-		this.canvas.add(imgInstance);
+		imgInstance.addToCanvas(this.canvas);
 		imgInstance.sendToBack();
 
 		// resize canvas to fit cropped ratio
@@ -774,6 +845,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 		img.onload = function() {
 			var imgWidth = this.width;
+			var imgHeight = this.height;
 
 			var imgInstance = new fabric.Image(editor.image[0], {
 				  left: 0,
@@ -785,12 +857,40 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 			// scale to set image size to canvas width :
 			var scale = ext_imageAnnotator.standardWidth / imgWidth;
+
+			editor.fixedBackgroundTop = 0;
+			editor.fixedBackgroundLeft = 0;
+			editor.fixedBackgroundScale = 1;
+
+			if (editor.fixedHeight) {
+				var scaleF = editor.fixedHeight / imgHeight;
+				if (scaleF < scale) {
+					// margin on right and left
+					editor.fixedBackgroundScale = scaleF / scale;
+					scale = scaleF;
+					var realWidth = imgWidth * scale;
+					editor.fixedBackgroundTop = 0;
+					editor.fixedBackgroundLeft = (ext_imageAnnotator.standardWidth - realWidth) / 2;
+				} else {
+					editor.fixedBackgroundScale = 1;
+					var realHeight = imgHeight * scale;
+					editor.fixedBackgroundTop = (editor.fixedHeight - realHeight) / 2;
+					editor.fixedBackgroundLeft = 0;
+					// margins on top and bottom
+				}
+			}
+			imgInstance.top = editor.fixedBackgroundTop;
+			imgInstance.left = editor.fixedBackgroundLeft;
 			// apply scale :
 			imgInstance.scale(scale);
 
 			// add new image cropped :
 			editor.canvas.add(imgInstance);
 			imgInstance.sendToBack();
+
+			editor.backgroundImage = imgInstance;
+
+			editor.setCropZonePosition(editor.originalCropPosition);
 
 			editor.canvas.renderAll();
 		}
@@ -814,6 +914,10 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		var number = 1;
 		var result = [];
 
+		var editor = this;
+
+		// if this : fixed Height
+
 		// get the smallest number wich do not exists yet :
 		objects.forEach(function(item) {
 			if (item.type == 'cropzone') {
@@ -826,6 +930,17 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 			}
 		});
+
+		if (this.fixedHeight) {
+			var correctedResult = [];
+			correctedResult.cropzoneleft = (result.cropzoneleft - this.fixedBackgroundLeft) / this.fixedBackgroundScale;
+			correctedResult.cropzonetop = (result.cropzonetop - this.fixedBackgroundTop) / this.fixedBackgroundScale;
+			correctedResult.cropzonewidth = (result.cropzonewidth ) / this.fixedBackgroundScale;
+			correctedResult.cropzoneheight = (result.cropzoneheight ) / this.fixedBackgroundScale;
+			correctedResult.cropzonescaleX = result.cropzonescaleX ;
+			correctedResult.cropzonescaleY = result.cropzonescaleY ;
+			result = correctedResult;
+		}
 
 		return result;
 	}
@@ -910,6 +1025,9 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		if (type == 'format') {
 			label = 'f' + params['format'];
 		}
+		if (type == 'zoom') {
+			label = 'zoom' + params['format'];
+		}
 		if (type =='div') {
 			return this.addToolbarDiv(params);
 		}
@@ -952,6 +1070,13 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 					return false;
 				});
 		        break;
+		    case 'zoom':
+		    	var zoom = label;
+		    	button.click(function() {
+					editor.changeZoom(params['zoom']);
+					return false;
+				});
+		        break;
 		    case 'color':
 		    	var color = params['color'];
 		    	button.click(function() {
@@ -980,6 +1105,12 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		    case 'arrow2':
 		    	button.click(function() {
 					editor.addArrow2(100);
+					return false;
+				});
+		        break;
+		    case 'duplicate':
+		    	button.click(function() {
+					editor.duplicateSelection();
 					return false;
 				});
 		        break;
@@ -1049,6 +1180,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 	 * handle keyPress actions
 	 */
 	ext_imageAnnotator.Editor.prototype.onKeyPress = function(e) {
+
 		switch (e.keyCode) {
 			case 46 :
 				// DELL
@@ -1067,6 +1199,12 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 				break;
 			case 40 : // DOWN
 				this.moveDown();
+				break;
+			case 67 : // COPY
+				if (e.ctrlKey) this.copyObject();
+				break;
+			case 86 : // PASTE
+				if (e.ctrlKey) this.pasteObject();
 				break;
 			default:
 				return true;
@@ -1107,18 +1245,30 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		return this.exportOverSourceImage();
 	}
 
-	ext_imageAnnotator.Editor.prototype.generateThumbUsingAPI = function (jsoncontent) {
+	ext_imageAnnotator.Editor.prototype.generateThumbUsingAPI = function (jsoncontent, callback) {
 		// fonction to do second request to execute follow action
 
 		var editor = this;
 
-		function setOverlayImage(url) {
-			// display it only if content, (some browsers doesn't like empty images)
-			editor.overlayImg = $('<img>').attr('class','annotationlayer').attr('src', url);
-			// positioning
-			$(editor.image).parent().css({ position:'relative'});
-			$(editor.overlayImg).insertAfter(editor.image);
-			$(editor.overlayImg).css({ width:'100%', position:'absolute', top:0, left : 0});
+		if ( ! callback) {
+			callback = function setOverlayImage(url) {
+				// display it only if content, (some browsers doesn't like empty images)
+
+				if (! editor.isStatic) {
+					return;
+				}
+				var imgWidth = $(editor.image).attr('width');
+				var imgClass = $(editor.image).attr('class');
+				editor.overlayImg = $('<img>').attr('class','annotationlayer '+imgClass).attr('src', url);
+
+				$(editor.overlayImg).insertAfter(editor.image);
+				$(editor.image).hide();
+				// positioning : this methode wa used chen backgound is not set within annotated layer
+				// sould we keep it for wikifab olds one ?
+				//$(editor.image).parent().css({ position:'relative'});
+				//$(editor.overlayImg).css({ width:imgWidth});
+				//$(editor.overlayImg).css({ width:'100%', position:'absolute', top:0, left : 0});
+			}
 		}
 
 		function convertQuery(jsondata) {
@@ -1141,8 +1291,9 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			    success: function (jsondata) {
 
 			    	if (jsondata.iaThumbs.success == 1) {
-			    		setOverlayImage(jsondata.iaThumbs.image)
-
+			    		editor.hash = jsondata.iaThumbs.hash;
+			    		//setOverlayImage(jsondata.iaThumbs.image);
+			    		callback(jsondata.iaThumbs.image, jsondata.iaThumbs);
 			    	} else {
 			    		console.log('Fail to generate annotatedImage');
 			    		console.log(jsondata);
@@ -1204,20 +1355,26 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 		var editor = this;
 		var activeObject = this.canvas.getActiveObject();
+
 		// note : fabric.Object.clone() didn't work for some reason
 		// error thrown : this._render is not a function
 		// so, used fabric.util.object.clone instead
-		var clone =  fabric.util.object.clone(activeObject);
 
-		clone.top += 10;
-		clone.left += 10;
+		activeObject.clone(function (clonedObj) {
 
-		// so to ensure that each copied object has its own cache environment
-		clone._cacheCanvas = null;
-	    clone.cacheWidth = 0;
-	    clone.cacheHeight = 0;
+			clonedObj.top += 10;
+			clonedObj.left += 10;
 
-		editor._clipboard = clone;
+			// for arrows
+			if (clonedObj.x1) clonedObj.x1 += 10;
+			if (clonedObj.x2) clonedObj.x2 += 10;
+			if (clonedObj.y1) clonedObj.y1 += 10;
+			if (clonedObj.y2) clonedObj.y2 += 10;
+
+			editor._clipboard = clonedObj;
+		});
+
+		
 
 	}
 
@@ -1230,50 +1387,36 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		// note : fabric.Object.clone() didn't work for some reason
 		// error thrown : this._render is not a function
 		// so, used fabric.util.object.clone instead
-		var clonedObj = fabric.util.object.clone(this._clipboard);
+		this._clipboard.clone(function (clonedObj) {
 
-		// so to ensure that each object has its own cache environment
-		clonedObj._cacheCanvas = null;
-	    clonedObj.cacheWidth = 0;
-	    clonedObj.cacheHeight = 0;
+			editor.canvas.discardActiveObject();
 
-		editor.canvas.discardActiveObject();
+			if (clonedObj.type === 'activeSelection') {
+				// active selection needs a reference to the canvas.
+				clonedObj.canvas = editor.canvas;
+				clonedObj.forEachObject(function(obj) {
+					obj.addToCanvas(editor.canvas);
+				});
+				// this should solve the unselectability
+				clonedObj.setCoords();
+			} else {
+				clonedObj.addToCanvas(editor.canvas);
+			}
 
-		if (clonedObj.type === 'activeSelection') {
-			// active selection needs a reference to the canvas.
-			clonedObj.canvas = editor.canvas;
-			clonedObj.forEachObject(function(obj) {
-				editor.canvas.add(obj);
-			});
-			// this should solve the unselectability
-			clonedObj.setCoords();
-		} else {
-			editor.canvas.add(clonedObj);
-		}
+			editor._clipboard.top += 10;
+			editor._clipboard.left += 10;
 
-		this._clipboard.top += 10;
-		this._clipboard.left += 10;
+			// for arrows
+			if (editor._clipboard.x1) editor._clipboard.x1 += 10;
+			if (editor._clipboard.x2) editor._clipboard.x2 += 10;
+			if (editor._clipboard.y1) editor._clipboard.y1 += 10;
+			if (editor._clipboard.y2) editor._clipboard.y2 += 10;
 
-		editor.canvas.setActiveObject(clonedObj);
-		editor.canvas.requestRenderAll();
-	}
+			editor.canvas.setActiveObject(clonedObj);
+			editor.canvas.requestRenderAll();
+		});
 
-	ext_imageAnnotator.Editor.prototype.onKeyPress = function() {
-
-		var editor = this;
-
-		function KeyPress(e) {
-
-            var evtobj = window.event? event : e;
-
-            // COPY
-            if (evtobj.keyCode == 67 && evtobj.ctrlKey) editor.copyObject(); 
-
-            // PASTE
-            if (evtobj.keyCode == 86 && evtobj.ctrlKey) editor.pasteObject();
-        }
-
-        document.onkeydown = KeyPress;
+		
 	}
 
 

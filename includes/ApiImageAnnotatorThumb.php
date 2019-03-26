@@ -39,7 +39,7 @@ class ApiImageAnnotatorThumb extends \ApiBase {
 	 * @param string $image full url of source image
 	 * @return array
 	 */
-	protected function getImageInfo($image) {
+	public  function getImageInfo($image) {
 		global $wgUploadPath;
 		// TODO : use real repo url instead of wgRessouceBasePAth
 
@@ -92,31 +92,19 @@ class ApiImageAnnotatorThumb extends \ApiBase {
 
 		return [
 				'filename' => $outfilename,
+				'relative_filepath' => $subFilePath,
 				'filepath' => $outfilepathname,
 				'fileurl' => $outfileurl
 		];
 	}
 
-	public function svgToPngConvert($svg, $fileIncluded, $fileOut, $hash) {
+
+	public function correctSvgIncludedRessourcePathBeforeConversion($svg, $fileIncluded, $hash, $tmpDir, &$tempFiles) {
 		global $wgUploadDirectory, $wgServer;
 
-		/*
-		$fileIncluded =
-		[
-			'imgUrl' =>	"http://demo-dokit.localtest.me/w/images/thumb/7/7a/Test_de_tuto_LB_Final.jpg/800px-Test_de_tuto_LB_Final.jpg"
-			'thumbUrl' =>	"http://...." // if defined
-			'hashdir' =>	"7/7a"
-			'filename' =>	"Test_de_tuto_LB_Final.jpg"
-			'thumbfilename' =>	"800px-Test_de_tuto_LB_Final.jpg"
-		]
-		*/
-
-		$subDir = 'fel';
-
-		$tmpDir = $wgUploadDirectory . '/imagesAnnotationTemp/' . $subDir;
-		if (!file_exists($tmpDir)) {
-			mkdir($tmpDir, 0755, true);
-		}
+		// replace url encoded string of filename :
+		$svg = str_replace(urlencode($fileIncluded['filename']), $fileIncluded['filename'], $svg);
+		$fileIncluded['imgUrl'] = str_replace(urlencode($fileIncluded['filename']), $fileIncluded['filename'], $fileIncluded['imgUrl']);
 
 		// replace ALL files url by relative filepath
 		$filesToReplaces = [];
@@ -178,6 +166,35 @@ class ApiImageAnnotatorThumb extends \ApiBase {
 			}
 		}
 
+		return $svg;
+
+	}
+
+	public function svgToPngConvert($svg, $fileIncluded, $fileOut, $hash) {
+		global $wgUploadDirectory, $wgServer;
+
+		/*
+		$fileIncluded =
+		[
+			'imgUrl' =>	"http://demo-dokit.localtest.me/w/images/thumb/7/7a/Test_de_tuto_LB_Final.jpg/800px-Test_de_tuto_LB_Final.jpg"
+			'thumbUrl' =>	"http://...." // if defined
+			'hashdir' =>	"7/7a"
+			'filename' =>	"Test_de_tuto_LB_Final.jpg"
+			'thumbfilename' =>	"800px-Test_de_tuto_LB_Final.jpg"
+		]
+		*/
+
+		$subDir = 'fel';
+
+		$tmpDir = $wgUploadDirectory . '/imagesAnnotationTemp/' . $subDir;
+		if (!file_exists($tmpDir)) {
+			mkdir($tmpDir, 0755, true);
+		}
+
+		$tempFiles = [];
+
+		$svg = $this->correctSvgIncludedRessourcePathBeforeConversion($svg, $fileIncluded, $hash, $tmpDir, $tempFiles);
+
 		//create svg tmp file
 		$svgInFile = $tmpDir . "/$hash.svg";
 		file_put_contents($svgInFile, $svg);
@@ -196,7 +213,7 @@ class ApiImageAnnotatorThumb extends \ApiBase {
 		// for a strange reason, unlink trigger a warning saying that file doesn't exists
 		// so add @ to hide this error
 		@unlink($svgInFile);
-		foreach ($tempFiles as $$tempFile ) {
+		foreach ($tempFiles as $tempFile ) {
 			unlink($tempFile);
 		}
 
@@ -252,6 +269,8 @@ class ApiImageAnnotatorThumb extends \ApiBase {
 
 		$fileOut = $fileOutputPaths['filepath'];
 		$fileUrl = $fileOutputPaths['fileurl'];
+		$fileOutRelative = $fileOutputPaths['relative_filepath'];
+
 
 		// TODO : convert svg to png
 		$convertResult = $this->svgToPngConvert($svgdata, $imageInfo, $fileOut, $hash);
@@ -261,9 +280,11 @@ class ApiImageAnnotatorThumb extends \ApiBase {
 
 		$r = [ ];
 		if ($convertResult['success']) {
+			$this->storeInDatabase($imageInfo['filename'], $hash, $jsondata, $svgdata, $fileOutRelative);
 			$r ['success'] = 1;
 			$r ['result'] = 'OK';
 			$r ['image'] = $fileUrl;
+			$r ['hash'] = $hash;
 		} else {
 			$r ['result'] = 'fail';
 			$r ['details'] = $convertResult['message'];
@@ -271,6 +292,30 @@ class ApiImageAnnotatorThumb extends \ApiBase {
 
 		$this->getResult ()->addValue ( null, $this->getModuleName (), $r );
 	}
+
+	public function storeInDatabase($fileName, $hash, $jsonData, $svgData, $thumbFile) {
+		$dbw = wfGetDB( DB_MASTER );
+		$rows = array();
+
+		$title = \Title::newFromDBkey('File:'  . $fileName);
+
+		$added = array();
+
+		$rows = [
+			'ai_page_id' => $title->getArticleID() ,
+			'ai_filename' => $fileName,
+			'ai_hash' => $hash,
+			'ai_data_json' => $jsonData,
+			'ai_data_svg' => $svgData,
+			'ai_thumbfile' => $thumbFile,
+		];
+
+		$dbw->insert( 'annotatedimages', $rows, __METHOD__, 'IGNORE' );
+
+	}
+
+
+
 	public function needsToken() {
 		return 'csrf';
 	}

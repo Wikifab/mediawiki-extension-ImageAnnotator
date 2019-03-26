@@ -32,6 +32,26 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 					this.callSuper('render', ctx);
 				},
 
+				clone: function(callback) {
+
+					var arrowLine;
+
+					if (this.line1) {
+						arrowLine = fabric.util.object.clone(this.line1);
+					} else if (this.line2) {
+						arrowLine = fabric.util.object.clone(this.line2);
+					}
+
+					arrowLine._clearCache();
+
+					arrowLine.c1 = null;
+					arrowLine.c2 = null;
+
+					if (typeof callback === "function") {
+					    callback(arrowLine);
+					}
+				},
+
 				/**
 				 * bypass toSVG function, to not display those dots in display
 				 * mode (those are edit tools only) TODO : do not save same in
@@ -39,7 +59,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 				 */
 			   toSVG: function(reviver) {
 				   return '';
-			   },
+			   }
 
 
 			});

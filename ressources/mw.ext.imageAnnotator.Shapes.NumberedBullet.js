@@ -50,7 +50,26 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			this.callSuper('initialize', objects, optionsopt, isAlreadyGroupedopt);
 	   },
 
+	   _clone: function (callback) {
+
+			var clone = new ext_imageAnnotator.shapes.WfNumberedBullet([], 
+				{ stroke : this.circleObj.fill, number : this.textObj.text });
+
+			clone.top = this.top;
+			clone.left = this.left;
+
+			// why does the function above fabric.util.object.clone(this) add
+			// a reference to the group in circleObj and textObj ?
+			if (clone.circleObj.group) delete clone.circleObj.group;
+			if (clone.textObj.group) delete clone.textObj.group;
+
+			if (typeof callback === "function") {
+			    callback(clone);
+			}
+		},
+
 	   getTextColor: function(fillColor) {
+
 		   var textColor = 'rgba(0,0,0,255)';
 		   switch (fillColor) {
 			   case	"black":

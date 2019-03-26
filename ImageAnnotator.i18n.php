@@ -15,7 +15,9 @@ $magicWords = array();
  */
 $magicWords['en'] = array(
    'annotatedImage' => array( 0, 'annotatedImage' ),
+   'annotatedImageLight' => array( 0, 'annotatedImageLight' ),
 );
 $magicWords['fr'] = array(
    'annotatedImage' => array( 0, 'annotatedImage' ),
+   'annotatedImageLight' => array( 0, 'annotatedImageLight' ),
 );

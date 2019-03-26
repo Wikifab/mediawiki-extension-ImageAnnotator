@@ -155,6 +155,53 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 	      return poly.toSVG();
 	    },
 
+	    _addArrow2Circles: function () {
+
+			var c1 = new ext_imageAnnotator.shapes.Wfarrow2Circle({
+				left : this.get('x1'),
+				top : this.get('y1'),
+				radius : 8,
+				line1 : this,
+			});
+
+			var c2 = new ext_imageAnnotator.shapes.Wfarrow2Circle({
+				left : this.get('x2'),
+				top : this.get('y2'),
+				radius : 8,
+				line2 : this,
+			});
+
+			this.c1 = c1;
+			this.c2 = c2;
+		},
+
+		clone: function (callback) {
+
+			var clone = fabric.util.object.clone(this);
+
+			clone.c1 = null;
+			clone.c2 = null;
+
+			this._clearCache();
+
+			if (typeof callback === "function") {
+			    callback(clone);
+			}
+		},
+
+		addToCanvas: function (canvas) {
+
+			canvas.add(this);
+
+			if (!this.c1 && !this.c2) {
+				// add the two circles
+				this._addArrow2Circles();
+
+				canvas.add(this.c1);
+				canvas.add(this.c2);
+			}
+		}
+
 	});
 
 })(jQuery, mw, fabric, ext_imageAnnotator);

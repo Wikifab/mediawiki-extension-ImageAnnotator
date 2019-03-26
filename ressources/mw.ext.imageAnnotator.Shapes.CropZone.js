@@ -21,7 +21,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		lockScalingFlip: true,
 
 		// if false, center of crop must be in area, if true, all cropzone must be inside area
-		positionLimitStrict: true,
+		positionLimitStrict: false,
 
 
 	    initialize: function(options) {

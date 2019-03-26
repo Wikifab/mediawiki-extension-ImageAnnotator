@@ -79,6 +79,11 @@
     float:right;
 }
 
+.mw-ia-popup-toolbar .editorButton.duplicate {
+    background-image: url(images/copy.png);
+    float:right;
+}
+
 .mw-ia-popup-toolbar .editorButton.text {
     background-image: url(images/text.png);
 }
