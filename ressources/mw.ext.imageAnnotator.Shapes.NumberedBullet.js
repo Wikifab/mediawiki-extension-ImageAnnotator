@@ -52,9 +52,11 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 	   _clone: function (callback) {
 
-			var clone = fabric.util.object.clone(this);
+			var clone = new ext_imageAnnotator.shapes.WfNumberedBullet([], 
+				{ stroke : this.circleObj.fill, number : this.textObj.text });
 
-			this._clearCache();
+			clone.top = this.top;
+			clone.left = this.left;
 
 			// why does the function above fabric.util.object.clone(this) add
 			// a reference to the group in circleObj and textObj ?
@@ -134,13 +136,6 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		   propertiesToInclude.push('number');
 		   return this.callSuper('toObject', propertiesToInclude);
 
-	   },
-	   _clearCache: function() {
-
-	   		this.callSuper('clearCache');
-
-	   		this.circleObj._clearCache();
-	   		this.textObj._clearCache();
 	   }
 	});
 
