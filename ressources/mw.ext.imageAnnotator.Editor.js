@@ -416,7 +416,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 	ext_imageAnnotator.Editor.prototype.addText = function (size) {
 
-		var text = new fabric.Textbox('Texte',{
+		var text = new ext_imageAnnotator.shapes.Wftextbox('Texte',{
 			originX: 'center',
 			originY: 'center',
 			top: 120,
@@ -1358,7 +1358,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 		// note : fabric.Object.clone() didn't work for some reason
 		// error thrown : this._render is not a function
-		// so, used fabric.util.object.clone instead
+		// so, used our own clone function
 
 		activeObject.clone(function (clonedObj) {
 
@@ -1373,9 +1373,6 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 			editor._clipboard = clonedObj;
 		});
-
-		
-
 	}
 
 	ext_imageAnnotator.Editor.prototype.pasteObject = function() {
@@ -1390,7 +1387,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		
 		// note : fabric.Object.clone() didn't work for some reason
 		// error thrown : this._render is not a function
-		// so, used fabric.util.object.clone instead
+		// so, used our own clone function
 		this._clipboard.clone(function (clonedObj) {
 
 			editor.canvas.discardActiveObject();
