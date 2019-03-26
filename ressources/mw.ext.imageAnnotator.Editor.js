@@ -142,12 +142,6 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			this.addToolbarDyn(toolbarConfig);
 		}
 		this.addEditListeners();
-
-<<<<<<< HEAD
-=======
-		//this.onKeyPress();
-
->>>>>>> acfb04ba926576c80b8651d86e548af7a13365d3
 	}
 
 	ext_imageAnnotator.Editor.prototype.addToolBarCustomsPics = function (toolbarConfig) {
