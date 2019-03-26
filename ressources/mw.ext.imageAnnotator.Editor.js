@@ -57,14 +57,15 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 		if (mw.config.values.ImageAnnotator.imageAnnotatorColors) {
 
-			var imageAnnotatorColors = mw.config.values.ImageAnnotator.imageAnnotatorColors; 
-			
+			var imageAnnotatorColors = mw.config.values.ImageAnnotator.imageAnnotatorColors;
+
 			imageAnnotatorColors.forEach(function(color) {
 				colors.push({'type':'color', 'color': color, 'parent':'colors'});
 			});
 
-			if (imageAnnotatorColors[2])
+			if (imageAnnotatorColors[2]) {
 				this.currentColor = imageAnnotatorColors[2];
+			}
 
 		} else {
 
@@ -142,6 +143,11 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		}
 		this.addEditListeners();
 
+<<<<<<< HEAD
+=======
+		//this.onKeyPress();
+
+>>>>>>> acfb04ba926576c80b8651d86e548af7a13365d3
 	}
 
 	ext_imageAnnotator.Editor.prototype.addToolBarCustomsPics = function (toolbarConfig) {
@@ -219,6 +225,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		if (this.canvas) {
 			//this.canvas.setWidth( width);
 			//this.canvas.setHeight( height);
+			this.canvas.setHeight(height);
 			this.canvas.renderAll();
 		}
 	}
@@ -1259,7 +1266,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 				var imgWidth = $(editor.image).attr('width');
 				var imgClass = $(editor.image).attr('class');
 				editor.overlayImg = $('<img>').attr('class','annotationlayer '+imgClass).attr('src', url);
-				
+
 				$(editor.overlayImg).insertAfter(editor.image);
 				$(editor.image).hide();
 				// positioning : this methode wa used chen backgound is not set within annotated layer
