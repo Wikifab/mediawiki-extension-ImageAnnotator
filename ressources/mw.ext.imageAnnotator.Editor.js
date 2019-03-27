@@ -652,9 +652,9 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 		if (obj) {
 			// set current color to the color of the active object
-			if (obj.stroke) { // what can be considered the color of the object ?
+			if (obj.hasOwnProperty("stroke")) { // what can be considered the color of the object ?
 				color =  obj.stroke;
-			} else if (obj.fill) {
+			} else if (obj.hasOwnProperty("fill")) {
 				color = obj.fill;
 			}
 
