@@ -46,10 +46,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 				{'type':'text', 'parent':'tools'},
 				{'type':'numberedbullet', 'parent':'tools'},
 				{'type':'duplicate', 'parent':'tools'},
-				{'type':'del', 'parent':'tools'},
-				{'type':'dropdown', 'name':'customtools', 'parent':'tools'}
-				//{'type':'custompic', 'parent':'customtools'},
-				//{'type':'custompic', 'parent':'customtools'},
+				{'type':'del', 'parent':'tools'}
 			];
 
 		// colors
@@ -175,12 +172,18 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 	ext_imageAnnotator.Editor.prototype.addToolBarCustomsPics = function (toolbarConfig) {
 
 		var pictList = $('.ia-custompics-container').first();
-		pictList.find('.ia-custompics').each(function(index, item) {
-			var filename = $(item).attr('data-imgid');
-			var fileurl = $(item).attr('src');
-			var item = {'type':'custompic', 'parent':'customtools', 'filename':filename, 'fileurl':fileurl};
-			toolbarConfig.push(item);
-		});
+		var $custompics = pictList.find('.ia-custompics');
+
+		if ($custompics.length > 0) { // don't add the dropdown button if nothing inside
+			toolbarConfig.push({'type':'dropdown', 'name':'customtools', 'parent':'tools'});
+			
+			$custompics.each(function(index, item) {
+				var filename = $(item).attr('data-imgid');
+				var fileurl = $(item).attr('src');
+				var item = {'type':'custompic', 'parent':'customtools', 'filename':filename, 'fileurl':fileurl};
+				toolbarConfig.push(item);
+			});
+		}
 
 		return toolbarConfig;
 	}
