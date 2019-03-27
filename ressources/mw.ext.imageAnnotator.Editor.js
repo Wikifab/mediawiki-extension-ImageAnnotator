@@ -68,14 +68,13 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			}
 
 		} else {
-
 			colors = [
-				{'type':'color', 'color':'black', 'parent':'colors'},
-				{'type':'color', 'color':'white', 'parent':'colors'},
-				{'type':'color', 'color':'blue', 'parent':'colors'},
-				{'type':'color', 'color':'red', 'parent':'colors'},
-				{'type':'color', 'color':'yellow', 'parent':'colors'},
-				{'type':'color', 'color':'green', 'parent':'colors'}
+				{'type':'color', 'color':'#000000', 'parent':'colors'}, //black
+				{'type':'color', 'color':'#FFFFFF', 'parent':'colors'}, //white
+				{'type':'color', 'color':'#0054FF', 'parent':'colors'}, //blue
+				{'type':'color', 'color':'#FF0000', 'parent':'colors'}, //red
+				{'type':'color', 'color':'#FFF600', 'parent':'colors'}, //yellow
+				{'type':'color', 'color':'#4AE40D', 'parent':'colors'} // green
 			];
 		}
 

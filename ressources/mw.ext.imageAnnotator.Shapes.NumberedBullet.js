@@ -65,8 +65,11 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 	   getTextColor: function(fillColor) {
 
-		   var textColor = 'rgba(0,0,0,255)';
-		   switch (fillColor) {
+	   		var black = 'rgba(0,0,0,255)';
+	   		var white = 'rgba(255,255,255,255)';
+			var textColor = black;
+
+			switch (fillColor) {
 			   case	"black":
 				   textColor = 'rgba(255,255,255,255)';
 				   break;
@@ -74,10 +77,11 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			   case	"blue":
 			   case	"white":
 			   default:
-				   textColor = 'rgba(0,0,0,255)';
+					textColor = 'rgba(0,0,0,255)';
 			   	break;
-		   }
-		   return textColor;
+			}
+
+			return textColor;
 	   },
 
 	   set: function(key, value) {
