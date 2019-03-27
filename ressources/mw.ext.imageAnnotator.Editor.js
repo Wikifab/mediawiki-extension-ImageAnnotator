@@ -1067,7 +1067,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 	ext_imageAnnotator.Editor.prototype.addToolbarDropDown = function (params) {
 
 		var name = params['name'];
-		var container = $('<div>').addClass('dropdown-container');
+		var container = $('<div>').addClass('dropdown-container dropdown-container-' + name);
 		var button = $('<button>' + '</button>').addClass('editorButton editorDropdown editorDropdown' + name );
 		var div = $('<div>').addClass('editorToolbarArea').addClass('toolbarArea-'+name).addClass('ia-dropdown-menu');
 		this.toolbarDivs[name] = div;
