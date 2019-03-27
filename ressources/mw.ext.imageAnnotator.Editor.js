@@ -665,7 +665,13 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 	}
 
 	ext_imageAnnotator.Editor.prototype.getActiveObject = function () {
+		
 		var obj = this.canvas.getActiveObject();
+
+		if (!obj) {
+			return;
+		}
+
 		if (obj.line1) {
 			obj = obj.line1;
 		}
@@ -741,7 +747,6 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		$(this.toolbar).find('.toolbarArea-colors button').removeClass('active');
 		$(this.toolbar).find('.toolbarArea-colors button.'+this.currentColor.replace('#', '')).addClass('active');
 
-		console.log("change css");
 		// change css background-color of the colorselector button
 		$(this.toolbar).find('.editorDropdowncolorselector').css('background-color', this.currentColor);
 	}
