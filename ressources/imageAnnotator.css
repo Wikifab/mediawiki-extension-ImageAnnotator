@@ -11,12 +11,14 @@
 }
 .mw-ia-popup-toolbar {
     border: 1px solid #ccc;
+    border-bottom: 0;
     height: 42px;
     background: #f9f9f9;
 }
 
 .mw-ia-popup-toolbar .editorToolbarArea {
 	display:inline-block;
+	margin-left: 2px;
 }
 
 .mw-ia-popup-toolbar .editorToolbarArea.toolbarArea-colors {
@@ -100,8 +102,9 @@
 }
 
 .mw-ia-popup-toolbar .dropdown-container-colorselector .ia-dropdown-menu {
-	width: 44px;
-	left: -1px;
+    width: 44px;
+    left: -3px;
+    top: 41px;
 }
 
 .mw-ia-popup-toolbar .dropdown-container-colorselector .editorButton.editorDropdown {
@@ -127,20 +130,19 @@
 }
 
 .mw-ia-popup-toolbar .editorButton {
-    margin: 3px 1px;
+    margin: 4px 0px;
     vertical-align: top;
     border-radius: 5px;
     border: 2px solid #f9f9f9;
     height: 33px;
 }
 
-.mw-ia-popup-image {
-    border: 1px solid #ccc;
-    border-top: none;
+.mw-ia-popup-toolbar .dropdown-container-colorselector .editorButton {
+	margin: 2px 1px;
 }
 
 .mw-ia-popup-image .lower-canvas, .mw-ia-popup-image .upper-canvas {
-    border:none;
+    border:1px solid #ccc !important;
 }
 
 .mw-ia-popup-buttonbar {
