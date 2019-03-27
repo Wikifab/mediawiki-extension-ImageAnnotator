@@ -39,7 +39,6 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 		var toolbarConfig = [
 				{'type':'div', 'name':'tools'},
-				{'type':'div', 'name':'colors'},
 				{'type':'crop', 'parent':'tools'},
 				{'type':'square', 'parent':'tools'},
 				{'type':'circle', 'parent':'tools'},
@@ -48,7 +47,8 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 				{'type':'numberedbullet', 'parent':'tools'},
 				{'type':'duplicate', 'parent':'tools'},
 				{'type':'del', 'parent':'tools'},
-				{'type':'dropdown', 'name':'customtools', 'parent':'tools'}
+				{'type':'dropdown', 'name':'customtools', 'parent':'tools'},
+				{'type':'dropdown', 'name':'colorselector', 'parent':'tools'}
 				//{'type':'custompic', 'parent':'customtools'},
 				//{'type':'custompic', 'parent':'customtools'},
 			];
@@ -60,7 +60,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			var imageAnnotatorColors = mw.config.values.ImageAnnotator.imageAnnotatorColors;
 
 			imageAnnotatorColors.forEach(function(color) {
-				colors.push({'type':'color', 'color': color, 'parent':'colors'});
+				colors.push({'type':'color', 'color': color, 'parent':'colorselector'});
 			});
 
 			if (imageAnnotatorColors[2]) {
@@ -70,12 +70,12 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		} else {
 
 			colors = [
-				{'type':'color', 'color':'black', 'parent':'colors'},
-				{'type':'color', 'color':'white', 'parent':'colors'},
-				{'type':'color', 'color':'blue', 'parent':'colors'},
-				{'type':'color', 'color':'red', 'parent':'colors'},
-				{'type':'color', 'color':'yellow', 'parent':'colors'},
-				{'type':'color', 'color':'green', 'parent':'colors'}
+				{'type':'color', 'color':'black', 'parent':'colorselector'},
+				{'type':'color', 'color':'white', 'parent':'colorselector'},
+				{'type':'color', 'color':'blue', 'parent':'colorselector'},
+				{'type':'color', 'color':'red', 'parent':'colorselector'},
+				{'type':'color', 'color':'yellow', 'parent':'colorselector'},
+				{'type':'color', 'color':'green', 'parent':'colorselector'}
 			];
 		}
 
@@ -133,6 +133,21 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		this.canvas.selection = false;
 
 		this.canvas.selectionLineWidth = 10;
+
+		var canvas = this.canvas;
+
+		// redefine setActiveObject so that we can add an event
+		this.canvas.setActiveObject = function (obj, e) {
+
+			if	(editor.isStatic) {
+				fabric.StaticCanvas.prototype.setActiveObject.call(this, obj, e);
+			} else {
+				fabric.Canvas.prototype.setActiveObject.call(this, obj, e);
+			}
+
+			//event
+			editor._onSetActiveObject();
+		}
 
 		//content = '{"objects":[{"type":"image","originX":"left","originY":"top","left":39,"top":53,"width":360,"height":258,"fill":"rgb(0,0,0)","stroke":null,"strokeWidth":0,"strokeDashArray":null,"strokeLineCap":"butt","strokeLineJoin":"miter","strokeMiterLimit":10,"scaleX":1,"scaleY":1,"angle":0,"flipX":false,"flipY":false,"opacity":1,"shadow":null,"visible":true,"clipTo":null,"backgroundColor":"","fillRule":"nonzero","globalCompositeOperation":"source-over","transformMatrix":null,"skewX":0,"skewY":0,"crossOrigin":"","alignX":"none","alignY":"none","meetOrSlice":"meet","src":"http://files.wikifab.org/7/7b/Le_petit_robot_%C3%A9ducatif_SCOTT_by_La_Machinerie_robot-scott.jpg","filters":[],"resizeFilters":[]},{"type":"polyline","originX":"left","originY":"top","left":20,"top":20,"width":10,"height":90,"fill":"rgba(255,0,0,0)","stroke":"red","strokeWidth":3,"strokeDashArray":null,"strokeLineCap":"butt","strokeLineJoin":"miter","strokeMiterLimit":10,"scaleX":1,"scaleY":1,"angle":-90,"flipX":false,"flipY":false,"opacity":1,"shadow":null,"visible":true,"clipTo":null,"backgroundColor":"","fillRule":"nonzero","globalCompositeOperation":"source-over","transformMatrix":null,"skewX":0,"skewY":0,"points":[{"x":30,"y":30},{"x":30,"y":120},{"x":25,"y":110},{"x":30,"y":120},{"x":35,"y":110}]}]}';
 
@@ -631,6 +646,24 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		this.cropZone = circle;
 	}
 
+	ext_imageAnnotator.Editor.prototype._onSetActiveObject = function () {
+
+		var obj = this.getActiveObject(), color = null;
+
+		if (obj) {
+			// set current color to the color of the active object
+			if (obj.stroke) { // what can be considered the color of the object ?
+				color =  obj.stroke;
+			} else if (obj.fill) {
+				color = obj.fill;
+			}
+
+			if (color) {
+				this._setActiveColor(color);
+			}
+		}
+	}
+
 	ext_imageAnnotator.Editor.prototype.getActiveObject = function () {
 		var obj = this.canvas.getActiveObject();
 		if (obj.line1) {
@@ -639,11 +672,14 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		if (obj.line2) {
 			obj = obj.line2;
 		}
+
 		return obj;
 	}
 
 	ext_imageAnnotator.Editor.prototype.setColor = function (color) {
-		this.currentColor = color;
+
+		this._setActiveColor(color);
+		
 		if(this.getActiveObject()) {
 			var activeObject = this.getActiveObject();
 			this.getActiveObject().set('stroke', this.currentColor);
@@ -652,7 +688,6 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			}
 			this.canvas.renderAll();
 		}
-		this.setActiveColorbutton();
 	}
 
 	ext_imageAnnotator.Editor.prototype.setFormat = function (format) {
@@ -693,11 +728,22 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 	}
 
+	ext_imageAnnotator.Editor.prototype._setActiveColor = function (color) {
+
+		this.currentColor = color;
+
+		this.setActiveColorbutton();
+	}
+
 	ext_imageAnnotator.Editor.prototype.setActiveColorbutton = function () {
 
 		// change css class on buttons :
 		$(this.toolbar).find('.toolbarArea-colors button').removeClass('active');
 		$(this.toolbar).find('.toolbarArea-colors button.'+this.currentColor.replace('#', '')).addClass('active');
+
+		console.log("change css");
+		// change css background-color of the colorselector button
+		$(this.toolbar).find('.editorDropdowncolorselector').css('background-color', this.currentColor);
 	}
 
 	ext_imageAnnotator.Editor.prototype.delSelection = function () {
@@ -987,11 +1033,37 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		this.toolbar.append(div);
 	}
 
+	ext_imageAnnotator.Editor.prototype.addColorSelector = function (colors) {
+
+		var name = params['name'];
+		var container = $('<div>').addClass('color-selector-container');
+		var button = $('<button>' + '</button>').addClass('editorButton color-selector');
+		var div = $('<div>').addClass('editorToolbarArea').addClass('toolbarArea-'+name).addClass('ia-dropdown-menu');
+		this.toolbarDivs[name] = div;
+		button.click(function() {
+			div.toggle();
+			return false;
+		});
+
+		container.append(button);
+		container.append(div);
+		button.blur(function(){
+			// we must hide dropdown,
+			// but only after click action on subdiv has been called
+			setTimeout(function(){
+				div.hide();
+			}, 200);
+		});
+		div.hide();
+
+		this.toolbar.append(container);
+	}
+
 	ext_imageAnnotator.Editor.prototype.addToolbarDropDown = function (params) {
 
 		var name = params['name'];
 		var container = $('<div>').addClass('dropdown-container');
-		var button = $('<button>' + '</button>').addClass('editorButton editorDropdown');
+		var button = $('<button>' + '</button>').addClass('editorButton editorDropdown editorDropdown' + name );
 		var div = $('<div>').addClass('editorToolbarArea').addClass('toolbarArea-'+name).addClass('ia-dropdown-menu');
 		this.toolbarDivs[name] = div;
 		button.click(function() {
