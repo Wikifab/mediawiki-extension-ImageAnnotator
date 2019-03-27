@@ -47,39 +47,15 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 				{'type':'numberedbullet', 'parent':'tools'},
 				{'type':'duplicate', 'parent':'tools'},
 				{'type':'del', 'parent':'tools'},
-				{'type':'dropdown', 'name':'customtools', 'parent':'tools'},
-				{'type':'dropdown', 'name':'colorselector', 'parent':'tools'}
+				{'type':'dropdown', 'name':'customtools', 'parent':'tools'}
 				//{'type':'custompic', 'parent':'customtools'},
 				//{'type':'custompic', 'parent':'customtools'},
 			];
 
-		var colors = [];
+		// colors
+		toolbarConfig = this.addToolBarColors(toolbarConfig);
 
-		if (mw.config.values.ImageAnnotator.imageAnnotatorColors) {
-
-			var imageAnnotatorColors = mw.config.values.ImageAnnotator.imageAnnotatorColors;
-
-			imageAnnotatorColors.forEach(function(color) {
-				colors.push({'type':'color', 'color': color, 'parent':'colorselector'});
-			});
-
-			if (imageAnnotatorColors[2]) {
-				this.currentColor = imageAnnotatorColors[2];
-			}
-
-		} else {
-			colors = [
-				{'type':'color', 'color':'#000000', 'parent':'colors'}, //black
-				{'type':'color', 'color':'#FFFFFF', 'parent':'colors'}, //white
-				{'type':'color', 'color':'#0054FF', 'parent':'colors'}, //blue
-				{'type':'color', 'color':'#FF0000', 'parent':'colors'}, //red
-				{'type':'color', 'color':'#FFF600', 'parent':'colors'}, //yellow
-				{'type':'color', 'color':'#4AE40D', 'parent':'colors'} // green
-			];
-		}
-
-		toolbarConfig = toolbarConfig.concat(colors);
-
+		// custom pics
 		toolbarConfig = this.addToolBarCustomsPics(toolbarConfig);
 
 		if (this.isCropMode) {
@@ -156,6 +132,44 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			this.addToolbarDyn(toolbarConfig);
 		}
 		this.addEditListeners();
+	}
+
+	ext_imageAnnotator.Editor.prototype.addToolBarColors = function (toolbarConfig) {
+
+		var colors = [];
+
+		toolbarConfig.push({'type':'dropdown', 'name':'colorselector', 'parent':'tools'});
+
+		if (mw.config.values.ImageAnnotator.imageAnnotatorColors) {
+
+			// colors set via admin config
+
+			var imageAnnotatorColors = mw.config.values.ImageAnnotator.imageAnnotatorColors;
+
+			imageAnnotatorColors.forEach(function(color) {
+				colors.push({'type':'color', 'color': color, 'parent':'colorselector'});
+			});
+
+			if (imageAnnotatorColors[2]) {
+				this.currentColor = imageAnnotatorColors[2];
+			}
+
+		} else {
+
+			// default colors
+			colors = [
+				{'type':'color', 'color':'black', 'parent':'colorselector'},
+				{'type':'color', 'color':'white', 'parent':'colorselector'},
+				{'type':'color', 'color':'blue', 'parent':'colorselector'},
+				{'type':'color', 'color':'red', 'parent':'colorselector'},
+				{'type':'color', 'color':'yellow', 'parent':'colorselector'},
+				{'type':'color', 'color':'green', 'parent':'colorselector'}
+			];
+		}
+
+		toolbarConfig = toolbarConfig.concat(colors);
+
+		return toolbarConfig;
 	}
 
 	ext_imageAnnotator.Editor.prototype.addToolBarCustomsPics = function (toolbarConfig) {
