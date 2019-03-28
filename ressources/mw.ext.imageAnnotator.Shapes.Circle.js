@@ -74,6 +74,18 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 	   }
 	});
 
+	// for clone()
+	ext_imageAnnotator.shapes.Wfcircle.fromObject = function(object, callback) {
+
+		var klass = this.prototype.constructor;
+		object = fabric.util.object.clone(object, true);
+
+		var instance = new klass(object);
+        callback && callback(instance);
+	}
+
+	fabric.Wfcircle = ext_imageAnnotator.shapes.Wfcircle;
+
 })(jQuery, mw, fabric, ext_imageAnnotator);
 
 

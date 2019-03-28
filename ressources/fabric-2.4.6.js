@@ -7521,10 +7521,6 @@ fabric.ElementsParser = function(elements, callback, options, reviver, parsingOp
      */
     _renderObjects: function(ctx, objects) {
       var i, len;
-      console.log("ctx");
-      console.log(ctx);
-      console.log("objects");
-      console.log(objects);
       for (i = 0, len = objects.length; i < len; ++i) {
         objects[i] && objects[i].render(ctx);
       }

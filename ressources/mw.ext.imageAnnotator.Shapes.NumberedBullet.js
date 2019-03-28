@@ -8,7 +8,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 	ext_imageAnnotator.shapes.WfNumberedBullet = fabric.util.createClass(fabric.Group, {
 
-		type: 'wfnumberedbullet',
+		type: 'wfNumberedBullet',
 	   // Min and Max size to enforce (false == no enforcement)
 	   minSize: 15,
 	   maxSize: 200,
@@ -49,19 +49,6 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			objects.push(text);
 			this.callSuper('initialize', objects, optionsopt, isAlreadyGroupedopt);
 	   },
-
-	   clone: function (callback) {
-
-			var clone = new ext_imageAnnotator.shapes.WfNumberedBullet([], 
-				{ stroke : this.circleObj.fill, number : this.textObj.text });
-
-			clone.top = this.top;
-			clone.left = this.left;
-
-			if (typeof callback === "function") {
-			    callback(clone);
-			}
-		},
 
 	   getTextColor: function(fillColor) {
 
@@ -125,14 +112,29 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		   return this.callSuper('toJSON', propertiesToInclude);
 	   },
 	   toObject: function(propertiesToInclude) {
-		   if(! propertiesToInclude) {
-			   propertiesToInclude = [];
-		   }
-		   propertiesToInclude.push('number');
-		   return this.callSuper('toObject', propertiesToInclude);
+		   return fabric.util.object.extend(this.callSuper('toObject'), {
+	        number: this.number
+	      });
 
 	   }
 	});
+
+	// for clone()
+	ext_imageAnnotator.shapes.WfNumberedBullet.fromObject = function(object, callback) {
+
+		var klass = this.prototype.constructor;
+
+		fabric.util.enlivenObjects(object.objects, function(enlivenedObjects) {
+	      fabric.util.enlivenObjects([object.clipPath], function(enlivedClipPath) {
+	        var options = fabric.util.object.clone(object, true);
+	        options.clipPath = enlivedClipPath[0];
+	        delete options.objects;
+	        callback && callback(new klass(enlivenedObjects, options, true));
+	      });
+	    });
+	}
+
+	fabric.WfNumberedBullet = ext_imageAnnotator.shapes.WfNumberedBullet;
 
 })(jQuery, mw, fabric, ext_imageAnnotator);
 
