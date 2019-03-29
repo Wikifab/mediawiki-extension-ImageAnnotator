@@ -284,7 +284,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 				} else if (this.specificsObjectsToLoad[x].type == 'wfrect') {
 					var objectToload = this.specificsObjectsToLoad[x];
 					var rect = new ext_imageAnnotator.shapes.Wfrect(objectToload);
-					this.canvas(rect);
+					this.canvas.add(rect);
 				} else if (this.specificsObjectsToLoad[x].type == 'wfarrow') {
 					var objectToload = this.specificsObjectsToLoad[x];
 					var arrow = new ext_imageAnnotator.shapes.Wfarrow(objectToload);
