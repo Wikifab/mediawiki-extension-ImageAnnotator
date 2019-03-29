@@ -175,20 +175,6 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			this.c2 = c2;
 		},
 
-		clone: function (callback) {
-
-			var clone = fabric.util.object.clone(this);
-
-			clone.c1 = null;
-			clone.c2 = null;
-
-			this._clearCache();
-
-			if (typeof callback === "function") {
-			    callback(clone);
-			}
-		},
-
 		addToCanvas: function (canvas) {
 
 			canvas.add(this);
