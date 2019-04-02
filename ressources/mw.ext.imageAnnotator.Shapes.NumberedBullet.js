@@ -6,9 +6,9 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 	ext_imageAnnotator.shapes = ext_imageAnnotator.shapes || {}
 
-	ext_imageAnnotator.shapes.WfNumberedBullet = fabric.util.createClass(fabric.Group, {
+	ext_imageAnnotator.shapes.Wfnumberedbullet = fabric.util.createClass(fabric.Group, {
 
-		type: 'wfNumberedBullet',
+		type: 'wfnumberedbullet',
 	   // Min and Max size to enforce (false == no enforcement)
 	   minSize: 15,
 	   maxSize: 200,
@@ -156,7 +156,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 	});
 
 	// for clone()
-	ext_imageAnnotator.shapes.WfNumberedBullet.fromObject = function(object, callback) {
+	ext_imageAnnotator.shapes.Wfnumberedbullet.fromObject = function(object, callback) {
 
 		var klass = this.prototype.constructor;
 
@@ -172,7 +172,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 	// For objects that are contained in other objects, fabric.util.enlivenObjects()
 	// will look for classes within fabric. 
-	fabric.WfNumberedBullet = ext_imageAnnotator.shapes.WfNumberedBullet;
+	fabric.Wfnumberedbullet = ext_imageAnnotator.shapes.Wfnumberedbullet;
 
 })(jQuery, mw, fabric, ext_imageAnnotator);
 
