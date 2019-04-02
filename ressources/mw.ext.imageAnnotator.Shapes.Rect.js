@@ -22,7 +22,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 	   // Min and Max size to enforce (false == no enforcement)
 	   minSize: 15,
-	   maxSize: 200,
+	   maxSize: 590,
 
 	   centerTransform: true,
 
