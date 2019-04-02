@@ -446,8 +446,6 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			top: 120,
 			left: 120,
 			radius: size,
-			minSize: 10,
-			maxSize: 100,
 			strokeWidth: 3,
 			stroke:this.currentColor,
 			fill: 'rgba(255,0,0,0)'
