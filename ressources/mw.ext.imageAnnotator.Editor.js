@@ -198,8 +198,18 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		var canvas = this.canvas;
 
 		function objectMoved(o) {
-			o.line1 && o.line1.setP1(o.left, o.top);
-			o.line2 && o.line2.setP2(o.left, o.top);
+
+			var coords = {};
+
+			if (o.line1) {
+				o.line1.setP1(o.left, o.top);
+				o.line1.setCoords();
+			}
+
+			if (o.line2) {
+				o.line2.setP2(o.left, o.top);
+				o.line2.setCoords();
+			}
 		}
 		this.canvas.on('object:moving', function(e) {
 			var p = e.target;
@@ -325,10 +335,8 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 					this.canvas.add(bullet);
 				} else if (this.specificsObjectsToLoad[x].type == 'wfarrow2line') {
 					var objectToload = this.specificsObjectsToLoad[x];
-					var arrow = new ext_imageAnnotator.shapes.Wfarrow2Line(objectToload);
+					var arrow = new ext_imageAnnotator.shapes.Wfarrow2line(objectToload);
 					this.canvas.add(arrow);
-
-					this.addArrow2CirclesFromLine(line);
 				}else if (this.specificsObjectsToLoad[x].type == 'wfcustompic') {
 					var objectToload = this.specificsObjectsToLoad[x];
 					var pic = new ext_imageAnnotator.shapes.Wfcustompic(objectToload);
@@ -451,24 +459,20 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 	ext_imageAnnotator.Editor.prototype.addText = function (size) {
 
-		var text = new fabric.Text('Texte',{
+		var line = new fabric.Line([50,50, 150, 50], {
+		//var line = new ext_imageAnnotator.shapes.Wfarrow2Arrow([x,y,x2,y2], {
 			originX: 'center',
 			originY: 'center',
-			top: 120,
-			left: 120,
-			//fontWeight: 'bold',
-			fontFamily: 'sans-serif',
-			fontSize: 20,
+			strokeWidth: 3,
 			stroke:this.currentColor,
-			fill:this.currentColor,
-			borderColor: 'black',
-			cornerColor: 'rgba(200,200,200,1)',
-			transparentCorners:false
-			//lockUniScaling:true
-			//fill: 'rgba(255,0,0,0)' // transparent
+			fill: 'rgba(255,0,0,0)',
 		});
-		this.canvas.add(text);
-		this.canvas.setActiveObject(text);
+
+		//this.addArrow2CirclesFromLine(line);
+
+		this.canvas.add(line);
+
+		return;
 	}
 
 	ext_imageAnnotator.Editor.prototype.addArrow = function (size) {
@@ -514,14 +518,18 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 	ext_imageAnnotator.Editor.prototype.addArrow2 = function (size) {
 
+		var line = new ext_imageAnnotator.shapes.Wfarrow2line({
+		//var line = new ext_imageAnnotator.shapes.Wfarrow2Arrow([x,y,x2,y2], {
+			originX: 'center',
+			originY: 'center',
+			strokeWidth: 3,
+			stroke:this.currentColor,
+			fill: 'rgba(255,0,0,0)',
+		});
 
-		var arrow = new ext_imageAnnotator.shapes.Arrow2([50, 100, 200, 200], {
-	        left: 170,
-	        top: 150,
-	        stroke:this.currentColor,
-	    });
+		//this.addArrow2CirclesFromLine(line);
 
-		this.canvas.add(arrow);
+		this.canvas.add(line);
 
 		return;
 	}
@@ -776,6 +784,11 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 				activeObject.forEachObject(function(obj) {
 					editor.canvas.remove(obj);
 				});
+
+				activeObject.destroy();
+				this.canvas.discardActiveObject();
+
+				
 			} else {
 				this.canvas.remove(this.canvas.getActiveObject());
 			}

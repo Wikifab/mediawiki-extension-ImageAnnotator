@@ -170,6 +170,8 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 	    });
 	}
 
+	// For objects that are contained in other objects, fabric.util.enlivenObjects()
+	// will look for classes within fabric. 
 	fabric.WfNumberedBullet = ext_imageAnnotator.shapes.WfNumberedBullet;
 
 })(jQuery, mw, fabric, ext_imageAnnotator);

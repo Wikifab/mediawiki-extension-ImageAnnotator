@@ -90,6 +90,8 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
         callback && callback(instance);
 	}
 
+	// For objects that are contained in other objects, fabric.util.enlivenObjects()
+	// will look for classes within fabric. 
 	fabric.Wfcustompic = ext_imageAnnotator.shapes.Wfcustompic;
 
 })(jQuery, mw, fabric, ext_imageAnnotator);
