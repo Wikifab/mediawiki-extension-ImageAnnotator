@@ -331,7 +331,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 				} else if (this.specificsObjectsToLoad[x].type == 'wfnumberedbullet') {
 					var objectToload = this.specificsObjectsToLoad[x];
 					// load group without inside shapes, they will be recreated in constructor
-					var bullet = new ext_imageAnnotator.shapes.WfNumberedBullet([],objectToload);
+					var bullet = new ext_imageAnnotator.shapes.Wfnumberedbullet([],objectToload);
 					this.canvas.add(bullet);
 				} else if (this.specificsObjectsToLoad[x].type == 'wfarrow2line') {
 					var objectToload = this.specificsObjectsToLoad[x];
@@ -459,20 +459,24 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 	ext_imageAnnotator.Editor.prototype.addText = function (size) {
 
-		var line = new fabric.Line([50,50, 150, 50], {
-		//var line = new ext_imageAnnotator.shapes.Wfarrow2Arrow([x,y,x2,y2], {
+		var text = new fabric.Text('Texte',{
 			originX: 'center',
 			originY: 'center',
-			strokeWidth: 3,
+			top: 120,
+			left: 120,
+			//fontWeight: 'bold',
+			fontFamily: 'sans-serif',
+			fontSize: 20,
 			stroke:this.currentColor,
-			fill: 'rgba(255,0,0,0)',
+			fill:this.currentColor,
+			borderColor: 'black',
+			cornerColor: 'rgba(200,200,200,1)',
+			transparentCorners:false
+			//lockUniScaling:true
+			//fill: 'rgba(255,0,0,0)' // transparent
 		});
-
-		//this.addArrow2CirclesFromLine(line);
-
-		this.canvas.add(line);
-
-		return;
+		this.canvas.add(text);
+		this.canvas.setActiveObject(text);
 	}
 
 	ext_imageAnnotator.Editor.prototype.addArrow = function (size) {
@@ -494,28 +498,6 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		this.canvas.setActiveObject(poly);
 	}
 
-	ext_imageAnnotator.Editor.prototype.addArrow2CirclesFromLine = function (line) {
-
-		var c = new ext_imageAnnotator.shapes.Wfarrow2Circle({
-			left : line.get('x1'),
-			top : line.get('y1'),
-			radius : 8,
-			line1 : line,
-		});
-		var c2 = new ext_imageAnnotator.shapes.Wfarrow2Circle({
-			left : line.get('x2'),
-			top : line.get('y2'),
-			radius : 8,
-			line2 : line,
-		});
-
-		line.c1 = c;
-		line.c2 = c2;
-
-		this.canvas.add(c);
-		this.canvas.add(c2);
-	}
-
 	ext_imageAnnotator.Editor.prototype.addArrow2 = function (size) {
 
 		var line = new ext_imageAnnotator.shapes.Wfarrow2line({
@@ -527,11 +509,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			fill: 'rgba(255,0,0,0)',
 		});
 
-		//this.addArrow2CirclesFromLine(line);
-
 		this.canvas.add(line);
-
-		return;
 	}
 
 	ext_imageAnnotator.Editor.prototype.getNextBulletNumber = function() {
@@ -561,7 +539,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		var number = this.getNextBulletNumber();
 
 		var left = 70 + (number % 10) * 30;
-		var bullet = new ext_imageAnnotator.shapes.WfNumberedBullet(
+		var bullet = new ext_imageAnnotator.shapes.Wfnumberedbullet(
 				[],
 				{
 					left: left,
