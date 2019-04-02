@@ -71,10 +71,6 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 	      // change the stroke width to look same
 	      //this.setStrokeWidth(3 *2 / (this.scaleX + this.scaleY) );
 	      this.setCoords();
-	      console.log("limitsize");
-	      console.log(this);
-	      console.log(newRadiusX);
-	      console.log(newRadiusY);
 	   }
 	});
 
