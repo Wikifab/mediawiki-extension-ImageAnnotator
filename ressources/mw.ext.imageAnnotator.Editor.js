@@ -703,14 +703,31 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 	ext_imageAnnotator.Editor.prototype.setColor = function (color) {
 
+		var editor = this;
+
 		this._setActiveColor(color);
+
+		var _setColor = function (obj) {
+			obj.set('stroke', editor.currentColor);
+			if (obj.get('fill') != 'rgba(255,0,0,0)') {
+				obj.set('fill', editor.currentColor);
+			}
+		};
 		
 		if(this.getActiveObject()) {
+
 			var activeObject = this.getActiveObject();
-			this.getActiveObject().set('stroke', this.currentColor);
-			if (this.getActiveObject().get('fill') != 'rgba(255,0,0,0)') {
-				this.getActiveObject().set('fill', this.currentColor);
+
+			if (activeObject.type === 'activeSelection') {
+
+				activeObject.forEachObject(function(obj) {
+					_setColor(obj);
+				});
+
+			} else {
+				_setColor(obj);
 			}
+
 			this.canvas.renderAll();
 		}
 	}
