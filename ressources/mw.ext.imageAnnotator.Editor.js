@@ -159,15 +159,15 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			}
 
 		} else {
-
+			
 			// default colors
 			colors = [
-				{'type':'color', 'color':'black', 'parent':'colorselector'},
-				{'type':'color', 'color':'white', 'parent':'colorselector'},
-				{'type':'color', 'color':'blue', 'parent':'colorselector'},
-				{'type':'color', 'color':'red', 'parent':'colorselector'},
-				{'type':'color', 'color':'yellow', 'parent':'colorselector'},
-				{'type':'color', 'color':'green', 'parent':'colorselector'}
+				{'type':'color', 'color':'#000000', 'parent':'colorselector'},
+				{'type':'color', 'color':'#FFFFFF', 'parent':'colorselector'},
+				{'type':'color', 'color':'#0054FF', 'parent':'colorselector'},
+				{'type':'color', 'color':'#FF0000', 'parent':'colorselector'},
+				{'type':'color', 'color':'#FFF600', 'parent':'colorselector'},
+				{'type':'color', 'color':'#4AE40D', 'parent':'colorselector'}
 			];
 		}
 
