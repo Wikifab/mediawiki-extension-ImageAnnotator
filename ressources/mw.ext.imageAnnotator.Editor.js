@@ -519,7 +519,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 		// get the smallest number wich do not exists yet :
 		objects.forEach(function(item) {
-			if(item.type == 'wfNumberedBullet') {
+			if(item.type == 'wfnumberedbullet') {
 				numbers[item.number] = item.number;
 				if (number == item.number) {
 					number = number + 1;
