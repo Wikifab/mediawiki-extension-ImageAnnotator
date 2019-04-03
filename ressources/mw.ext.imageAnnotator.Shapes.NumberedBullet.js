@@ -63,21 +63,58 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			}
 		},
 
+		_hexToRgbA: function(hex){
+		    var c;
+		    if(/^#([A-Fa-f0-9]{3}){1,2}$/.test(hex)){
+		        c= hex.substring(1).split('');
+		        if(c.length== 3){
+		            c= [c[0], c[0], c[1], c[1], c[2], c[2]];
+		        }
+		        c= '0x'+c.join('');
+		        return 'rgba('+[(c>>16)&255, (c>>8)&255, c&255].join(',')+',1)';
+		    }
+		    throw new Error('Bad Hex');
+		},
+
 	   getTextColor: function(fillColor) {
 
-		   var textColor = 'rgba(0,0,0,255)';
-		   switch (fillColor) {
-			   case	"black":
-				   textColor = 'rgba(255,255,255,255)';
-				   break;
-			   case	"yellow":
-			   case	"blue":
-			   case	"white":
-			   default:
-				   textColor = 'rgba(0,0,0,255)';
-			   	break;
-		   }
-		   return textColor;
+	   		var black = 'rgba(0,0,0,255)';
+	   		var white = 'rgba(255,255,255,255)';
+			var textColor = black;
+
+			// hex pattern
+			var regex = /#([A-F0-9]{2})([A-F0-9]{2})([A-F0-9]{2})/i;
+
+			var match = regex.exec(fillColor);
+
+			// fillColor must be in hex format
+			if (!match) {
+				console.log("Color not in right format. Must be in hex format.");
+				return textColor;
+			}
+
+			var fillColorrgba = this._hexToRgbA(fillColor);
+
+			// rgba pattern
+			regex = /rgba\(([0-9]{1,3}),([0-9]{1,3}),([0-9]{1,3}),[0-9]{1}\)/;
+
+			match = regex.exec(fillColorrgba);
+
+			if (match) {
+
+				var red = match[1];
+				var green = match[2];
+				var blue = match[3];
+
+				// threshold is set here to 150, set it at your convenience
+				if ( (red*0.299 + green*0.587 + blue*0.114) > 150 ){
+					textColor = black;
+				} else {
+					textColor = white;
+				}
+			}
+
+			return textColor;
 	   },
 
 	   set: function(key, value) {
