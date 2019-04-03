@@ -458,7 +458,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 	ext_imageAnnotator.Editor.prototype.addText = function (size) {
 
-		var text = new fabric.Text('Texte',{
+		var text = new fabric.Textbox('Texte',{
 			originX: 'center',
 			originY: 'center',
 			top: 120,
@@ -474,6 +474,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			//lockUniScaling:true
 			//fill: 'rgba(255,0,0,0)' // transparent
 		});
+		
 		this.canvas.add(text);
 		this.canvas.setActiveObject(text);
 	}
