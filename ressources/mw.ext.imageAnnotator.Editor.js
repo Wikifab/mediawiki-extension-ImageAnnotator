@@ -725,7 +725,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 				});
 
 			} else {
-				_setColor(obj);
+				_setColor(activeObject);
 			}
 
 			this.canvas.renderAll();
