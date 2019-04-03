@@ -1,4 +1,3 @@
-
 var ext_imageAnnotator = ext_imageAnnotator || {};
 
 ( function ( $, mw, fabric, ext_imageAnnotator ) {
@@ -82,6 +81,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 		var instance = new klass(object);
         callback && callback(instance);
+        
 	}
 
 	// For objects that are contained in other objects, fabric.util.enlivenObjects()

@@ -44,6 +44,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 				{'type':'crop', 'parent':'tools'},
 				{'type':'square', 'parent':'tools'},
 				{'type':'circle', 'parent':'tools'},
+				// {'type':'ellipse', 'parent':'tools'},
 				{'type':'arrow2', 'parent':'tools'},
 				{'type':'line', 'parent':'tools'},
 				{'type':'text', 'parent':'tools'},
@@ -293,7 +294,8 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			'wfarrow2line',
 			'wfnumberedbullet',
 			'wfcustompic',
-			'wfline'
+			'wfline',
+			'wfellipse'
 		]
 
 		for (var x = 0; x < data['objects'].length; x++) {
@@ -319,6 +321,10 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 					var objectToload = this.specificsObjectsToLoad[x];
 					var circle = new ext_imageAnnotator.shapes.Wfcircle(objectToload);
 					this.canvas.add(circle);
+				} else if (this.specificsObjectsToLoad[x].type == 'wfellipse') {
+					var objectToload = this.specificsObjectsToLoad[x];
+					var ellipse = new ext_imageAnnotator.shapes.Wfellipse(objectToload);
+					this.canvas.add(ellipse);
 				} else if (this.specificsObjectsToLoad[x].type == 'wfrect') {
 					var objectToload = this.specificsObjectsToLoad[x];
 					var rect = new ext_imageAnnotator.shapes.Wfrect(objectToload);
@@ -444,7 +450,6 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 	ext_imageAnnotator.Editor.prototype.addCircle = function (size) {
 
-
 		//var circle = new ext_imageAnnotator.shapes.Circle({
 		var circle = new ext_imageAnnotator.shapes.Wfcircle({
 		//var circle = new fabric.Circle({
@@ -460,6 +465,18 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 		this.canvas.add(circle);
 		this.canvas.setActiveObject(circle);
+	}
+
+	ext_imageAnnotator.Editor.prototype.addEllipse = function () {
+
+		var ellipse = new ext_imageAnnotator.shapes.Wfellipse({
+			ry: 100,
+     		rx: 100,
+     		stroke: this.currentColor
+		});
+		  
+		this.canvas.add(ellipse);
+		this.canvas.setActiveObject(ellipse);
 	}
 
 	ext_imageAnnotator.Editor.prototype.addText = function (size) {
@@ -1283,10 +1300,17 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		        break;
 		    case 'circle':
 		    	button.click(function() {
-					editor.addCircle(100);
+					//editor.addCircle(100);
+					editor.addEllipse();
 					return false;
 				});
 		        break;
+		  //   case 'ellipse':
+		  //   	button.click(function() {
+				// 	editor.addEllipse();
+				// 	return false;
+				// });
+		  //       break;
 		    case 'arrow':
 		    	button.click(function() {
 					editor.addArrow(100);
