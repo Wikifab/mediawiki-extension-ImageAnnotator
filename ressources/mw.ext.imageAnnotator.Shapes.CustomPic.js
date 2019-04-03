@@ -29,7 +29,6 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 	   initialize : function(element, options) {
 
-
 			options || (options = {});
 
 			if (typeof options['filename'] !== 'undefined') {
@@ -72,17 +71,28 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		   return this.callSuper('toJSON', propertiesToInclude);
 	   },
 	   toObject: function(propertiesToInclude) {
-		   if(! propertiesToInclude) {
-			   propertiesToInclude = [];
-		   }
-		   propertiesToInclude.push('filename');
-		   propertiesToInclude.push('fileurl');
-		   return this.callSuper('toObject', propertiesToInclude);
-
+		   	return fabric.util.object.extend(this.callSuper('toObject'), {
+		        filename: this.filename,
+		        fileurl: this.fileurl
+		    });
 	   }
-
-
 	});
+
+	// for clone()
+	ext_imageAnnotator.shapes.Wfcustompic.fromObject = function(object, callback) {
+
+		var klass = this.prototype.constructor;
+		object = fabric.util.object.clone(object, true);
+
+		var imgElement = $('.ia-custompics[data-imgid="'+ object.filename + '"]').get(0);
+
+		var instance = new klass(imgElement, object);
+        callback && callback(instance);
+	}
+
+	// For objects that are contained in other objects, fabric.util.enlivenObjects()
+	// will look for classes within fabric. 
+	fabric.Wfcustompic = ext_imageAnnotator.shapes.Wfcustompic;
 
 })(jQuery, mw, fabric, ext_imageAnnotator);
 

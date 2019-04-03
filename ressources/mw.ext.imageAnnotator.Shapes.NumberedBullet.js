@@ -6,7 +6,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 	ext_imageAnnotator.shapes = ext_imageAnnotator.shapes || {}
 
-	ext_imageAnnotator.shapes.WfNumberedBullet = fabric.util.createClass(fabric.Group, {
+	ext_imageAnnotator.shapes.Wfnumberedbullet = fabric.util.createClass(fabric.Group, {
 
 		type: 'wfnumberedbullet',
 	   // Min and Max size to enforce (false == no enforcement)
@@ -50,19 +50,6 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			this.callSuper('initialize', objects, optionsopt, isAlreadyGroupedopt);
 	   },
 
-	   clone: function (callback) {
-
-			var clone = new ext_imageAnnotator.shapes.WfNumberedBullet([], 
-				{ stroke : this.circleObj.fill, number : this.textObj.text });
-
-			clone.top = this.top;
-			clone.left = this.left;
-
-			if (typeof callback === "function") {
-			    callback(clone);
-			}
-		},
-
 		_hexToRgbA: function(hex){
 		    var c;
 		    if(/^#([A-Fa-f0-9]{3}){1,2}$/.test(hex)){
@@ -75,7 +62,6 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		    }
 		    throw new Error('Bad Hex');
 		},
-
 	   getTextColor: function(fillColor) {
 
 	   		var black = 'rgba(0,0,0,255)';
@@ -162,14 +148,31 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		   return this.callSuper('toJSON', propertiesToInclude);
 	   },
 	   toObject: function(propertiesToInclude) {
-		   if(! propertiesToInclude) {
-			   propertiesToInclude = [];
-		   }
-		   propertiesToInclude.push('number');
-		   return this.callSuper('toObject', propertiesToInclude);
+		   return fabric.util.object.extend(this.callSuper('toObject'), {
+	        number: this.number
+	      });
 
 	   }
 	});
+
+	// for clone()
+	ext_imageAnnotator.shapes.Wfnumberedbullet.fromObject = function(object, callback) {
+
+		var klass = this.prototype.constructor;
+
+		fabric.util.enlivenObjects(object.objects, function(enlivenedObjects) {
+	      fabric.util.enlivenObjects([object.clipPath], function(enlivedClipPath) {
+	        var options = fabric.util.object.clone(object, true);
+	        options.clipPath = enlivedClipPath[0];
+	        delete options.objects;
+	        callback && callback(new klass(enlivenedObjects, options, true));
+	      });
+	    });
+	}
+
+	// For objects that are contained in other objects, fabric.util.enlivenObjects()
+	// will look for classes within fabric. 
+	fabric.Wfnumberedbullet = ext_imageAnnotator.shapes.Wfnumberedbullet;
 
 })(jQuery, mw, fabric, ext_imageAnnotator);
 

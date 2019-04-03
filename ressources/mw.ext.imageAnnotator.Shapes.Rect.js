@@ -22,7 +22,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 	   // Min and Max size to enforce (false == no enforcement)
 	   minSize: 15,
-	   maxSize: 200,
+	   maxSize: 590,
 
 	   centerTransform: true,
 
@@ -94,6 +94,20 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 	      this.setCoords();
 	   }
 	});
+
+	// for clone()
+	ext_imageAnnotator.shapes.Wfrect.fromObject = function(object, callback) {
+
+		var klass = this.prototype.constructor;
+		object = fabric.util.object.clone(object, true);
+
+		var instance = new klass(object);
+        callback && callback(instance);
+	}
+
+	// For objects that are contained in other objects, fabric.util.enlivenObjects()
+	// will look for classes within fabric. 
+	fabric.Wfrect = ext_imageAnnotator.shapes.Wfrect;
 
 })(jQuery, mw, fabric, ext_imageAnnotator);
 

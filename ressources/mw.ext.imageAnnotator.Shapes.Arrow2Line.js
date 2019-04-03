@@ -6,7 +6,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 	ext_imageAnnotator.shapes = ext_imageAnnotator.shapes || {}
 
-	ext_imageAnnotator.shapes.Wfarrow2Line = fabric.util.createClass(fabric.Line, {
+	ext_imageAnnotator.shapes.Wfarrow2line = fabric.util.createClass(fabric.Line, {
 			shapeName: 'wfarrow2line',
 			type: 'wfarrow2line',
 			originX: 'center',
@@ -16,15 +16,12 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			fill: 'rgba(255,0,0,0)',
 			left: 0,
 			top: 0,
-			transparentCorners:true,
 			selectable:true,
-			hasborder:false,
-			hasControls:false,
 			lockRotation: true,
 			lockScalingX: true,
-			lockScalingY: true,
-			lockMovementX: true,
-			lockMovementY: true,
+		   lockScalingY: true,
+		   hasControls: false,
+		   hasBorders: false,
 			//borderColor: 'black',
 			//cornerColor: 'rgba(200,200,200,1)',
 
@@ -41,10 +38,10 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 	    	  points[2] = options['left'] + options['x2'];
 	    	  points[3] = options['top'] + options['y2'];
 	      }
-	      this.callSuper('initialize', points, options);
-	      //this.hasBorder = false;
-	    },
 
+	      this.callSuper('initialize', points, options);
+	      this._onEvents();
+	    },
 
 	    setP1 : function ( x, y) {
 	    	this.set({ 'x1': x, 'y1': y });
@@ -58,6 +55,51 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 	      this.callSuper('render', ctx);
 	   },
 
+	   _onEvents() {
+
+	   	  this.on('added', function (e) {
+	      		this._addCircles();
+	      });
+
+	      this.on('moving', function(e) {
+
+	      		var points = this.calcLinePoints();
+
+	            this.c1.set('left',this.get('left') + points.x1);
+	            this.c1.set('top',this.get('top') + points.y1);
+	            this.c2.set('left',this.get('left') + points.x2);
+	            this.c2.set('top',this.get('top') + points.y2);            
+	      });
+
+	      this.on('moved', function(e) {
+
+	      		// this should solve the unselectability
+	      		this.setCoords();
+	      		this.c1.setCoords();
+	      		this.c2.setCoords();
+
+	      		this._updatePoints();
+	      });
+
+	      this.on('rotating', function(e) {
+	      		var p = this.calcLinePoints();
+
+	      		this.c1.set('left',this.get('left') + points.x1);
+	            this.c1.set('top',this.get('top') + points.y1);
+	            this.c2.set('left',this.get('left') + points.x2);
+	            this.c2.set('top',this.get('top') + points.y2);
+	      });
+
+	      this.on('deselected', function(e) {
+
+	      		// after rotation
+	      		if (this.angle && this.angle != 0) {
+	      			this.angle = 0;
+	      		}
+
+	      		this._updatePoints();
+	      });
+	   },
 
 	    /**
 	     * Recalculates line points given width and height
@@ -126,6 +168,11 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 	      ctx.strokeStyle = origStrokeStyle;
 	    },
 
+	    _updatePoints: function() {
+	    	this.setP1(this.c1.left, this.c1.top);
+	    	this.setP2(this.c2.left, this.c2.top);
+	    },
+
 	    /**
 	     * Returns svg representation of an instance
 	     * @return {Array} an array of strings with the specific svg representation
@@ -155,54 +202,79 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 	      return poly.toSVG();
 	    },
 
-	    _addArrow2Circles: function () {
+	    _addCircles: function () {
 
-			var c1 = new ext_imageAnnotator.shapes.Wfarrow2Circle({
-				left : this.get('x1'),
-				top : this.get('y1'),
+	    	var top = this.get('top'), left = this.get('left');
+
+	    	if (this.group) {
+
+	    		// That means object was copy-pasted while being in an
+	    		// ActiveSelection object. Since objects in groups have 
+	    		// relative coordinates, we must first get the absolute
+	    		// coordinates before adding circles since they rely on 
+	    		// them.
+
+	    		// see fabric.Object.prototype._restoreObjectState()
+	    		var matrix = this.calcTransformMatrix(),
+		          options = fabric.util.qrDecompose(matrix),
+		          center = new fabric.Point(options.translateX, options.translateY),
+	          	  position = this.translateToOriginPoint(
+	          			this.translateToCenterPoint(center, 'center', 'center'),
+	          			 this.originX, this.originY);
+
+	          	left = position.x;
+	          	top = position.y;
+	    	}
+	    	
+	    	// calculate line points
+	    	var points = this.calcLinePoints();
+
+			var c1 = new ext_imageAnnotator.shapes.Wfarrow2circle({
+				left : left + points.x1,
+				top : top + points.y1,
 				radius : 8,
 				line1 : this,
 			});
 
-			var c2 = new ext_imageAnnotator.shapes.Wfarrow2Circle({
-				left : this.get('x2'),
-				top : this.get('y2'),
+			var c2 = new ext_imageAnnotator.shapes.Wfarrow2circle({
+				left : left + points.x2,
+				top : top + points.y2,
 				radius : 8,
 				line2 : this,
 			});
 
+			// attach them to this object
 			this.c1 = c1;
 			this.c2 = c2;
-		},
 
-		clone: function (callback) {
+			this.c1.setCoords();
+			this.c2.setCoords();
 
-			var clone = fabric.util.object.clone(this);
+			// add them to the canvas
+      		this.canvas.add(this.c1);
+			this.canvas.add(this.c2);
 
-			clone.c1 = null;
-			clone.c2 = null;
+			// if object in a group, forget not to add the circles to it
+			this.group && this.group.addWithUpdate(this.c1);
+			this.group && this.group.addWithUpdate(this.c2);
 
-			this._clearCache();
-
-			if (typeof callback === "function") {
-			    callback(clone);
-			}
-		},
-
-		addToCanvas: function (canvas) {
-
-			canvas.add(this);
-
-			if (!this.c1 && !this.c2) {
-				// add the two circles
-				this._addArrow2Circles();
-
-				canvas.add(this.c1);
-				canvas.add(this.c2);
-			}
-		}
+		 }
 
 	});
+
+	// for clone()
+	ext_imageAnnotator.shapes.Wfarrow2line.fromObject = function(object, callback) {
+
+		var klass = this.prototype.constructor;
+		object = fabric.util.object.clone(object, true);
+
+		var instance = new klass(object);
+        callback && callback(instance);
+	}
+
+	// For objects that are contained in other objects, fabric.util.enlivenObjects()
+	// will look for classes within fabric. 
+	fabric.Wfarrow2line = ext_imageAnnotator.shapes.Wfarrow2line;
 
 })(jQuery, mw, fabric, ext_imageAnnotator);
 

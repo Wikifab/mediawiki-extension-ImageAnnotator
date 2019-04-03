@@ -7,7 +7,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 	ext_imageAnnotator.shapes = ext_imageAnnotator.shapes || {}
 
 
-	ext_imageAnnotator.shapes.Wfarrow2Circle = fabric.util.createClass(
+	ext_imageAnnotator.shapes.Wfarrow2circle = fabric.util.createClass(
 			fabric.Circle, {
 				shapeName : 'wfarrow2circle',
 				type : 'wfarrow2circle',
@@ -26,30 +26,21 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 				 */
 				initialize : function(options) {
 					this.callSuper('initialize', options);
+
+					// dirty hack : we let ActiveSelection recreate the object
+					// so that it doesn't complain ("cannot add 'group' on undefined)
+					// but then remove it afterwards. ArrowCircles are never created 
+					// directly, always from Arrow2Line.
+					this.on('added', function() {
+						if (this.line1 == undefined && this.line2 == undefined) {
+							this.group && this.group.removeWithUpdate(this);
+							this.canvas && this.canvas.remove(this);
+						}
+					});
 				},
 
 				render : function(ctx) {
 					this.callSuper('render', ctx);
-				},
-
-				clone: function(callback) {
-
-					var arrowLine;
-
-					if (this.line1) {
-						arrowLine = fabric.util.object.clone(this.line1);
-					} else if (this.line2) {
-						arrowLine = fabric.util.object.clone(this.line2);
-					}
-
-					arrowLine._clearCache();
-
-					arrowLine.c1 = null;
-					arrowLine.c2 = null;
-
-					if (typeof callback === "function") {
-					    callback(arrowLine);
-					}
 				},
 
 				/**
@@ -63,6 +54,22 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 
 			});
+
+	// for clone()
+	ext_imageAnnotator.shapes.Wfarrow2circle.fromObject = function(object, callback) {
+		
+  		var klass = this.prototype.constructor;
+		object = fabric.util.object.clone(object, true);
+
+		object.isClone = true;
+
+		var instance = new klass(object);
+        callback && callback(instance);
+	}
+
+	// For objects that are contained in other objects, fabric.util.enlivenObjects()
+	// will look for classes within fabric. 
+	fabric.Wfarrow2circle = ext_imageAnnotator.shapes.Wfarrow2circle;
 
 })(jQuery, mw, fabric, ext_imageAnnotator);
 

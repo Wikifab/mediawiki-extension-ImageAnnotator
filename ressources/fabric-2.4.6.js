@@ -1019,12 +1019,16 @@ fabric.CommonMethods = {
       objects.forEach(function (o, index) {
         // if sparse array
         if (!o || !o.type) {
+          console.log("sparse array");
+          console.log(o);
           onLoaded();
           return;
         }
         var klass = fabric.util.getKlass(o.type, namespace);
         klass.fromObject(o, function (obj, error) {
           error || (enlivenedObjects[index] = obj);
+          console.log("enlivenedObjects");
+          console.log(enlivenedObjects);
           reviver && reviver(o, obj, error);
           onLoaded();
         });
@@ -7521,10 +7525,6 @@ fabric.ElementsParser = function(elements, callback, options, reviver, parsingOp
      */
     _renderObjects: function(ctx, objects) {
       var i, len;
-      console.log("ctx");
-      console.log(ctx);
-      console.log("objects");
-      console.log(objects);
       for (i = 0, len = objects.length; i < len; ++i) {
         objects[i] && objects[i].render(ctx);
       }
