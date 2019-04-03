@@ -45,6 +45,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 				{'type':'square', 'parent':'tools'},
 				{'type':'circle', 'parent':'tools'},
 				{'type':'arrow2', 'parent':'tools'},
+				{'type':'line', 'parent':'tools'},
 				{'type':'text', 'parent':'tools'},
 				{'type':'numberedbullet', 'parent':'tools'},
 				{'type':'duplicate', 'parent':'tools'},
@@ -291,7 +292,8 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			'wfarrow2circle',
 			'wfarrow2line',
 			'wfnumberedbullet',
-			'wfcustompic'
+			'wfcustompic',
+			'wfline'
 		]
 
 		for (var x = 0; x < data['objects'].length; x++) {
@@ -338,7 +340,11 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 					var objectToload = this.specificsObjectsToLoad[x];
 					var arrow = new ext_imageAnnotator.shapes.Wfarrow2line(objectToload);
 					this.canvas.add(arrow);
-				}else if (this.specificsObjectsToLoad[x].type == 'wfcustompic') {
+				} else if (this.specificsObjectsToLoad[x].type == 'wfline') {
+					var objectToload = this.specificsObjectsToLoad[x];
+					var line = new ext_imageAnnotator.shapes.Wfline(objectToload);
+					this.canvas.add(line);
+				} else if (this.specificsObjectsToLoad[x].type == 'wfcustompic') {
 					var objectToload = this.specificsObjectsToLoad[x];
 					var pic = new ext_imageAnnotator.shapes.Wfcustompic(objectToload);
 					this.canvas.add(pic);
@@ -497,10 +503,23 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		this.canvas.setActiveObject(poly);
 	}
 
-	ext_imageAnnotator.Editor.prototype.addArrow2 = function (size) {
+	ext_imageAnnotator.Editor.prototype.addArrow2 = function () {
 
 		var line = new ext_imageAnnotator.shapes.Wfarrow2line({
 		//var line = new ext_imageAnnotator.shapes.Wfarrow2Arrow([x,y,x2,y2], {
+			originX: 'center',
+			originY: 'center',
+			strokeWidth: 3,
+			stroke:this.currentColor,
+			fill: 'rgba(255,0,0,0)',
+		});
+
+		this.canvas.add(line);
+	}
+
+	ext_imageAnnotator.Editor.prototype.addLine = function () {
+
+		var line = new ext_imageAnnotator.shapes.Wfline({
 			originX: 'center',
 			originY: 'center',
 			strokeWidth: 3,
@@ -1258,7 +1277,13 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		        break;
 		    case 'arrow2':
 		    	button.click(function() {
-					editor.addArrow2(100);
+					editor.addArrow2();
+					return false;
+				});
+		        break;
+		    case 'line':
+		    	button.click(function() {
+					editor.addLine();
 					return false;
 				});
 		        break;
