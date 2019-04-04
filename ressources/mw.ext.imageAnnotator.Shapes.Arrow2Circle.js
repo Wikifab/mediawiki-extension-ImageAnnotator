@@ -32,7 +32,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 					// but then remove it afterwards. ArrowCircles are never created 
 					// directly, always from Arrow2Line.
 					this.on('added', function() {
-						if (this.line1 && this.line1 == undefined || this.line2 && this.line2 == undefined) {
+						if (this.line1 == undefined && this.line2 == undefined) {
 							this.group && this.group.removeWithUpdate(this);
 							this.canvas && this.canvas.remove(this);
 						}
