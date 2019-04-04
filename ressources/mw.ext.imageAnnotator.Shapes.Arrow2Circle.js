@@ -32,11 +32,41 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 					// but then remove it afterwards. ArrowCircles are never created 
 					// directly, always from Arrow2Line.
 					this.on('added', function() {
-						if (this.line1 == undefined && this.line2 == undefined) {
+						if (this.line1 && this.line1 == undefined || this.line2 && this.line2 == undefined) {
 							this.group && this.group.removeWithUpdate(this);
 							this.canvas && this.canvas.remove(this);
 						}
 					});
+
+					  // the arrow must move as a whole, that is the arrow and its circles, 
+				      // so make sure both its control circles are included in the selection
+				      this.on('selected', function (e) {
+				      	if (this.group != undefined && this.group.type === 'activeSelection') {
+				      		
+				      		var selection = this.group;
+
+				      		if (this.line1) {
+
+				      			if (!selection.contains(this.line1)) selection.addWithUpdate(this.line1);
+
+				      			if (this == this.line1.c1) {
+				      				if (!selection.contains(this.line1.c2)) selection.addWithUpdate(this.line1.c2);
+				      			} else if (this == this.line1.c2) {
+				      				if (!selection.contains(this.line1.c1)) selection.addWithUpdate(this.line1.c1);
+				      			}
+
+				      		} else if (this.line2) {
+
+				      			if (!selection.contains(this.line2)) selection.addWithUpdate(this.line2);
+
+				      			if (this == this.line2.c1) {
+				      				if (!selection.contains(this.line2.c2)) selection.addWithUpdate(this.line2.c2);
+				      			} else if (this == this.line2.c2) {
+				      				if (!selection.contains(this.line2.c1)) selection.addWithUpdate(this.line2.c1);
+				      			}
+				      		}
+				      	}
+				      });
 				},
 
 				render : function(ctx) {
