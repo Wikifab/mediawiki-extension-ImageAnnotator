@@ -29,10 +29,10 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 	      var d1Factor = xMult == -1 && yMult == -1 ? -1 : 1;
 	      var d3Factor = xMult == 1 && yMult == 1 ? -1 : 1;
 
-	      var 	x2a = x2 - (30 * x2 /l) + (d3Factor * 5 * ly / l),
-				y2a = y2 - (30 * y2 /l) + (d1Factor * 5 * lx / l) ,
-		  		x2b = x2 - (30 * x2 /l) - (d3Factor * 5 * ly / l),
-		  		y2b = y2 - (30 * y2 /l) - (d1Factor * 5 * lx / l);
+	      var 	x2a = x2 - (40 * x2 /l) + (d3Factor * 8 * ly / l),
+				y2a = y2 - (40 * y2 /l) + (d1Factor * 8 * lx / l) ,
+		  		x2b = x2 - (40 * x2 /l) - (d3Factor * 8 * ly / l),
+		  		y2b = y2 - (40 * y2 /l) - (d1Factor * 8 * lx / l);
 
 	      return {
 	        x1: x1,
@@ -75,6 +75,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 	      ctx.strokeStyle = this.stroke || ctx.fillStyle;
 	      this.stroke && this._renderStroke(ctx);
 	      ctx.strokeStyle = origStrokeStyle;
+	      ctx.lineCap = this.strokeLineCap;
 	    },
 
 	    /**

@@ -509,7 +509,6 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		//var line = new ext_imageAnnotator.shapes.Wfarrow2Arrow([x,y,x2,y2], {
 			originX: 'center',
 			originY: 'center',
-			strokeWidth: 3,
 			stroke:this.currentColor,
 			fill: 'rgba(255,0,0,0)',
 		});
@@ -522,7 +521,6 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		var line = new ext_imageAnnotator.shapes.Wfline({
 			originX: 'center',
 			originY: 'center',
-			strokeWidth: 3,
 			stroke:this.currentColor,
 			fill: 'rgba(255,0,0,0)',
 		});
