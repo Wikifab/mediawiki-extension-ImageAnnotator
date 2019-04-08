@@ -37,36 +37,6 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 							this.canvas && this.canvas.remove(this);
 						}
 					});
-
-					  // the arrow must move as a whole, that is the arrow and its circles, 
-				      // so make sure both its control circles are included in the selection
-				      this.on('selected', function (e) {
-				      	if (this.group != undefined && this.group.type === 'activeSelection') {
-				      		
-				      		var selection = this.group;
-
-				      		if (this.line1) {
-
-				      			if (!selection.contains(this.line1)) selection.addWithUpdate(this.line1);
-
-				      			if (this == this.line1.c1) {
-				      				if (!selection.contains(this.line1.c2)) selection.addWithUpdate(this.line1.c2);
-				      			} else if (this == this.line1.c2) {
-				      				if (!selection.contains(this.line1.c1)) selection.addWithUpdate(this.line1.c1);
-				      			}
-
-				      		} else if (this.line2) {
-
-				      			if (!selection.contains(this.line2)) selection.addWithUpdate(this.line2);
-
-				      			if (this == this.line2.c1) {
-				      				if (!selection.contains(this.line2.c2)) selection.addWithUpdate(this.line2.c2);
-				      			} else if (this == this.line2.c2) {
-				      				if (!selection.contains(this.line2.c1)) selection.addWithUpdate(this.line2.c1);
-				      			}
-				      		}
-				      	}
-				      });
 				},
 
 				render : function(ctx) {
