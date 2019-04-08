@@ -69,7 +69,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 	            this.c1.set('left',this.get('left') + points.x1);
 	            this.c1.set('top',this.get('top') + points.y1);
 	            this.c2.set('left',this.get('left') + points.x2);
-	            this.c2.set('top',this.get('top') + points.y2);            
+	            this.c2.set('top',this.get('top') + points.y2);      
 	      });
 
 	      this.on('moved', function(e) {
@@ -98,8 +98,34 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 	      			this.angle = 0;
 	      		}
 
-	      		this._updatePoints();
+	      		var points = this.calcLinePoints();
+
+	            this.c1.set('left',this.get('left') + points.x1);
+	            this.c1.set('top',this.get('top') + points.y1);
+	            this.c2.set('left',this.get('left') + points.x2);
+	            this.c2.set('top',this.get('top') + points.y2); 
+
+	            this._updatePoints();
+
+	            this._toggleCircles(true);
 	      });
+
+	      this.on('selected', function (e) {
+	      	if (this.group != undefined && this.group.type === 'activeSelection') {
+	      		this._toggleCircles(false);
+	      	}
+	      });
+	   },
+
+	   // circles' visibility
+	   _toggleCircles: function(val) {
+
+	   		if (val != undefined) {
+	   			this.c2.visible = this.c1.visible = val;
+	   			return;
+	   		}
+
+	   		this.c2.visible = this.c1.visible = this.c1.visible ? false : true;
 	   },
 
 	    _updatePoints: function() {
@@ -182,6 +208,3 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 	fabric.Wfline = ext_imageAnnotator.shapes.Wfline;
 
 })(jQuery, mw, fabric, ext_imageAnnotator);
-
-
-
