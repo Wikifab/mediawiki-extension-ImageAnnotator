@@ -15,6 +15,8 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 	     */
 	    initialize: function(points, options) {
 
+	      this.callSuper('initialize', points, options);
+
 	      // the arrow must move as a whole, that is the arrow and its circles, 
 	      // so make sure both its control circles are included in the selection
 	      // Note : it's safe since when selected is triggered, _objects of the 
