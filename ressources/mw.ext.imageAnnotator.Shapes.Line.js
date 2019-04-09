@@ -41,6 +41,20 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 	      }
 
 	      this.callSuper('initialize', points, options);
+
+	      // the line must move as a whole, that is the line itself and its circles, 
+	      // so make sure both its control circles are included in the selection
+	      // Note : it's safe since when selected is triggered, _objects of the 
+	      // group already contains all the selected objects 
+	      this.on('selected', function (e) {
+	      	if (this.group != undefined && this.group.type === 'activeSelection') {
+	      		
+	      		var selection = this.group;
+
+	      		if (!selection.contains(this.c1)) selection.addWithUpdate(this.c1);
+	      		if (!selection.contains(this.c2)) selection.addWithUpdate(this.c2);
+	      	}
+	      });
 	      this._onEvents();
 	    },
 
@@ -80,15 +94,6 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 	      		this.c2.setCoords();
 
 	      		this._updatePoints();
-	      });
-
-	      this.on('rotating', function(e) {
-	      		var p = this.calcLinePoints();
-
-	      		this.c1.set('left',this.get('left') + points.x1);
-	            this.c1.set('top',this.get('top') + points.y1);
-	            this.c2.set('left',this.get('left') + points.x2);
-	            this.c2.set('top',this.get('top') + points.y2);
 	      });
 
 	      this.on('deselected', function(e) {
