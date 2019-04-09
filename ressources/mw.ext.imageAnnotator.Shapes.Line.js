@@ -96,15 +96,6 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 	      		this._updatePoints();
 	      });
 
-	      this.on('rotating', function(e) {
-	      		var p = this.calcLinePoints();
-
-	      		this.c1.set('left',this.get('left') + points.x1);
-	            this.c1.set('top',this.get('top') + points.y1);
-	            this.c2.set('left',this.get('left') + points.x2);
-	            this.c2.set('top',this.get('top') + points.y2);
-	      });
-
 	      this.on('deselected', function(e) {
 
 	      		// after rotation
