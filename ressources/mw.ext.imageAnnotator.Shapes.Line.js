@@ -23,6 +23,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		   lockScalingY: true,
 		   hasControls: false,
 		   hasBorders: false,
+		   padding: 5,
 			//borderColor: 'black',
 			//cornerColor: 'rgba(200,200,200,1)',
 
