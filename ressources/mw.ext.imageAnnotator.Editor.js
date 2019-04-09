@@ -1547,6 +1547,3 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 	}
 
 })(jQuery, mediaWiki, fabric, ext_imageAnnotator);
-
-
-
