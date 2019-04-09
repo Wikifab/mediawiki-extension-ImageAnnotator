@@ -139,6 +139,9 @@ class Hooks {
 			// replace img source by img annotated image :
 			$imgElement = preg_replace('@src="([^"]+)"@', 'src="'.$annotatedImage->getImgUrl() . '"', $imgElement);
 
+			// remove srcset attribut :
+			$imgElement = preg_replace('@srcset="([^"]+)"@', '', $imgElement);
+
 			// if image has a height defined, we must change it by the height from annotated content :
 			if (preg_match('@ height="([0-9]+)"@', $imgElement, $matches)) {
 				$height = $matches[1];
