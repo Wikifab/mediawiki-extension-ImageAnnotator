@@ -1060,69 +1060,6 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		this.moveSelection(0,5);
 	}
 
-	ext_imageAnnotator.Editor.prototype.copyObject = function() {
-
-		// clone what are you copying since you
-		// may want copy and paste on different moment.
-		// and you do not want the changes happened
-		// later to reflect on the copy.
-
-		var editor = this;
-		var activeObject = this.canvas.getActiveObject();
-		// note : fabric.Object.clone() didn't work for some reason
-		// error thrown : this._render is not a function
-		// so, used fabric.util.object.clone instead
-		var clone =  fabric.util.object.clone(activeObject);
-
-		clone.top += 10;
-		clone.left += 10;
-
-		// so to ensure that each copied object has its own cache environment
-		clone._cacheCanvas = null;
-	    clone.cacheWidth = 0;
-	    clone.cacheHeight = 0;
-
-		editor._clipboard = clone;
-
-	}
-
-	ext_imageAnnotator.Editor.prototype.pasteObject = function() {
-
-		var editor = this;
-
-		// clone again, so you can do multiple copies.
-		
-		// note : fabric.Object.clone() didn't work for some reason
-		// error thrown : this._render is not a function
-		// so, used fabric.util.object.clone instead
-		var clonedObj = fabric.util.object.clone(this._clipboard);
-
-		// so to ensure that each object has its own cache environment
-		clonedObj._cacheCanvas = null;
-	    clonedObj.cacheWidth = 0;
-	    clonedObj.cacheHeight = 0;
-
-		editor.canvas.discardActiveObject();
-
-		if (clonedObj.type === 'activeSelection') {
-			// active selection needs a reference to the canvas.
-			clonedObj.canvas = editor.canvas;
-			clonedObj.forEachObject(function(obj) {
-				editor.canvas.add(obj);
-			});
-			// this should solve the unselectability
-			clonedObj.setCoords();
-		} else {
-			editor.canvas.add(clonedObj);
-		}
-
-		this._clipboard.top += 10;
-		this._clipboard.left += 10;
-
-		editor.canvas.setActiveObject(clonedObj);
-		editor.canvas.requestRenderAll();
-	}
-
 	ext_imageAnnotator.Editor.prototype.addToolbarDiv = function (params) {
 
 		var name = params['name'];
@@ -1525,7 +1462,9 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 	ext_imageAnnotator.Editor.prototype.copyObject = function() {
 
-		var editor = this;
+		var editor = this, activeObject = this.canvas.getActiveObject();
+
+		if (!activeObject) return; 
 
 		this.canvas.getActiveObject().clone(function(cloned) {
 			editor._clipboard = cloned;
@@ -1536,9 +1475,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 		var editor = this;
 
-		if (!this._clipboard) { // nothing to paste
-			return;
-		}
+		if (!this._clipboard) return;
 
 		// clone again, so you can do multiple copies.
 		this._clipboard.clone(function(clonedObj) {
@@ -1568,6 +1505,3 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 	}
 
 })(jQuery, mediaWiki, fabric, ext_imageAnnotator);
-
-
-

@@ -10,6 +10,28 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			shapeName: 'wfarrow2line',
 			type: 'wfarrow2line',
 
+		/**
+	     * Constructor
+	     */
+	    initialize: function(points, options) {
+
+	      this.callSuper('initialize', points, options);
+
+	      // the arrow must move as a whole, that is the arrow and its circles, 
+	      // so make sure both its control circles are included in the selection
+	      // Note : it's safe since when selected is triggered, _objects of the 
+	      // group already contains all the selected objects 
+	      this.on('selected', function (e) {
+	      	if (this.group != undefined && this.group.type === 'activeSelection') {
+	      		
+	      		var selection = this.group;
+
+	      		if (!selection.contains(this.c1)) selection.addWithUpdate(this.c1);
+	      		if (!selection.contains(this.c2)) selection.addWithUpdate(this.c2);
+	      	}
+	      });
+	    },
+
 	    /**
 	     * Recalculates line points given width and height
 	     * @private

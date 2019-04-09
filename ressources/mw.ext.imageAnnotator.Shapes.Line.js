@@ -33,7 +33,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 	      var points = [50,50, 150, 50];
 
-	      if(options['left'] && options['x1']) {
+	      if(options['left'] != undefined && options['x1'] != undefined) {
 	    	  points[0] = options['left'] + options['x1'];
 	    	  points[1] = options['top'] + options['y1'];
 	    	  points[2] = options['left'] + options['x2'];
