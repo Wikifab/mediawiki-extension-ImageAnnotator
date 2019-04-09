@@ -46,6 +46,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 				{'type':'circle', 'parent':'tools'},
 				// {'type':'ellipse', 'parent':'tools'},
 				{'type':'arrow2', 'parent':'tools'},
+				{'type':'line', 'parent':'tools'},
 				{'type':'text', 'parent':'tools'},
 				{'type':'numberedbullet', 'parent':'tools'},
 				{'type':'duplicate', 'parent':'tools'},
@@ -293,7 +294,8 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			'wfarrow2line',
 			'wfnumberedbullet',
 			'wfcustompic',
-			'wfellipse'
+			'wfellipse',
+			'wfline'
 		]
 
 		for (var x = 0; x < data['objects'].length; x++) {
@@ -344,7 +346,11 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 					var objectToload = this.specificsObjectsToLoad[x];
 					var arrow = new ext_imageAnnotator.shapes.Wfarrow2line(objectToload);
 					this.canvas.add(arrow);
-				}else if (this.specificsObjectsToLoad[x].type == 'wfcustompic') {
+				} else if (this.specificsObjectsToLoad[x].type == 'wfline') {
+					var objectToload = this.specificsObjectsToLoad[x];
+					var line = new ext_imageAnnotator.shapes.Wfline(objectToload);
+					this.canvas.add(line);
+				} else if (this.specificsObjectsToLoad[x].type == 'wfcustompic') {
 					var objectToload = this.specificsObjectsToLoad[x];
 					var pic = new ext_imageAnnotator.shapes.Wfcustompic(objectToload);
 					this.canvas.add(pic);
@@ -515,13 +521,24 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		this.canvas.setActiveObject(poly);
 	}
 
-	ext_imageAnnotator.Editor.prototype.addArrow2 = function (size) {
+	ext_imageAnnotator.Editor.prototype.addArrow2 = function () {
 
 		var line = new ext_imageAnnotator.shapes.Wfarrow2line({
 		//var line = new ext_imageAnnotator.shapes.Wfarrow2Arrow([x,y,x2,y2], {
 			originX: 'center',
 			originY: 'center',
-			strokeWidth: 3,
+			stroke:this.currentColor,
+			fill: 'rgba(255,0,0,0)',
+		});
+
+		this.canvas.add(line);
+	}
+
+	ext_imageAnnotator.Editor.prototype.addLine = function () {
+
+		var line = new ext_imageAnnotator.shapes.Wfline({
+			originX: 'center',
+			originY: 'center',
 			stroke:this.currentColor,
 			fill: 'rgba(255,0,0,0)',
 		});
@@ -1078,69 +1095,6 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		this.moveSelection(0,5);
 	}
 
-	ext_imageAnnotator.Editor.prototype.copyObject = function() {
-
-		// clone what are you copying since you
-		// may want copy and paste on different moment.
-		// and you do not want the changes happened
-		// later to reflect on the copy.
-
-		var editor = this;
-		var activeObject = this.canvas.getActiveObject();
-		// note : fabric.Object.clone() didn't work for some reason
-		// error thrown : this._render is not a function
-		// so, used fabric.util.object.clone instead
-		var clone =  fabric.util.object.clone(activeObject);
-
-		clone.top += 10;
-		clone.left += 10;
-
-		// so to ensure that each copied object has its own cache environment
-		clone._cacheCanvas = null;
-	    clone.cacheWidth = 0;
-	    clone.cacheHeight = 0;
-
-		editor._clipboard = clone;
-
-	}
-
-	ext_imageAnnotator.Editor.prototype.pasteObject = function() {
-
-		var editor = this;
-
-		// clone again, so you can do multiple copies.
-		
-		// note : fabric.Object.clone() didn't work for some reason
-		// error thrown : this._render is not a function
-		// so, used fabric.util.object.clone instead
-		var clonedObj = fabric.util.object.clone(this._clipboard);
-
-		// so to ensure that each object has its own cache environment
-		clonedObj._cacheCanvas = null;
-	    clonedObj.cacheWidth = 0;
-	    clonedObj.cacheHeight = 0;
-
-		editor.canvas.discardActiveObject();
-
-		if (clonedObj.type === 'activeSelection') {
-			// active selection needs a reference to the canvas.
-			clonedObj.canvas = editor.canvas;
-			clonedObj.forEachObject(function(obj) {
-				editor.canvas.add(obj);
-			});
-			// this should solve the unselectability
-			clonedObj.setCoords();
-		} else {
-			editor.canvas.add(clonedObj);
-		}
-
-		this._clipboard.top += 10;
-		this._clipboard.left += 10;
-
-		editor.canvas.setActiveObject(clonedObj);
-		editor.canvas.requestRenderAll();
-	}
-
 	ext_imageAnnotator.Editor.prototype.addToolbarDiv = function (params) {
 
 		var name = params['name'];
@@ -1300,7 +1254,13 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		        break;
 		    case 'arrow2':
 		    	button.click(function() {
-					editor.addArrow2(100);
+					editor.addArrow2();
+					return false;
+				});
+		        break;
+		    case 'line':
+		    	button.click(function() {
+					editor.addLine();
 					return false;
 				});
 		        break;
@@ -1544,7 +1504,9 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 	ext_imageAnnotator.Editor.prototype.copyObject = function() {
 
-		var editor = this;
+		var editor = this, activeObject = this.canvas.getActiveObject();
+
+		if (!activeObject) return; 
 
 		this.canvas.getActiveObject().clone(function(cloned) {
 			editor._clipboard = cloned;
@@ -1555,9 +1517,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 		var editor = this;
 
-		if (!this._clipboard) { // nothing to paste
-			return;
-		}
+		if (!this._clipboard) return;
 
 		// clone again, so you can do multiple copies.
 		this._clipboard.clone(function(clonedObj) {
@@ -1587,6 +1547,3 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 	}
 
 })(jQuery, mediaWiki, fabric, ext_imageAnnotator);
-
-
-
