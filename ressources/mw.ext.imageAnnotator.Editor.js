@@ -36,7 +36,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		this.originalCropPosition = false;
 
 		// default params :
-		this.currentColor = 'red';
+		this.currentColor = '#FF0000'; // red
 		this.toolbarDivs = {};
 
 		var toolbarConfig = [
