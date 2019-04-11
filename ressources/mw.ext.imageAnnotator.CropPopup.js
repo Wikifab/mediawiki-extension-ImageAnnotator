@@ -13,7 +13,7 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 	 * @param {jQuery} container container to put editor in it
 	 * @param {string} [content='']
 	 */
-	ext_imageAnnotator.CropPopup = function (editLink, image, cropPosition, cropCallback, sourcePopup ) {
+	ext_imageAnnotator.CropPopup = function (editLink, image, cropPosition, cropCallback, sourcePopup, format) {
 		this.editLink = editLink;
 		this.initPopup();
 		this.image = image;
@@ -21,43 +21,46 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 		this.content = '';
 		this.sourcePopup = sourcePopup;
 		this.cropCallback = cropCallback;
+		this.cropPopup = $('#mw-ia-croppopup-div');
+		this.format = format; //ratio (ex: 16_9)
 
 
 		this.clonedImage = $(image).clone();
 		this.clonedImage.appendTo(this.imagediv);
 
-		if (sourcePopup) {
-			$('#mw-ia-croppopup-div').popup({
-				onclose: function( event, ui ) {
-					sourcePopup.show();
-				}
-			});
-			sourcePopup.hide();
+		if (this.sourcePopup) {
+			this.sourcePopup.hide();
 		}
 		
-		$('#mw-ia-croppopup-div').popup({
+		this.cropPopup.popup({
 			blur: false
 		});
 
-		$('#mw-ia-croppopup-div').popup('show');
+		this.cropPopup.popup('show');
 
 		this.launchEditor();
 
 	}
 
 	ext_imageAnnotator.CropPopup.prototype.hide = function() {
-		$('#mw-ia-croppopup-div').popup('hide');
-		this.sourcePopup.show();
+		this.cropPopup.popup('hide');
+		if (this.sourcePopup) {
+			this.sourcePopup.show();
+		}
 	}
 
 	ext_imageAnnotator.CropPopup.prototype.launchEditor = function () {
 		var cropPopup = this;
 
 		var options = {
-				'toolbarContainer' : this.toolbar,
-				'cropMode' : true,
-				'fixedHeight' : 500
+			'toolbarContainer' : this.toolbar,
+			'cropMode' : true,
+			'fixedHeight' : 500
 		};
+
+		// user won't be able to change format
+		if (this.format) options['predefinedFormat'] = this.format;
+
 		this.editor = new ext_imageAnnotator.Editor( this.imagediv, null, this.content, this.clonedImage, true, options );
 
 		$(this.imagediv).css('width', ext_imageAnnotator.standardWidth + 'px');
@@ -67,11 +70,16 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 		this.clonedImage.hide();
 
 		this.editor.addCropZone(this.cropPosition);
+		var editor = this.editor;
+		var cropPopup = this;
+
+		// add predefined format
+		this.format && setTimeout(function(){ editor.setFormat(cropPopup.format); }, 20);
 
 		// add cancel button
 		this.buttonbar.append($('<button >' +mw.message( 'imageannotator-button-cancel' ).text() + '</button>').addClass('cancelButton').click(function () {
 			setTimeout(function () {
-				cropPopup.hide();
+				cropPopup.cancel();
 			}, 10);
 			return false;
 		}));
@@ -92,7 +100,7 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 	ext_imageAnnotator.CropPopup.prototype.initPopup = function () {
 		var cropPopup = this;
 		if (ext_imageAnnotator.CropPopup_isInit) {
-			this.containerdiv = $('#mw-ia-croppopup-div');
+			this.containerdiv = this.cropPopup;
 			this.maindiv = ext_imageAnnotator.CropPopup_mainDiv;
 			this.toolbar = this.maindiv.find('.mw-ia-popup-toolbar');
 			this.imagediv = this.maindiv.find('.mw-ia-popup-image');
@@ -136,6 +144,16 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 		var cropPositions = this.editor.getCropPosition();
 
 		this.cropCallback[1].call(this.cropCallback[0], cropPositions);
+
+		this.sourcePopup && this.sourcePopup.show();
+
+		this.hide();
+
+	}
+
+	ext_imageAnnotator.CropPopup.prototype.cancel = function () {
+
+		this.sourcePopup && this.sourcePopup.show();
 
 		this.hide();
 

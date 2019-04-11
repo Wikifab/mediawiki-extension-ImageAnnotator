@@ -18,21 +18,21 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 		this.initPopup();
 		this.image = image;
 		this.content = content;
-
+		this.$editorPopup = $('#mw-ia-popup-div');
 
 		this.clonedImage = $(image).clone();
 		this.clonedImage.appendTo(this.imagediv);
 
-		$('#mw-ia-popup-div').popup({
+		this.$editorPopup.popup({
 		  blur: false // do not close when clicking outside the popup
 		});
 
-		$('#mw-ia-popup-div').popup('show');
+		this.$editorPopup.popup('show');
 		this.launchEditor();
 	}
 
 	ext_imageAnnotator.EditorPopup.prototype.hide = function() {
-		$('#mw-ia-popup-div').popup('hide');
+		this.$editorPopup.popup('hide');
 	}
 
 	ext_imageAnnotator.EditorPopup.prototype.launchEditor = function () {
@@ -41,6 +41,9 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 		var options = {
 				'toolbarContainer' : this.toolbar
 		};
+
+		if (this.editLink.predefinedFormat) options['predefinedFormat'] = this.editLink.predefinedFormat;
+
 		this.editor = new ext_imageAnnotator.Editor( this.imagediv, null, this.content, this.clonedImage, true, options );
 
 		$(this.imagediv).css('width', ext_imageAnnotator.standardWidth + 'px');
@@ -74,7 +77,7 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 	ext_imageAnnotator.EditorPopup.prototype.initPopup = function () {
 		var editorPopup = this;
 		if (ext_imageAnnotator.EditorPopup_isInit) {
-			this.containerdiv = $('#mw-ia-popup-div');
+			this.containerdiv = this.$editorPopup;
 			this.maindiv = ext_imageAnnotator.EditorPopup_mainDiv;
 			this.toolbar = this.maindiv.find('.mw-ia-popup-toolbar');
 			this.imagediv = this.maindiv.find('.mw-ia-popup-image');
@@ -118,7 +121,7 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 		// update thumb is call within update Data, must not been called twice :
 		//this.editor.generateThumbUsingAPI(jsonData);
 		this.editLink.updateData(jsonData);
-		$('#mw-ia-popup-div').popup('hide');
+		this.$editorPopup.popup('hide');
 
 	}
 
