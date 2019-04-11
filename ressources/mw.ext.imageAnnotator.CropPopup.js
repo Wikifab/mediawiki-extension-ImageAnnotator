@@ -22,6 +22,8 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 		this.sourcePopup = sourcePopup;
 		this.cropCallback = cropCallback;
 
+		// width of the crop canvas, this is the base width used to get cropPosition
+		this.baseWidth = 600;
 
 		this.clonedImage = $(image).clone();
 		this.clonedImage.appendTo(this.imagediv);
@@ -54,6 +56,10 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 				'cropMode' : true,
 				'fixedHeight' : 500
 		};
+		options['custom-dimensions'] = {
+				'width': this.baseWidth,
+				'height': 500
+		}
 		this.editor = new ext_imageAnnotator.Editor( this.imagediv, null, this.content, this.clonedImage, true, options );
 
 		$(this.imagediv).css('width', ext_imageAnnotator.standardWidth + 'px');

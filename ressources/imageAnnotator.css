@@ -145,6 +145,10 @@
 	margin: 2px 1px;
 }
 
+.mw-ia-popup-image {
+    margin:auto;
+    background:#FFFFFF;
+}
 .mw-ia-popup-image .lower-canvas, .mw-ia-popup-image .upper-canvas {
     border:1px solid #ccc !important;
 }
