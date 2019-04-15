@@ -56,10 +56,10 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 				'cropMode' : true,
 				'fixedHeight' : 500
 		};
-		options['custom-dimensions'] = {
+		/*options['custom-dimensions'] = {
 				'width': this.baseWidth,
 				'height': 500
-		}
+		}*/
 		this.editor = new ext_imageAnnotator.Editor( this.imagediv, null, this.content, this.clonedImage, true, options );
 
 		$(this.imagediv).css('width', ext_imageAnnotator.standardWidth + 'px');

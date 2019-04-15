@@ -69,8 +69,8 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 		this.clonedImage.hide();
 
 
-		console.log('launchEditor');
-		console.log(this.clonedImage);
+		//console.log('launchEditor');
+		//console.log(this.clonedImage);
 
 		if ( ! this.options || ! this.options['no-controlbar']) {
 			// add cancel button
