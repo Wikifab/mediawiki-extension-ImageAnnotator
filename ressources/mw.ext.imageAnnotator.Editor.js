@@ -259,8 +259,8 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		// if there is a cropped image, use cropped dim as base dim :
 		var cropedImage = this.getCropedImagePosition();
 		if (cropedImage && cropedImage.height) {
-			baseHeight = cropedImage.height;
-			baseWidth = cropedImage.width;
+			baseHeight = cropedImage.cropzoneheight;
+			baseWidth = cropedImage.cropzonewidth;
 		}
 		
 
@@ -417,13 +417,15 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 						editor.canvas.setWidth(editor.editorWidth);
 						editor.canvas.setHeight(h);
 					}
-					console.log('Editor.updateData');
-					console.log([obj.width,obj.height, editor.canvas.getWidth()]);
-					console.log(content);
-					console.log('Editor.updateData');
-					
 					
 					editor.addBackground();
+
+					// if image dimensions has changed, we must scale it :
+					if (obj.width !== 'undefined' && obj.width != editor.editorWidth) {
+						console.log ('image size changed from ' +  obj.width + " to " +  editor.editorWidth );
+						// TODO : scale all objects to match original position
+					}
+
 					// disable cropped image edition
 					editor.lockBackImage();
 
