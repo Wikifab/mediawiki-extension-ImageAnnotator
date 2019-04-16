@@ -1,8 +1,11 @@
 
 
-.mw-ia-popup-container
+.mw-ia-croppopup-div {
+	width:100%;
+	min-height:100%;
+}
 
-.mw-ia-popup-main {
+.mw-ia-popup-container .mw-ia-popup-main {
 	padding:10px;
 	background:#FFF;
 	-webkit-border-radius: 5px;

@@ -23,7 +23,7 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 		this.cropCallback = cropCallback;
 
 		// width of the crop canvas, this is the base width used to get cropPosition
-		this.baseWidth = 600;
+		this.baseWidth = parseInt($(window).width() / 2);
 
 		this.clonedImage = $(image).clone();
 		this.clonedImage.appendTo(this.imagediv);
@@ -51,18 +51,27 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 	ext_imageAnnotator.CropPopup.prototype.launchEditor = function () {
 		var cropPopup = this;
 
+		var fixedHeight =  $(window).height() - 150;
+		var fixedWidth =  $(window).width() - 50;
+		if (! fixedHeight || fixedHeight < 500 ) {
+			fixedHeight = 500;
+		}
+		if (! fixedWidth || fixedWidth < 600 ) {
+			fixedWidth = 600;
+		}
 		var options = {
 				'toolbarContainer' : this.toolbar,
 				'cropMode' : true,
-				'fixedHeight' : 500
+				'fixedHeight' : fixedHeight,
+				'fixedWidth' : fixedWidth
 		};
-		/*options['custom-dimensions'] = {
+		options['custom-dimensions'] = {
 				'width': this.baseWidth,
-				'height': 500
-		}*/
+				'height': fixedHeight
+		}
 		this.editor = new ext_imageAnnotator.Editor( this.imagediv, null, this.content, this.clonedImage, true, options );
 
-		$(this.imagediv).css('width', ext_imageAnnotator.standardWidth + 'px');
+		//$(this.imagediv).css('width', this.baseWidth + 'px');
 		//$(this.imagediv).css("background-image", "url('" + this.clonedImage.attr('src') +"')");
 		$(this.imagediv).css("background-repeat", "no");
 		$(this.imagediv).css("background-size", "100% 100%");
