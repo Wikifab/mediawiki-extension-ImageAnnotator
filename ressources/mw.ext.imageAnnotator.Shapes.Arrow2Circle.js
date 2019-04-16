@@ -45,11 +45,10 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 		set: function(key, value) {
 
-		   // circles do not change color
-		   if( key === 'stroke') {
+			var lockedAttr = ['scaleX', 'scaleY', 'stroke', 'fill'];
+
+		   if( lockedAttr.indexOf(key) != -1 ) {
 			   return this;
-		   } else if ( key === 'fill') {
-		   	 return this;
 		   }
 		   
 		   return this.callSuper('set', key, value);
