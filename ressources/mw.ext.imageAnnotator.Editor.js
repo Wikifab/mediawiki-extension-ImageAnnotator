@@ -17,6 +17,9 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 	 * @param {string} [content='']
 	 */
 	ext_imageAnnotator.Editor = function ( container, canvasId, content, image, editable, options ) {
+
+		console.log("options");
+		console.log(options);
 		var editor = this;
 		this.container = $( container);
 		if (this.container.length == 0) {
@@ -124,6 +127,9 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		this.canvas.selectionLineWidth = 10;
 
 		var canvas = this.canvas;
+
+		console.log("canvas");
+		console.log(this.canvas);
 
 		// override : we allow selecting multiple objects but restrict what we can do with the selection
 		this.canvas.setActiveObject = function (object, e) {
@@ -430,6 +436,16 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 					if (obj.width !== 'undefined' && obj.width != editor.editorWidth) {
 						console.log ('image size changed from ' +  obj.width + " to " +  editor.editorWidth );
 						// TODO : scale all objects to match original position
+
+						var scale = editor.editorWidth / obj.width;
+
+						var objects = editor.canvas.getObjects();
+
+						var activeSelection = new fabric.ActiveSelection(objects);
+						activeSelection.scaleX = scale;
+						activeSelection.scaleY = scale;
+
+						activeSelection.destroy();
 					}
 
 					// disable cropped image edition
@@ -1555,6 +1571,9 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 	ext_imageAnnotator.Editor.prototype.copyObject = function() {
 
 		var editor = this, activeObject = this.canvas.getActiveObject();
+
+		console.log("activeObject");
+		console.log(activeObject);
 
 		if (!activeObject) return; 
 

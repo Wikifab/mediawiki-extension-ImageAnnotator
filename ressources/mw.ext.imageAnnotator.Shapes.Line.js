@@ -57,6 +57,17 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 	      	}
 	      });
 	      this._onEvents();
+
+	      this.on('deselected', function(e) {
+
+	   	  		var obj = this;
+
+	   	  		obj.set({
+	   	  			'scaleX'	: 1,
+	   	  			'scaleY'	: 1
+	   	  		});
+	   	  		
+			});
 	    },
 
 	    setP1 : function ( x, y) {
@@ -106,6 +117,21 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 	      		this._updatePoints();
 	      });
+	   },
+
+	   set: function(key, value) {
+
+			if (key === 'scaleX') {
+				this.width = this.width * value;
+				return this;
+			}
+
+			if (key === 'scaleY') {
+				this.height = this.height * value;
+				return this;
+			}
+		   
+		   return this.callSuper('set', key, value);
 	   },
 
 	    _updatePoints: function() {
