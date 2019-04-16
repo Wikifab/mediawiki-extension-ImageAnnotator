@@ -674,12 +674,12 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 		if ( ! cropPosition.cropzonetop ) {
 			cropPosition = {};
-			cropPosition.cropzonetop = 60;
-			cropPosition.cropzoneleft = 60;
 			cropPosition.cropzoneheight = 300;
 			cropPosition.cropzonewidth = 400;
 			cropPosition.cropzonescaleX = 1;
 			cropPosition.cropzonescaleY = 1;
+			cropPosition.cropzonetop = parseInt((this.canvasElement.attr('height') - cropPosition.cropzoneheight)/ 2);
+			cropPosition.cropzoneleft = parseInt((this.canvasElement.attr('width') - cropPosition.cropzonewidth) / 2);
 		}
 
 		this.originalCropPosition = cropPosition;
