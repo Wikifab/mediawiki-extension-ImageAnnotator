@@ -894,9 +894,9 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 				result.scaleX = item.get('scaleX');
 				result.scaleY = item.get('scaleY');
 				
-				result.baseWidth = editor.editorWidth;
-				result.relativescale = item.width / editor.editorWidth;
-				result.cropzonewidth = result.baseWidth / result.relativescale;
+				result.baseWidth = parseInt(editor.baseWidth);
+				result.relativescale = item.width / result.baseWidth;
+				result.cropzonewidth = result.baseWidth / (result.relativescale * result.scaleX);
 				result.cropzoneheight = result.cropzonewidth * editor.canvas.getHeight() / editor.canvas.getWidth();
 
 				result.cropzonescaleX = 1;
