@@ -1040,6 +1040,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 					editor.fixedBackgroundScale = scaleF / scale;
 					scale = scaleF;
 					editor.fixedBackgroundWidth = Math.round(realWidth);
+					editor.fixedBackgroundLeft = Math.round((editor.editorWidth - realWidth) / 2);
 					editor.fixedBackgroundTop = 0;
 				} else {
 					// width = baseWidth
