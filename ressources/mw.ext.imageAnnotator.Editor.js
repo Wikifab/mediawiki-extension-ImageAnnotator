@@ -36,6 +36,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		this.fixedBackgroundTop = 0; // top positionning of background, (if fixedHeight )
 		this.fixedBackgroundScale = 1; // scale = 1 mean backgroundwidth = standardWidth (ie backgroundwidth = baseWidth)
 		this.originalCropPosition = false;
+		this.backgroundIsCropped = false;
 		if (this.fixedWidth) {
 			this.editorWidth = this.fixedWidth;
 			this.isCustomWidth = false;
@@ -268,7 +269,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		}
 		// if there is a cropped image, use cropped dim as base dim :
 		var cropedImage = this.getCropedImagePosition();
-		if (cropedImage && cropedImage.height) {
+		if (this.backgroundIsCropped && cropedImage && cropedImage.height) {
 			baseHeight = cropedImage.cropzoneheight;
 			baseWidth = cropedImage.cropzonewidth;
 		}
@@ -974,6 +975,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		// add new image cropped :
 		this.canvas.add(imgInstance);
 		imgInstance.sendToBack();
+		this.backgroundIsCropped = true;
 
 
 		var width = this.editorWidth;
@@ -1058,6 +1060,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			imgInstance.left = editor.fixedBackgroundLeft;
 			// apply scale :
 			imgInstance.scale(scale);
+			this.backgroundIsCropped = false;
 
 			// add new image cropped :
 			editor.canvas.add(imgInstance);
