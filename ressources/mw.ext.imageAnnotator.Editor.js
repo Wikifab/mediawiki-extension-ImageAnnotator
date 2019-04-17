@@ -444,6 +444,8 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 						var activeSelection = new fabric.ActiveSelection(objects);
 						activeSelection.scaleX = scale;
 						activeSelection.scaleY = scale;
+						activeSelection.top = activeSelection.top * scale;
+						activeSelection.left = activeSelection.left * scale;
 
 						activeSelection.destroy();
 					}

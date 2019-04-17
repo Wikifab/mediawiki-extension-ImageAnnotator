@@ -110,6 +110,12 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			   var textColor = this.getTextColor(value);
 			   this.textObj.set('fill', textColor);
 		   }
+		   if( key == 'scaleX') {
+			   value = 1;
+		   }
+		   if( key == 'scaleY') {
+			   value = 1;
+		   }
 		   return this.callSuper('set', key, value);
 	   },
 
@@ -171,7 +177,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 	}
 
 	// For objects that are contained in other objects, fabric.util.enlivenObjects()
-	// will look for classes within fabric. 
+	// will look for classes within fabric.
 	fabric.Wfnumberedbullet = ext_imageAnnotator.shapes.Wfnumberedbullet;
 
 })(jQuery, mw, fabric, ext_imageAnnotator);
