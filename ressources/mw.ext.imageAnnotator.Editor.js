@@ -915,11 +915,13 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 				result.cropzonescaleX = 1;
 				result.cropzonescaleY = 1;
 
-				result.cropzonetop = - result.top * result.baseWidth / result.width;
-				result.cropzoneleft = - result.left * result.baseWidth / result.width;
+				result.cropzonetop = - result.top * result.baseWidth / (result.width * result.scaleX) ;
+				result.cropzoneleft = - result.left * result.baseWidth / (result.width * result.scaleY);
 			}
 		});
 
+		//console.log ("getCropedImagePosition");
+		//console.log (result);
 		return result;
 	}
 
@@ -1123,6 +1125,8 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		}
 		result.baseWidth = this.fixedBackgroundWidth;
 
+		//console.log ("getCropPosition");
+		//console.log (result);
 		return result;
 	}
 
