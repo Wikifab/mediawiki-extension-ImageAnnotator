@@ -18,8 +18,6 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 	 */
 	ext_imageAnnotator.Editor = function ( container, canvasId, content, image, editable, options ) {
 
-		console.log("options");
-		console.log(options);
 		var editor = this;
 		this.container = $( container);
 		if (this.container.length == 0) {
@@ -127,9 +125,6 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		this.canvas.selectionLineWidth = 10;
 
 		var canvas = this.canvas;
-
-		console.log("canvas");
-		console.log(this.canvas);
 
 		// override : we allow selecting multiple objects but restrict what we can do with the selection
 		this.canvas.setActiveObject = function (object, e) {
@@ -1573,9 +1568,6 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 	ext_imageAnnotator.Editor.prototype.copyObject = function() {
 
 		var editor = this, activeObject = this.canvas.getActiveObject();
-
-		console.log("activeObject");
-		console.log(activeObject);
 
 		if (!activeObject) return; 
 
