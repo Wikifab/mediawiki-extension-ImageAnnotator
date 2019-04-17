@@ -1043,8 +1043,8 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 					// margin on right and left
 					editor.fixedBackgroundScale = scaleF / scale;
 					scale = scaleF;
-					editor.fixedBackgroundWidth = Math.round(realWidth);
-					editor.fixedBackgroundLeft = Math.round((editor.editorWidth - realWidth) / 2);
+					editor.fixedBackgroundWidth = Math.round(realWidth * editor.fixedBackgroundScale);
+					editor.fixedBackgroundLeft = Math.round((editor.editorWidth - editor.fixedBackgroundWidth) / 2);
 					editor.fixedBackgroundTop = 0;
 				} else {
 					// width = baseWidth
