@@ -36,6 +36,10 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 			});
 			sourcePopup.hide();
 		}
+		
+		$('#mw-ia-croppopup-div').popup({
+			blur: false
+		});
 
 		$('#mw-ia-croppopup-div').popup('show');
 
