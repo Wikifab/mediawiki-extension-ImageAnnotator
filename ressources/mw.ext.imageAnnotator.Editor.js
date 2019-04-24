@@ -52,7 +52,9 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		} else {
 			this.baseWidth = ext_imageAnnotator.standardWidth;
 		}
-			
+		
+		this.predefinedFormat = options && options['predefinedFormat'] ? options['predefinedFormat'] : undefined;
+
 		// default params :
 		this.currentColor = '#FF0000'; // red
 		this.toolbarDivs = {};
@@ -77,17 +79,22 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		// custom pics
 		toolbarConfig = this.addToolBarCustomsPics(toolbarConfig);
 
-		if (this.isCropMode) {
-			toolbarConfig = [
-				{'type':'div', 'name':'tools'},
-				{'type':'div', 'name':'colors'},
-				{'type':'format', 'format':'1_1', 'parent':'tools'},
-				{'type':'format', 'format':'4_3', 'parent':'tools'},
-				{'type':'format', 'format':'16_9', 'parent':'tools'},
-				//{'type':'zoom', 'zoom':'in', 'parent':'tools'},
-				//{'type':'zoom', 'zoom':'out', 'parent':'tools'},
-				//{'type':'cropzone', 'parent':'tools'}
-			];
+		if (this.isCropMode){
+
+			toolbarConfig = [];
+
+			if (!this.predefinedFormat /* predefined : user won't be able to change format */) {
+				toolbarConfig = [
+					{'type':'div', 'name':'tools'},
+					{'type':'div', 'name':'colors'},
+					{'type':'format', 'format':'1_1', 'parent':'tools'},
+					{'type':'format', 'format':'4_3', 'parent':'tools'},
+					{'type':'format', 'format':'16_9', 'parent':'tools'},
+					//{'type':'zoom', 'zoom':'in', 'parent':'tools'},
+					//{'type':'zoom', 'zoom':'out', 'parent':'tools'},
+					//{'type':'cropzone', 'parent':'tools'}
+				];
+			}
 		}
 
 		if (canvasId) {
@@ -931,7 +938,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		// if existing crop, load object :
 		var cropPosition = this.getCropedImagePosition();
 
-		new ext_imageAnnotator.CropPopup(this, this.image, cropPosition, [this, this.applyCrop ], $('#mw-ia-popup-div') );
+		new ext_imageAnnotator.CropPopup(this, this.image, cropPosition, [this, this.applyCrop ], $('#mw-ia-popup-div'), this.predefinedFormat );
 	}
 
 	/**

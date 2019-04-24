@@ -87,7 +87,7 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 	});
 
 
-	mw.hook('pmg.secondaryGallery.newImageAdded').add( function(imageInput,li) {
+	mw.hook('pmg.secondaryGallery.newImageAdded').add( function(imageInput,li,secondaryGallery) {
 
 		// hook to add edit link on image dropped on step :
 
@@ -122,6 +122,38 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 		var editLink = new ext_imageAnnotator.EditLink( buttonBar, dataInput, image, staticEditor);
 
 		editLinkRegister.registerEditLink(editLink, $(dataInput).attr('name'));
+
+		if (editLink.predefinedFormat) { /* Imposed ratio : the image must be cropped before being added. */
+
+			var ratio = editLink.predefinedFormat;
+
+			// open the editor popup (it will be closed by the crop popup)
+			editLink.openEditor();
+
+			// get crop position
+			var cropPosition = editLink.popup.editor.getCropedImagePosition();
+
+			// open the crop popup (pass the ratio to it)
+			var cropPopup = new ext_imageAnnotator.CropPopup(editLink.popup.editor, editLink.popup.editor.image, cropPosition, [editLink.popup.editor, editLink.popup.editor.applyCrop ], editLink.popup.$editorPopup, ratio);
+
+			/* redefine these methods */
+			cropPopup.save = function () {
+				// the initial function
+				ext_imageAnnotator.CropPopup.prototype.save.call(this);
+				// close the editor popup, too
+				editLink.popup.save();
+			};
+
+			cropPopup.cancel = function () {
+				// the initial function
+				ext_imageAnnotator.CropPopup.prototype.cancel.call(this);
+				// close the editor popup, too
+				editLink.popup.$editorPopup.popup('hide');
+
+				// remove the added image
+				secondaryGallery.removeImg(li);
+			};
+		}
 
 	});
 
