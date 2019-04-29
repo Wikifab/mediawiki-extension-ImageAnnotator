@@ -43,20 +43,31 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 	      this.callSuper('initialize', points, options);
 
-	      // the line must move as a whole, that is the line itself and its circles, 
+	      // the line must move as a whole, that is the line itself and its circles,
 	      // so make sure both its control circles are included in the selection
-	      // Note : it's safe since when selected is triggered, _objects of the 
-	      // group already contains all the selected objects 
+	      // Note : it's safe since when selected is triggered, _objects of the
+	      // group already contains all the selected objects
 	      this.on('selected', function (e) {
 	      	if (this.group != undefined && this.group.type === 'activeSelection') {
-	      		
+
 	      		var selection = this.group;
 
-	      		if (!selection.contains(this.c1)) selection.addWithUpdate(this.c1);
-	      		if (!selection.contains(this.c2)) selection.addWithUpdate(this.c2);
+	      		if (!selection.contains(this.c1)){selection.addWithUpdate(this.c1);}
+	      		if (!selection.contains(this.c2)){selection.addWithUpdate(this.c2);}
 	      	}
 	      });
 	      this._onEvents();
+
+	      this.on('deselected', function(e) {
+
+	   	  		var obj = this;
+
+	   	  		obj.set({
+	   	  			'scaleX'	: 1,
+	   	  			'scaleY'	: 1
+	   	  		});
+
+			});
 	    },
 
 	    setP1 : function ( x, y) {
@@ -84,7 +95,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 	            this.c1.set('left',this.get('left') + points.x1);
 	            this.c1.set('top',this.get('top') + points.y1);
 	            this.c2.set('left',this.get('left') + points.x2);
-	            this.c2.set('top',this.get('top') + points.y2);            
+	            this.c2.set('top',this.get('top') + points.y2);
 	      });
 
 	      this.on('moved', function(e) {
@@ -108,6 +119,25 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 	      });
 	   },
 
+	   set: function(key, value) {
+
+			if (key === 'scaleX') {
+				this.width = this.width * value;
+				this.x1 = this.x1 * value;
+				this.x2 = this.x2 * value;
+				return this;
+			}
+
+			if (key === 'scaleY') {
+				this.height = this.height * value;
+				this.y1 = this.y1 * value;
+				this.y2 = this.y2 * value;
+				return this;
+			}
+
+		   return this.callSuper('set', key, value);
+	   },
+
 	    _updatePoints: function() {
 	    	this.setP1(this.c1.left, this.c1.top);
 	    	this.setP2(this.c2.left, this.c2.top);
@@ -120,9 +150,9 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 	    	if (this.group) {
 
 	    		// That means object was copy-pasted while being in an
-	    		// ActiveSelection object. Since objects in groups have 
+	    		// ActiveSelection object. Since objects in groups have
 	    		// relative coordinates, we must first get the absolute
-	    		// coordinates before adding circles since they rely on 
+	    		// coordinates before adding circles since they rely on
 	    		// them.
 
 	    		// see fabric.Object.prototype._restoreObjectState()
@@ -136,7 +166,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 	          	left = position.x;
 	          	top = position.y;
 	    	}
-	    	
+
 	    	// calculate line points
 	    	var points = this.calcLinePoints();
 
@@ -184,7 +214,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 	}
 
 	// For objects that are contained in other objects, fabric.util.enlivenObjects()
-	// will look for classes within fabric. 
+	// will look for classes within fabric.
 	fabric.Wfline = ext_imageAnnotator.shapes.Wfline;
 
 })(jQuery, mw, fabric, ext_imageAnnotator);

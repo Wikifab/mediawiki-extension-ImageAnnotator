@@ -1,8 +1,11 @@
 
 
-.mw-ia-popup-container
+.mw-ia-croppopup-div {
+	width:100%;
+	min-height:100%;
+}
 
-.mw-ia-popup-main {
+.mw-ia-popup-container .mw-ia-popup-main {
 	padding:10px;
 	background:#FFF;
 	-webkit-border-radius: 5px;
@@ -145,6 +148,10 @@
 	margin: 2px 1px;
 }
 
+.mw-ia-popup-image {
+    margin:auto;
+    background:#FFFFFF;
+}
 .mw-ia-popup-image .lower-canvas, .mw-ia-popup-image .upper-canvas {
     border:1px solid #ccc !important;
 }

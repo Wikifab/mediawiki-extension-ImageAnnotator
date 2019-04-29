@@ -126,6 +126,10 @@ class Hooks {
 		}
 		$fileTitle = \Title::newFromText($image, NS_FILE);
 		$file = wfFindFile( $fileTitle );
+		if (! $file) {
+			$out = '<div class="annotatedImageContainer nosourcefile">missing file</div>';
+			return $out;
+		}
 		$srcImgUrl = $file->getFullUrl();
 		$imageOptions = implode('|',$args);
 		$imageOptions .= '|' . $caption;

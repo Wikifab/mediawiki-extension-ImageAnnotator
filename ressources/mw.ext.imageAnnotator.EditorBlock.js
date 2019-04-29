@@ -27,6 +27,10 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 		this.image = image;
 		this.content = content;
 
+		this.editorWidth = options['custom-dimensions'] ? options['custom-dimensions'].width : ext_imageAnnotator.standardWidth;
+
+		console.log('editor dimention : ' + this.editorWidth);
+
 
 		this.clonedImage = $(image).clone();
 
@@ -53,17 +57,20 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 		var options = {
 				'toolbarContainer' : this.toolbar
 		};
+		if (this.options['custom-dimensions']) {
+			options['custom-dimensions'] = this.options['custom-dimensions'];
+		}
 		this.editor = new ext_imageAnnotator.Editor( this.imagediv, null, this.content, this.clonedImage, true, options );
 
-		$(this.imagediv).css('width', ext_imageAnnotator.standardWidth + 'px');
+		$(this.imagediv).css('width', this.editorWidth + 'px');
 		//$(this.imagediv).css("background-image", "url('" + this.clonedImage.attr('src') +"')");
 		$(this.imagediv).css("background-repeat", "no");
 		$(this.imagediv).css("background-size", "100% 100%");
 		this.clonedImage.hide();
 
 
-		console.log('launchEditor');
-		console.log(this.clonedImage);
+		//console.log('launchEditor');
+		//console.log(this.clonedImage);
 
 		if ( ! this.options || ! this.options['no-controlbar']) {
 			// add cancel button

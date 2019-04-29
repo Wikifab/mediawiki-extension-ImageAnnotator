@@ -165,6 +165,11 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		    var y2 = this.top + this.height * this.scaleY ;
 		    var y3 = canvas.height ;
 
+		    if (this.canvas) {
+		    	x3 = this.canvas.getWidth();
+		    	y3 = this.canvas.getHeight();
+		    }
+
 		    ctx.beginPath();
 
 		    // Draw outer rectangle.
