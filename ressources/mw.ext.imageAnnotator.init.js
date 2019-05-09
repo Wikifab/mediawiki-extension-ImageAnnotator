@@ -24,6 +24,20 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 		return true;
 	}
 
+	/* utility function for checking ratio */
+	function respectsAspectRatio(a, b, w, h) {
+		
+		function greatestCommonDivisor(a,b) {
+			if (b == 0)
+		        return a
+		    return greatestCommonDivisor(b, a % b)
+		}
+
+		var gcd = greatestCommonDivisor(a,b);
+
+		return a / gcd === w && b / gcd === h;
+	}
+
 	mw.ext_imageAnnotator = mw.ext_imageAnnotator || {};
 
 	/**
@@ -125,34 +139,49 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 
 		if (editLink.predefinedFormat) { /* Imposed ratio : the image must be cropped before being added. */
 
-			var ratio = editLink.predefinedFormat;
+			// Trick to get the actual width and height of the image.
+			$("<img>").attr("src", $(image).attr("src")).load(function(){
+	            var imgRealWidth = this.width;
+	            var imgRealHeight = this.height;
+	            
+	            var regex = /(\d{1,2})_(\d{1,2})/i;
+				var match = regex.exec(editLink.predefinedFormat);
+				var ratio_width = parseInt(match[1]);
+				var ratio_height = parseInt(match[2]);
 
-			// open the editor popup (it will be closed by the crop popup)
-			editLink.openEditor();
+				// If it already has the right ratio, don't do anything.
+				if (!respectsAspectRatio(imgRealWidth, imgRealHeight, ratio_width, ratio_height)) {
 
-			// get crop position
-			var cropPosition = editLink.popup.editor.getCropedImagePosition();
+					var ratio = editLink.predefinedFormat;
 
-			// open the crop popup (pass the ratio to it)
-			var cropPopup = new ext_imageAnnotator.CropPopup(editLink.popup.editor, editLink.popup.editor.image, cropPosition, [editLink.popup.editor, editLink.popup.editor.applyCrop ], editLink.popup.$editorPopup, ratio);
+					// open the editor popup (it will be closed by the crop popup)
+					editLink.openEditor();
 
-			/* redefine these methods */
-			cropPopup.save = function () {
-				// the initial function
-				ext_imageAnnotator.CropPopup.prototype.save.call(this);
-				// close the editor popup, too
-				editLink.popup.save();
-			};
+					// get crop position
+					var cropPosition = editLink.popup.editor.getCropedImagePosition();
 
-			cropPopup.cancel = function () {
-				// the initial function
-				ext_imageAnnotator.CropPopup.prototype.cancel.call(this);
-				// close the editor popup, too
-				editLink.popup.$editorPopup.popup('hide');
+					// open the crop popup (pass the ratio to it)
+					var cropPopup = new ext_imageAnnotator.CropPopup(editLink.popup.editor, editLink.popup.editor.image, cropPosition, [editLink.popup.editor, editLink.popup.editor.applyCrop ], editLink.popup.$editorPopup, ratio);
 
-				// remove the added image
-				secondaryGallery.removeImg(li);
-			};
+					/* redefine these methods */
+					cropPopup.save = function () {
+						// the initial function
+						ext_imageAnnotator.CropPopup.prototype.save.call(this);
+						// close the editor popup, too
+						editLink.popup.save();
+					};
+
+					cropPopup.cancel = function () {
+						// the initial function
+						ext_imageAnnotator.CropPopup.prototype.cancel.call(this);
+						// close the editor popup, too
+						editLink.popup.$editorPopup.popup('hide');
+
+						// remove the added image
+						secondaryGallery.removeImg(li);
+					};
+				}
+	        });
 		}
 
 	});
