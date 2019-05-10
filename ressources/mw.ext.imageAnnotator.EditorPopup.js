@@ -42,7 +42,11 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 				'toolbarContainer' : this.toolbar
 		};
 
-		if (this.editLink.predefinedFormat) options['predefinedFormat'] = this.editLink.predefinedFormat;
+		if (this.editLink.freeCropping) {
+			options['freeCropping'] = true;
+		} else {
+			if (this.editLink.predefinedFormat) options['predefinedFormat'] = this.editLink.predefinedFormat;
+		}
 
 		this.editor = new ext_imageAnnotator.Editor( this.imagediv, null, this.content, this.clonedImage, true, options );
 
