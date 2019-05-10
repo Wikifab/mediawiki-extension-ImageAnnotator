@@ -161,7 +161,7 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 					var cropPosition = editLink.popup.editor.getCropedImagePosition();
 
 					// open the crop popup (pass the ratio to it)
-					var cropPopup = new ext_imageAnnotator.CropPopup(editLink.popup.editor, editLink.popup.editor.image, cropPosition, [editLink.popup.editor, editLink.popup.editor.applyCrop ], editLink.popup.$editorPopup, ratio);
+					var cropPopup = new ext_imageAnnotator.CropPopup(editLink.popup.editor, editLink.popup.editor.image, cropPosition, [editLink.popup.editor, editLink.popup.editor.applyCrop ], editLink.popup.$editorPopup, false, ratio);
 
 					/* redefine these methods */
 					cropPopup.save = function () {
