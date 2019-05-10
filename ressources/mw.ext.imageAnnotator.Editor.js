@@ -52,8 +52,13 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		} else {
 			this.baseWidth = ext_imageAnnotator.standardWidth;
 		}
-		
-		this.predefinedFormat = options && options['predefinedFormat'] ? options['predefinedFormat'] : undefined;
+
+		this.freeCropping = options && options['freeCropping'] ? options['freeCropping'] : false;
+
+		if (!this.freeCropping) {
+			// predefined format makes sense only if there is no free cropping
+			this.predefinedFormat = options && options['predefinedFormat'] ? options['predefinedFormat'] : undefined;
+		}
 
 		// default params :
 		this.currentColor = '#FF0000'; // red
@@ -83,7 +88,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 			toolbarConfig = [];
 
-			if (!this.predefinedFormat /* predefined : user won't be able to change format */) {
+			if (!this.freeCropping && !this.predefinedFormat /* predefined : user won't be able to change format */) {
 				toolbarConfig = [
 					{'type':'div', 'name':'tools'},
 					{'type':'div', 'name':'colors'},
@@ -724,6 +729,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 							* parseInt(this.canvasElement.attr('height'))
 							/ parseInt(this.canvasElement.attr('width'));
 
+		var lockUniScaling = !this.freeCropping;
 		//var circle = new ext_imageAnnotator.shapes.Circle({
 		var circle = new ext_imageAnnotator.shapes.CropZone({
 			top: cropPosition.cropzonetop,
@@ -732,7 +738,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			width: cropPosition.cropzonewidth,
 			scaleX: cropPosition.cropzonescaleX,
 			scaleY: cropPosition.cropzonescaleY,
-			lockUniScaling: true,
+			lockUniScaling: lockUniScaling,
 			maxPositionX: canvasWidth,
 			maxPositionY: canvasHeight
 		});
@@ -937,8 +943,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 		// if existing crop, load object :
 		var cropPosition = this.getCropedImagePosition();
-
-		new ext_imageAnnotator.CropPopup(this, this.image, cropPosition, [this, this.applyCrop ], $('#mw-ia-popup-div'), this.predefinedFormat );
+		new ext_imageAnnotator.CropPopup(this, this.image, cropPosition, [this, this.applyCrop ], $('#mw-ia-popup-div'), this.freeCropping, this.predefinedFormat );
 	}
 
 	/**

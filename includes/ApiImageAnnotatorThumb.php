@@ -158,7 +158,13 @@ class ApiImageAnnotatorThumb extends \ApiBase {
 				$tmpSourceFileName = $hash. '-' .  $fileToReplace['filename'];
 				$tmpSourceFileName = str_replace("'", '_', $tmpSourceFileName);
 				$tmpSourceFilePath = $tmpDir . "/" . $tmpSourceFileName;
-				copy($fileToReplace['path'], $tmpSourceFilePath);
+				$contextOptions = array (
+						'ssl' => array (
+								'verify_peer' => false
+						)
+				);
+				$copyContext = stream_context_create ( $contextOptions );
+				copy ( $fileToReplace ['path'], $tmpSourceFilePath, $copyContext );
 				$fileToReplace['path'] = $tmpSourceFilePath;
 				$tempFiles[] = $tmpSourceFilePath;
 			}

@@ -13,7 +13,7 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 	 * @param {jQuery} container container to put editor in it
 	 * @param {string} [content='']
 	 */
-	ext_imageAnnotator.CropPopup = function (editLink, image, cropPosition, cropCallback, sourcePopup, format) {
+	ext_imageAnnotator.CropPopup = function (editLink, image, cropPosition, cropCallback, sourcePopup, freeCropping = false, format) {
 		this.editLink = editLink;
 		this.initPopup();
 		this.image = image;
@@ -22,6 +22,7 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 		this.sourcePopup = sourcePopup;
 		this.cropCallback = cropCallback;
 		this.cropPopup = $('#mw-ia-croppopup-div');
+		this.freeCropping = freeCropping;
 		this.format = format; //ratio (ex: 16_9)
 
 		// width of the crop canvas, this is the base width used to get cropPosition
@@ -73,8 +74,13 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 				'height': fixedHeight
 		}
 
-		// user won't be able to change format
-		if (this.format) options['predefinedFormat'] = this.format;
+		if (!this.freeCropping) {
+			// user won't be able to change format
+			if (this.format) options['predefinedFormat'] = this.format;
+			// else default formats
+		} else {
+			options['freeCropping'] = true;
+		}
 
 		this.editor = new ext_imageAnnotator.Editor( this.imagediv, null, this.content, this.clonedImage, true, options );
 
