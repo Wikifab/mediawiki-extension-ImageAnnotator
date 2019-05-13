@@ -79,7 +79,7 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 			if (this.format) options['predefinedFormat'] = this.format;
 			// else default formats
 		} else {
-			options['freeCropping'] = true;
+			options['free-cropping'] = true;
 		}
 
 		this.editor = new ext_imageAnnotator.Editor( this.imagediv, null, this.content, this.clonedImage, true, options );

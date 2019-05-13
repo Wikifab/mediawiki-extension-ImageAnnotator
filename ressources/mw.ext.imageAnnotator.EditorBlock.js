@@ -60,6 +60,9 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 		if (this.options['custom-dimensions']) {
 			options['custom-dimensions'] = this.options['custom-dimensions'];
 		}
+		if (this.options['free-cropping']) {
+			options['free-cropping'] = this.options['free-cropping'];
+		}
 		this.editor = new ext_imageAnnotator.Editor( this.imagediv, null, this.content, this.clonedImage, true, options );
 
 		$(this.imagediv).css('width', this.editorWidth + 'px');
