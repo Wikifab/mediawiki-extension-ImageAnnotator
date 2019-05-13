@@ -43,7 +43,7 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 		};
 
 		if (this.editLink.freeCropping) {
-			options['freeCropping'] = true;
+			options['free-cropping'] = true;
 		} else {
 			if (this.editLink.predefinedFormat) options['predefinedFormat'] = this.editLink.predefinedFormat;
 		}

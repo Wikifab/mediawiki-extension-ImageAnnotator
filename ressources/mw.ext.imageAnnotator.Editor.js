@@ -53,7 +53,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			this.baseWidth = ext_imageAnnotator.standardWidth;
 		}
 
-		this.freeCropping = options && options['freeCropping'] ? options['freeCropping'] : false;
+		this.freeCropping = options && options['free-cropping'] ? options['free-cropping'] : false;
 
 		if (!this.freeCropping) {
 			// predefined format makes sense only if there is no free cropping
