@@ -29,14 +29,23 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 		this.dataInput = dataInput;
 		this.content = $(this.dataInput).val();
 
-		/* ratio, if any */
 		var imageInput = $("input[name='"+ $(dataInput).data('targetname') + "']");
 		var className = $(imageInput).attr('class');
-		// get ratio, if any
-		var regex = /\bratio(\d{1,2}_\d{1,2})\b/;
+
+		// free cropping?
+		var regex = /\bfree-cropping\b/;
 		var match = regex.exec(className);
 		if (match) {
-			this.predefinedFormat = match[1];
+			this.freeCropping = true;
+		}
+
+		if (!this.freeCropping) {
+			// get forced ratio, if any
+			var regex = /\bratio(\d{1,2}_\d{1,2})\b/;
+			var match = regex.exec(className);
+			if (match) {
+				this.predefinedFormat = match[1];
+			}
 		}
 
 		var button = $('<span class="image-button mw-ia-editButton"></span>').attr('id', this.getId());
