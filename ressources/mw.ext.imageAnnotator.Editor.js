@@ -168,7 +168,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		}
 
 		if ( this.freeCropping && this.isCropMode ) {
-			this.toolbar.append('<div class="toolbar-tooltip"><i class="fa fa-info-circle">' + mw.msg('imageannotator-toolbar-tooltip-freecropping') + '</i></div>');
+			this.toolbar.append('<div class="toolbar-tooltip"><i class="fa fa-info-circle"></i> ' + mw.msg('imageannotator-toolbar-tooltip-freecropping') + '</div>');
 		}
 
 		this.addEditListeners();
