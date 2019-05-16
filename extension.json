@@ -89,7 +89,8 @@
 			    "imageannotator-toolbar-blue-label",
 			    "imageannotator-toolbar-yellow-label",
 			    "imageannotator-toolbar-green-label",
-			    "imageannotator-toolbar-dell-label"
+			    "imageannotator-toolbar-dell-label",
+			    "imageannotator-toolbar-tooltip-freecropping"
 			]
 		}
 	},

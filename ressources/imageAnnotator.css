@@ -19,6 +19,14 @@
     background: #f9f9f9;
 }
 
+.toolbar-tooltip {
+    padding:11px;
+}
+
+.toolbar-tooltip code {
+    background-color: #fff;
+}
+
 .mw-ia-popup-toolbar .editorToolbarArea {
 	display:inline-block;
 	margin-left: 2px;
