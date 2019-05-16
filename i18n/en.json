@@ -19,7 +19,7 @@
     "imageannotator-toolbar-yellow-label": "Yellow",
     "imageannotator-toolbar-green-label": "Green",
     "imageannotator-toolbar-dell-label": "Delete",
-    "imageannotator-toolbar-tooltip-freecropping": "When cropping from a corner, holding down the Shift key disable the ratio constrain."
+    "imageannotator-toolbar-tooltip-freecropping": "When cropping from a corner, holding down the <code>Shift</code> key disable the ratio constrain."
 }
 
 

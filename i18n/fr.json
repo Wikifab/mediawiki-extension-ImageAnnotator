@@ -19,7 +19,7 @@
     "imageannotator-toolbar-yellow-label": "Jaune",
     "imageannotator-toolbar-green-label": "Vert",
     "imageannotator-toolbar-dell-label": "Supprimer",
-    "imageannotator-toolbar-tooltip-freecropping": "Lorsque vous recadrez à partir d’un coin, maintenez la touche Maj enfoncée pour désactiver la contrainte de ratio."
+    "imageannotator-toolbar-tooltip-freecropping": "Lorsque vous recadrez à partir d’un coin, maintenez la touche <code>Maj</code> enfoncée pour désactiver la contrainte de ratio."
 }
 
 
