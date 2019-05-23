@@ -1018,6 +1018,145 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		return result;
 	}
 
+	/**
+	 * set background according to image original size and orientation
+	 */
+	ext_imageAnnotator.Editor.prototype.setInitBackground = function (imgWidth, imgHeight, orientation = 0) {
+		
+		
+
+		var editor = this;
+		
+		var angle;
+		
+		switch (orientation) {
+			case 0 : 
+				angle = 0;
+				break;
+			case 8:
+				angle = 90;
+				break;
+			case 3:
+				angle = 180;
+				break;
+			case 6:
+				angle = 270;
+				break;
+			default:
+				angle = 0;
+				break;
+		}
+		// TODO : there is a bug : rotation is done around the top left corner,
+		// so image disapaer from canvas when turned
+		// we must adjust position when image is rotated
+		// moreover, we must manage correctly crop....
+		
+		console.log("setInitBackground, orientation : " + angle + " or:"  + orientation);
+		
+		
+
+		var imgInstance = new fabric.Image(editor.image[0], {
+			  left: 0,
+			  top: 0,
+			  angle: angle,
+			  centeredRotation: true,
+			  //opacity: 0.8,
+			  hasControls: false,
+			  selectable: false
+		});
+		
+		console.log('add background');
+		console.log(this);
+
+		// scale to set image size to canvas width :
+		var scale = editor.editorWidth / imgWidth;
+
+		editor.fixedBackgroundWidth = editor.editorWidth;
+		editor.fixedBackgroundTop = 0;
+		editor.fixedBackgroundLeft = 0;
+		editor.fixedBackgroundScale = 1;
+
+		if (editor.fixedHeight) {
+			scale = editor.baseWidth / imgWidth;
+			var realWidth = imgWidth * scale;
+			
+			
+			var scaleF = editor.fixedHeight / imgHeight;
+			if (scaleF < scale) {
+				// margin on right and left
+				editor.fixedBackgroundScale = scaleF / scale;
+				scale = scaleF;
+				editor.fixedBackgroundWidth = Math.round(realWidth * editor.fixedBackgroundScale);
+				editor.fixedBackgroundLeft = Math.round((editor.editorWidth - editor.fixedBackgroundWidth) / 2);
+				editor.fixedBackgroundTop = 0;
+			} else {
+				// width = baseWidth
+				editor.fixedBackgroundScale = 1;
+				var realHeight = imgHeight * scale;
+				editor.fixedBackgroundTop = Math.round((editor.fixedHeight - realHeight) / 2);
+				editor.fixedBackgroundLeft = Math.round((editor.editorWidth - realWidth) / 2);
+				editor.fixedBackgroundWidth = Math.round(realWidth);
+				// margins on top and bottom
+			}
+		}
+		imgInstance.top = editor.fixedBackgroundTop;
+		imgInstance.left = editor.fixedBackgroundLeft;
+		// apply scale :
+		imgInstance.scale(scale);
+		console.log(imgInstance);
+		this.backgroundIsCropped = false;
+
+		// add new image cropped :
+		editor.canvas.add(imgInstance);
+		imgInstance.sendToBack();
+
+		editor.backgroundImage = imgInstance;
+
+		editor.setCropZonePosition(editor.originalCropPosition);
+
+		editor.canvas.renderAll();
+		
+	}
+	
+	/**
+	 * this function do q query to mediawiki api to get back image real size and orientation
+	 */
+	ext_imageAnnotator.Editor.prototype.getBackgroundOrientation = function (callback) {
+
+		// TODO : get tile from filename
+		var fileTitle = 'File:Test_zlfhj_F350_emballage_et_installation.jpg';
+		
+		$.ajax({
+			type: "POST",
+			url: mw.util.wikiScript('api'),
+			data: { 
+				action:'query',
+				format:'json',
+				titles: fileTitle,
+				iiprop: "metadata|size", 
+				prop: 'imageinfo'
+			},
+		    dataType: 'json',
+		    success: function (jsondata) {
+	    		var orientation = 0;
+	    		var width = 0;
+	    		var height = 0;
+		    	if (jsondata.query.pages) {
+		    		$.each(jsondata.query.pages, function(pageid, page) {
+		    			width = page.imageinfo[0].width;
+		    			height = page.imageinfo[0].height;
+			    		page.imageinfo[0].metadata.forEach(function(element) {
+			    			  if(element.name == 'Orientation') {
+			    				  orientation = element.value;
+			    			  }
+			    		}); 
+		    		});
+		    	}
+		    	callback(width, height, orientation);
+			}
+		});
+	}
+
 	ext_imageAnnotator.Editor.prototype.addBackground = function () {
 
 		if(this.hasBackground()) {
@@ -1031,63 +1170,18 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		// load image first to get img size
 
 		img.onload = function() {
-			var imgWidth = this.width;
-			var imgHeight = this.height;
-
-			var imgInstance = new fabric.Image(editor.image[0], {
-				  left: 0,
-				  top: 0,
-				  //opacity: 0.8,
-				  hasControls: false,
-				  selectable: false
-			});
-
-			// scale to set image size to canvas width :
-			var scale = editor.editorWidth / imgWidth;
-
-			editor.fixedBackgroundWidth = editor.editorWidth;
-			editor.fixedBackgroundTop = 0;
-			editor.fixedBackgroundLeft = 0;
-			editor.fixedBackgroundScale = 1;
-
-			if (editor.fixedHeight) {
-				scale = editor.baseWidth / imgWidth;
-				var realWidth = imgWidth * scale;
-				
-				
-				var scaleF = editor.fixedHeight / imgHeight;
-				if (scaleF < scale) {
-					// margin on right and left
-					editor.fixedBackgroundScale = scaleF / scale;
-					scale = scaleF;
-					editor.fixedBackgroundWidth = Math.round(realWidth * editor.fixedBackgroundScale);
-					editor.fixedBackgroundLeft = Math.round((editor.editorWidth - editor.fixedBackgroundWidth) / 2);
-					editor.fixedBackgroundTop = 0;
-				} else {
-					// width = baseWidth
-					editor.fixedBackgroundScale = 1;
-					var realHeight = imgHeight * scale;
-					editor.fixedBackgroundTop = Math.round((editor.fixedHeight - realHeight) / 2);
-					editor.fixedBackgroundLeft = Math.round((editor.editorWidth - realWidth) / 2);
-					editor.fixedBackgroundWidth = Math.round(realWidth);
-					// margins on top and bottom
+			
+			var imgObj = this;
+			
+			editor.getBackgroundOrientation(function(width, height, orientation) {
+				if (! width || ! height) {
+					width = imgObj.width;
+					height = imgObj.height;
 				}
-			}
-			imgInstance.top = editor.fixedBackgroundTop;
-			imgInstance.left = editor.fixedBackgroundLeft;
-			// apply scale :
-			imgInstance.scale(scale);
-			this.backgroundIsCropped = false;
-
-			// add new image cropped :
-			editor.canvas.add(imgInstance);
-			imgInstance.sendToBack();
-
-			editor.backgroundImage = imgInstance;
-
-			editor.setCropZonePosition(editor.originalCropPosition);
-
-			editor.canvas.renderAll();
+				width = imgObj.width;
+				height = imgObj.height;
+				editor.setInitBackground(width, height, orientation);
+			});
 		}
 		img.src = $(this.image).attr('src');
 
