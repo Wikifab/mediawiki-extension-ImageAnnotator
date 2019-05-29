@@ -1087,22 +1087,6 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			  selectable: false
 			});
 		
-		var bounding = imgInstance.getBoundingRect();
-		console.log("Bounding crop rect : ");
-		console.log(bounding);
-
-		//if rotation has changed the position, correct it :
-		if (bounding.top != cropPosition.top) {
-			var diffTop = cropPosition.top - bounding.top;
-			imgInstance.top = cropPosition.top + diffTop;
-		}
-		if (bounding.left != cropPosition.left) {
-			var diffLeft = cropPosition.left - bounding.left;
-			imgInstance.left = cropPosition.left + diffLeft;
-		}
-		bounding = imgInstance.getBoundingRect();
-		console.log("Bounding crop rect corrected: ");
-		console.log(bounding);
 
 		// scale to set image size to canvas width :
 		var imageRealWidth = imgInstance.width;
@@ -1116,6 +1100,28 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		console.log([this.editorWidth , imageRealWidth , scale, cropPosition.relativescale]);
 		// apply scale :
 		imgInstance.scale(scale);
+		
+
+		var bounding = imgInstance.getBoundingRect();
+		console.log("Bounding crop rect : ");
+		console.log(bounding);
+
+		//if rotation has changed the position, correct it :
+		if (bounding.top != cropPosition.top || bounding.left != cropPosition.left) {
+			imgInstance = new fabric.Image(this.image[0], {
+				  left: cropPosition.left + cropPosition.left - bounding.left,
+				  top: cropPosition.top + cropPosition.top - bounding.top,
+				  angle: cropPosition.angle,
+				  //opacity: 0.8,
+				  hasControls: false,
+				  selectable: false
+				});
+			imgInstance.scale(scale);
+		}
+		bounding = imgInstance.getBoundingRect();
+		console.log("Bounding crop rect corrected: ");
+		console.log(bounding);
+		
 
 		var canvas = this.canvas;
 		// remove previous images
@@ -1282,6 +1288,10 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			default:
 				imgInstance.center();
 				imgInstance.setCoords();
+				var bounding = imgInstance.getBoundingRect();
+				// adjust background position info, changed due to the center() call
+				editor.fixedBackgroundTop = bounding.top;
+				editor.fixedBackgroundLeft = bounding.left;
 
 				break;
 		}
@@ -1304,7 +1314,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 	ext_imageAnnotator.Editor.prototype.getBackgroundOrientation = function (callback) {
 
 		var filename = $(this.image).get(0).src.substring($(this.image).get(0).src.lastIndexOf('/')+1);
-		var fileTitle = 'File:' + filename;
+		var fileTitle = 'File:' + decodeURIComponent(filename);
 		
 		$.ajax({
 			type: "POST",
@@ -1316,23 +1326,27 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 				iiprop: "metadata|size", 
 				prop: 'imageinfo'
 			},
-		    dataType: 'json',
-		    success: function (jsondata) {
-	    		var orientation = 0;
-	    		var width = 0;
-	    		var height = 0;
-		    	if (jsondata.query.pages) {
-		    		$.each(jsondata.query.pages, function(pageid, page) {
-		    			width = page.imageinfo[0].width;
-		    			height = page.imageinfo[0].height;
-			    		page.imageinfo[0].metadata.forEach(function(element) {
-			    			  if(element.name == 'Orientation') {
-			    				  orientation = element.value;
-			    			  }
-			    		}); 
-		    		});
-		    	}
-		    	callback(width, height, orientation);
+			dataType: 'json',
+			success: function (jsondata) {
+				var orientation = 0;
+				var width = 0;
+				var height = 0;
+				if (jsondata.query.pages) {
+					$.each(jsondata.query.pages, function(pageid, page) {
+						if (! page.imageinfo) {
+							console.error('imageinfo undefined', page);
+							return;
+						}
+						width = page.imageinfo[0].width;
+						height = page.imageinfo[0].height;
+						page.imageinfo[0].metadata.forEach(function(element) {
+							  if(element.name == 'Orientation') {
+								  orientation = element.value;
+							  }
+						});
+					});
+				}
+				callback(width, height, orientation);
 			}
 		});
 	}
@@ -1427,6 +1441,8 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		}
 		result.baseWidth = this.fixedBackgroundWidth;
 
+		console.log ("getCropPosition backgroun w, top, left");
+		console.log([this.fixedBackgroundWidth,this.fixedBackgroundTop,this.fixedBackgroundLeft]);
 		console.log ("getCropPosition");
 		console.log (result);
 		return result;
