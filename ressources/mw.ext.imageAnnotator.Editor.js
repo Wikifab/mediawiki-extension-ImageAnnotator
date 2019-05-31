@@ -278,6 +278,13 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		var width = this.editorWidth;
 		var baseHeight = $(this.image).height();
 		var baseWidth = $(this.image).width();
+		
+		console.log('updateSize');
+
+		console.log([
+			baseWidth, baseHeight,
+			this.image[0]
+		]);
 
 		if(! baseHeight && this.image[0] != undefined && this.image[0].naturalHeight != undefined) {
 			// if image not loaded yet, height element size may be null
@@ -294,6 +301,18 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		
 
 		var height = Math.round(baseHeight * width / baseWidth);
+		
+		switch (this.backgroundOrientation) {
+			case 6:
+			case 8:
+				console.log('image is turned, height : ' + height);
+				height = Math.round(baseWidth * width / baseHeight);
+				break;
+			default:
+				break;
+		}
+		
+		console.log('computed height = ' + height);
 
 		if (this.fixedHeight) {
 			height = this.fixedHeight;
@@ -1170,6 +1189,8 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		var angle;
 
 		editor.backgroundOrientation = orientation;
+		// update size to consider backgroundOrientation
+		this.updateSize();
 		
 		var invertWidthHeight = false;
 		switch (orientation) {
@@ -1204,10 +1225,10 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		}
 
 		if (this.isCustomWidth && invertWidthHeight) {
-			var temp = this.image.get(0).width;
+			/*var temp = this.image.get(0).width;
 			this.image.get(0).width = this.image.get(0).height;
-			this.image.get(0).height = temp;
-			editor.updateSize();
+			this.image.get(0).height = temp;*/
+			//editor.updateSize();
 		}
 
 		// TODO : there is a bug : rotation is done around the top left corner,
@@ -1223,7 +1244,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			  left: 0,
 			  top: 0,
 			  angle: angle,
-			  centeredRotation: true,
+			  //centeredRotation: true,
 			  //opacity: 0.8,
 			  hasControls: false,
 			  selectable: false
@@ -1239,6 +1260,8 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		editor.fixedBackgroundTop = 0;
 		editor.fixedBackgroundLeft = 0;
 		editor.fixedBackgroundScale = 1;
+		
+		console.log("bg editor.fixedHeight : " +editor.fixedHeight)
 
 		if (editor.fixedHeight) {
 			scale = editor.baseWidth / imgWidth;
@@ -1267,12 +1290,20 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 				console.log("fixedBackgroundLeft 2 fixedHeight :" + editor.fixedHeight);
 				console.log("fixedBackgroundLeft 2 realHeight :" + realHeight);
 			}
+		} else {
+			
 		}
+		
+		
 		imgInstance.top = editor.fixedBackgroundTop;
 		imgInstance.left = editor.fixedBackgroundLeft;
 
 		// apply scale :
 		imgInstance.scale(scale);
+		//var widthTemp = imgInstance.width;
+		//var heightTemp = imgInstance.height;
+		//imgInstance.width = widthTemp * scale;
+		//imgInstance.height = heightTemp * scale;
 
 		this.backgroundIsCropped = false;
 
@@ -1295,6 +1326,8 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 				break;
 		}
+		console.log('bounding');
+		console.log(bounding);
 		console.log('backgroun top left width : ');
 		console.log([editor.fixedBackgroundTop,editor.fixedBackgroundLeft,editor.fixedBackgroundWidth]);
 
@@ -1303,6 +1336,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		editor.backgroundImage = imgInstance;
 
 		editor.setCropZonePosition(editor.originalCropPosition);
+		
 
 		editor.canvas.renderAll();
 		
