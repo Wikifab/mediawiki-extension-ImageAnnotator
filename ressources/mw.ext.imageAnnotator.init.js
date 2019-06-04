@@ -70,7 +70,7 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 		var content = $(this).val();
 		var image = imagePreview.find('img');
 
-		if( ! isValidImageType(image)) {
+		if( ! isValidImageType(image) || image[0].src.toLowerCase().includes('.stl')) {
 			// if the is not an image (a video for instance) we do not add editor
 			return ;
 		}
