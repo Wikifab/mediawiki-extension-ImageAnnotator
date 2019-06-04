@@ -125,7 +125,7 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 		var content = $(dataInput).val();
 		var image = imagePreview.find('img');
 
-		if( ! isValidImageType(image) || MsUpload.isStl(image[0].src)) {
+		if( ! isValidImageType(image) || image[0].src.toLowerCase().includes('.stl')) {
 			// if the is not an image (a video for instance) we do not add editor
 			//if the image is a stl we do not add editor
 			return ;
