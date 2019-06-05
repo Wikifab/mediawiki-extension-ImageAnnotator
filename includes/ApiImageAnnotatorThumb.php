@@ -106,7 +106,9 @@ class ApiImageAnnotatorThumb extends \ApiBase {
 		$svg = str_replace(urlencode($fileIncluded['filename']), $fileIncluded['filename'], $svg);
 		$fileIncluded['imgUrl'] = str_replace(urlencode($fileIncluded['filename']), $fileIncluded['filename'], $fileIncluded['imgUrl']);
 
-		$fileIncluded['thumbUrl'] = str_replace(urlencode($fileIncluded['filename']), $fileIncluded['filename'], $fileIncluded['thumbUrl']);
+		if (isset($fileIncluded['thumbUrl'])){
+			$fileIncluded['thumbUrl'] = str_replace(urlencode($fileIncluded['filename']), $fileIncluded['filename'], $fileIncluded['thumbUrl']);
+		}
 
 		// replace ALL files url by relative filepath
 		$filesToReplaces = [];
@@ -178,7 +180,7 @@ class ApiImageAnnotatorThumb extends \ApiBase {
 
 	}
 
-	public function svgToPngConvert($svg, $fileIncluded, $fileOut, $hash) {
+	public function svgToPngConvert($svg, $width, $fileIncluded, $fileOut, $hash) {
 		global $wgUploadDirectory, $wgServer;
 
 		/*
@@ -208,8 +210,6 @@ class ApiImageAnnotatorThumb extends \ApiBase {
 		file_put_contents($svgInFile, $svg);
 
 		// convert to png :
-		// TODO : determine png size according to request
-		$width = 800;
 		$cmd = "inkscape -z -f ". escapeshellarg ($svgInFile) ." -w $width --export-background-opacity=0,0 --export-png=". escapeshellarg ($fileOut) ."";
 
 		if (!file_exists(dirname($fileOut))) {
@@ -279,10 +279,11 @@ class ApiImageAnnotatorThumb extends \ApiBase {
 		$fileUrl = $fileOutputPaths['fileurl'];
 		$fileOutRelative = $fileOutputPaths['relative_filepath'];
 
+		$jsonDecoded = json_decode($jsondata);
 
-		// TODO : convert svg to png
-		$convertResult = $this->svgToPngConvert($svgdata, $imageInfo, $fileOut, $hash);
+		$width = $jsonDecoded && isset($jsonDecoded->width) && $jsonDecoded->width ? $jsonDecoded->width : 800;
 
+		$convertResult = $this->svgToPngConvert($svgdata, $width, $imageInfo, $fileOut, $hash);
 
 		// TODO : store result in bdd
 
