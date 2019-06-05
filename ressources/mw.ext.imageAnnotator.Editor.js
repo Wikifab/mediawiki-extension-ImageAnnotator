@@ -1494,6 +1494,13 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 		var editor = this;
 
+		$(editor.image).css('filter', 'blur(5px)');
+		if($(editor.image).next().attr('class') !== "lds-grid"){
+            $(editor.image).after('<div class="lds-grid"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>');
+        } else {
+            $(editor.image).next().show();
+        }
+
 		if ( ! callback) {
 			callback = function setOverlayImage(url) {
 				// display it only if content, (some browsers doesn't like empty images)
@@ -1507,6 +1514,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 				$(editor.overlayImg).insertAfter(editor.image);
 				$(editor.image).hide();
+				
 				// positioning : this methode wa used chen backgound is not set within annotated layer
 				// sould we keep it for wikifab olds one ?
 				//$(editor.image).parent().css({ position:'relative'});
@@ -1538,6 +1546,11 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			    		editor.hash = jsondata.iaThumbs.hash;
 			    		//setOverlayImage(jsondata.iaThumbs.image);
 			    		callback(jsondata.iaThumbs.image, jsondata.iaThumbs);
+			    		if($(editor.overlayImg).next().attr('class') === "lds-grid"){
+				    		$(editor.overlayImg).on('load', function () {
+									$(this).next().hide();
+							});
+						}
 			    	} else {
 			    		console.log('Fail to generate annotatedImage');
 			    		console.log(jsondata);

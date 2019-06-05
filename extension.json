@@ -92,6 +92,9 @@
 			    "imageannotator-toolbar-dell-label",
 			    "imageannotator-toolbar-tooltip-freecropping"
 			]
+		},
+		"ext.imageannotator.editor.css": {
+			"styles": "ressources/imageAnnotator.css"
 		}
 	},
 	"ResourceFileModulePaths": {

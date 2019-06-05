@@ -221,7 +221,7 @@ class AnnotatedImage {
 			$imgDim = ' data-file-width="'.$jsonData->width.'" data-file-height="'.$jsonData->height.'" ';
 		}
 
-		$out = '<img class="annotationlayer" ' . $imgDim  . ' src="'. $this->getImgUrl() . '"/>';
+		$out = '<img class="annotationlayer" style="filter: blur(5px)" ' . $imgDim  . ' src="'. $this->getImgUrl() . '"/>';
 		$out = "<a class='image' href=\"". $this->getPageUrl() ."\" >$out</a>";
 
 		/*
