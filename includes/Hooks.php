@@ -39,6 +39,14 @@ class Hooks {
 			if ($annotatedImage->exists()) {
 				$out = '<div><img src="' . $annotatedImage->getImgUrl() . '"/> </div>';
 				$out = $annotatedImage->makeHtmlImageLink($input);
+
+				preg_match('/\[\[(.*)\]\]/', $image, $matches);
+				$file = explode('|', $matches[1], 2);
+				$filename = $file[0];
+				$option = $file[1];
+				$title = \Title::newFromText($filename);
+				$input->makeImage($title, $option);
+
 				return array( $out, 'noparse' => true, 'isHTML' => true );
 			} else {
 				// if image doesn't exists, fallback on default behaviour
