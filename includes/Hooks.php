@@ -78,7 +78,6 @@ class Hooks {
 		array_shift($args);
 		// we add 'frameless' option, to be default
 		//array_unshift($args, 'frameless');
-		array_unshift($args, 'link=');
 
 		foreach ($args as $arg) {
 			if (substr($arg, 0,5) == 'hash:') {
