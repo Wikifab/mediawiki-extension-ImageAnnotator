@@ -41,11 +41,9 @@ class Hooks {
 				$out = $annotatedImage->makeHtmlImageLink($input);
 
 				preg_match('/\[\[(.*)\]\]/', $image, $matches);
-				$file = explode('|', $matches[1], 2);
-				$filename = $file[0];
-				$option = $file[1];
+				$filename = explode('|', $matches[1])[0];
 				$title = \Title::newFromText($filename);
-				$input->makeImage($title, $option);
+				$input->getOutput()->addImage($title->getText(), false, false);
 
 				return array( $out, 'noparse' => true, 'isHTML' => true );
 			} else {
