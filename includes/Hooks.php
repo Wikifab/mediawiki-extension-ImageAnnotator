@@ -142,6 +142,9 @@ class Hooks {
 			// replace img source by img annotated image :
 			$imgElement = preg_replace('@src="([^"]+)"@', 'src="'.$annotatedImage->getImgUrl() . '"', $imgElement);
 
+			//replace a href by img annotated image :
+			$imgElement = preg_replace('@href="([^"]+)"@', 'href="'.$annotatedImage->getImgUrl().'"', $imgElement);
+
 			// remove srcset attribut :
 			$imgElement = preg_replace('@srcset="([^"]+)"@', '', $imgElement);
 
