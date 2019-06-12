@@ -43,7 +43,9 @@ class Hooks {
 				preg_match('/\[\[(.*)\]\]/', $image, $matches);
 				$filename = explode('|', $matches[1])[0];
 				$title = \Title::newFromText($filename);
-				$input->getOutput()->addImage($title->getText(), false, false);
+				if($title){
+					$input->getOutput()->addImage($title->getText(), false, false);
+				}
 
 				return array( $out, 'noparse' => true, 'isHTML' => true );
 			} else {
