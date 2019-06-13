@@ -86,7 +86,6 @@ class Hooks {
 		array_shift($args);
 		// we add 'frameless' option, to be default
 		//array_unshift($args, 'frameless');
-		array_unshift($args, 'link=');
 
 		foreach ($args as $arg) {
 			if (substr($arg, 0,5) == 'hash:') {
@@ -150,6 +149,9 @@ class Hooks {
 
 			// replace img source by img annotated image :
 			$imgElement = preg_replace('@src="([^"]+)"@', 'src="'.$annotatedImage->getImgUrl() . '"', $imgElement);
+
+			//replace a href by img annotated image :
+			$imgElement = preg_replace('@href="([^"]+)"@', 'href="'.$annotatedImage->getImgUrl().'"', $imgElement);
 
 			// remove srcset attribut :
 			$imgElement = preg_replace('@srcset="([^"]+)"@', '', $imgElement);
