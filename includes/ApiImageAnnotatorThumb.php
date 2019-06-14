@@ -100,7 +100,12 @@ class ApiImageAnnotatorThumb extends \ApiBase {
 
 
 	public function correctSvgIncludedRessourcePathBeforeConversion($svg, $fileIncluded, $hash, $tmpDir, &$tempFiles) {
-		global $wgUploadDirectory, $wgServer;
+		global $wgUploadDirectory, $wgServer, $wgImageAnnotatorOldWgServers;
+
+		// replace old wgServerUrls :
+		foreach ($wgImageAnnotatorOldWgServers as $oldWgServer) {
+			$svg = str_replace($oldWgServer, $wgServer, $svg);
+		}
 
 		// replace url encoded string of filename :
 		$svg = str_replace(urlencode($fileIncluded['filename']), $fileIncluded['filename'], $svg);
