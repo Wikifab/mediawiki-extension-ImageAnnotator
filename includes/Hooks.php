@@ -39,6 +39,14 @@ class Hooks {
 			if ($annotatedImage->exists()) {
 				$out = '<div><img src="' . $annotatedImage->getImgUrl() . '"/> </div>';
 				$out = $annotatedImage->makeHtmlImageLink($input);
+
+				preg_match('/\[\[(.*)\]\]/', $image, $matches);
+				$filename = explode('|', $matches[1])[0];
+				$title = \Title::newFromText($filename);
+				if($title){
+					$input->getOutput()->addImage($title->getText(), false, false);
+				}
+
 				return array( $out, 'noparse' => true, 'isHTML' => true );
 			} else {
 				// if image doesn't exists, fallback on default behaviour
@@ -78,7 +86,6 @@ class Hooks {
 		array_shift($args);
 		// we add 'frameless' option, to be default
 		//array_unshift($args, 'frameless');
-		array_unshift($args, 'link=');
 
 		foreach ($args as $arg) {
 			if (substr($arg, 0,5) == 'hash:') {
@@ -142,6 +149,9 @@ class Hooks {
 
 			// replace img source by img annotated image :
 			$imgElement = preg_replace('@src="([^"]+)"@', 'src="'.$annotatedImage->getImgUrl() . '"', $imgElement);
+
+			//replace a href by img annotated image :
+			$imgElement = preg_replace('@href="([^"]+)"@', 'href="'.$annotatedImage->getImgUrl().'"', $imgElement);
 
 			// remove srcset attribut :
 			$imgElement = preg_replace('@srcset="([^"]+)"@', '', $imgElement);
