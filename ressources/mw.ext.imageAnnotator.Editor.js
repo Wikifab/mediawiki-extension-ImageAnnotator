@@ -422,6 +422,13 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 				// extract specifics objects to be loaded afterwards
 				content = editor.getSpecificsObjectsFromJson(content);
 
+				if (mw.config.values.ImageAnnotator.imageAnnotatorOldWgServers && mw.config.values.wgServer) {
+						// replace old wgServerUrls :
+						mw.config.values.ImageAnnotator.imageAnnotatorOldWgServers.forEach(function(element) {
+							content = content.replace(element, mw.config.values.wgServer);
+						});
+				}
+
 				this.canvas.loadFromJSON(content, function () {
 					// add specifics objects not loaded by fabric
 					editor.loadSpecificsObjects();

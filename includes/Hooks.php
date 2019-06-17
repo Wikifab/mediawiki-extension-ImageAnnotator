@@ -193,12 +193,16 @@ class Hooks {
 	 */
 	private static function initJS( $output ) {
 
-		global $wgImageAnnotatorColors;
+		global $wgImageAnnotatorColors, $wgImageAnnotatorOldWgServers;
 
 		$imageAnnotatorParams = [];
 
 		if (isset($wgImageAnnotatorColors) && $wgImageAnnotatorColors)
 			$imageAnnotatorParams['imageAnnotatorColors'] = $wgImageAnnotatorColors;
+
+		if (isset($wgImageAnnotatorOldWgServers) && $wgImageAnnotatorOldWgServers) {
+			$imageAnnotatorParams['imageAnnotatorOldWgServers'] = $wgImageAnnotatorOldWgServers;
+		}
 
 		$output->addJsConfigVars( 'ImageAnnotator', $imageAnnotatorParams );
 		$output->addModules( 'ext.imageannotator.editor' );
