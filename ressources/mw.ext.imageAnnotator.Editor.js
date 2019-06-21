@@ -1575,25 +1575,12 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			return
 		};
 
-		// TODO : config this in extension configuration vars :
-		// if thumbModeApiConvert is true,
-		// then thumb of annotated image is generated using APIs
-		// else it use fabricJS to convert it (in SVG), but this won't works for cropping images
-		var thumbModeApiConvert = true;
-
-		if (!thumbModeApiConvert) {
-			// display it only if content, (some browsers doesn't like empty images)
-			this.overlayImg = $('<img>').attr('class','annotationlayer').attr('src', "data:image/svg+xml;utf8," + this.getSVG());
-
-			// positioning
-			$(this.image).parent().css({ position:'relative'});
-			$(this.overlayImg).insertAfter(this.image);
-			$(this.overlayImg).css({ width:'100%'});
-
-			$(this.overlayImg).css({position:'absolute', width:'100%', height:'auto', top: 0, left: 0});
+		if(this.isStatic){
+			this.generateThumbUsingAPI(this.content);
 		} else {
 			this.generateThumbUsingAPI();
 		}
+	
 		$('#'+this.canvasId).hide();
 	}
 
