@@ -955,7 +955,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 		// if existing crop, load object :
 		var cropPosition = this.getCropedImagePosition();
-		var cropoPopup = new ext_imageAnnotator.CropPopup(this, this.image, cropPosition, [this, this.applyCrop ], $('#mw-ia-popup-div'), this.freeCropping, this.predefinedFormat );
+		var cropPopup = new ext_imageAnnotator.CropPopup(this, this.image, cropPosition, [this, this.applyCrop ], $('#mw-ia-popup-div'), this.freeCropping, this.predefinedFormat );
 
 		//Enables closure with esc
 		var popupOptions = cropPopup.cropPopup.data('popupoptions');
