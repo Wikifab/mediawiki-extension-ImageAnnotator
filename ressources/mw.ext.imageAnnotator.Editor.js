@@ -955,7 +955,12 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 		// if existing crop, load object :
 		var cropPosition = this.getCropedImagePosition();
-		new ext_imageAnnotator.CropPopup(this, this.image, cropPosition, [this, this.applyCrop ], $('#mw-ia-popup-div'), this.freeCropping, this.predefinedFormat );
+		var cropPopup = new ext_imageAnnotator.CropPopup(this, this.image, cropPosition, [this, this.applyCrop ], $('#mw-ia-popup-div'), this.freeCropping, this.predefinedFormat );
+
+		//Enables closure with esc
+		var popupOptions = cropPopup.cropPopup.data('popupoptions');
+		popupOptions.escape = true;
+		cropPopup.cropPopup.data('popupoptions', popupOptions);
 	}
 
 	/**
