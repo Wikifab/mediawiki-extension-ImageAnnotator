@@ -213,6 +213,11 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 		}
 	});
 
+	$('.annotationlayer').each(function () {
+        $(this).css('filter', 'blur(0)');
+        $(this).parent().next().hide();
+    });
+
 }( jQuery, mediaWiki , ext_imageAnnotator) );
 
 

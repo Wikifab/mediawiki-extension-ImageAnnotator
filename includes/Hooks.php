@@ -25,6 +25,7 @@ class Hooks {
 		global $wgOut;
 
 		// add module for display annotations
+		$wgOut->addModuleStyles('ext.imageannotator.editor.css');
 		$wgOut->addModules( [
 				'ext.imageannotator.editor'
 		] );
@@ -38,7 +39,7 @@ class Hooks {
 			$annotatedImage = new AnnotatedImage($image, $annotatedContent);
 			if ($annotatedImage->exists()) {
 				$out = '<div><img src="' . $annotatedImage->getImgUrl() . '"/> </div>';
-				$out = $annotatedImage->makeHtmlImageLink($input);
+				$out = $annotatedImage->makeHtmlImageLink($input).'<div class="lds-grid"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>';
 
 				preg_match('/\[\[(.*)\]\]/', $image, $matches);
 				$filename = explode('|', $matches[1])[0];
