@@ -19,7 +19,8 @@
 			"ImageAnnotator\\Hooks::initialize"
 	],
 	"config": {
-		"ImageAnnotator-areaClasses": "imageAnnotator"
+		"ImageAnnotator-areaClasses": "imageAnnotator",
+		"ImageAnnotatorOldWgServers": []
 	},
 	"MessagesDirs": {
 		"ImageAnnotator": [

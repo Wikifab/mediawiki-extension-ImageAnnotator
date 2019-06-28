@@ -422,6 +422,13 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 				// extract specifics objects to be loaded afterwards
 				content = editor.getSpecificsObjectsFromJson(content);
 
+				if (mw.config.values.ImageAnnotator.imageAnnotatorOldWgServers && mw.config.values.wgServer) {
+						// replace old wgServerUrls :
+						mw.config.values.ImageAnnotator.imageAnnotatorOldWgServers.forEach(function(element) {
+							content = content.replace(element, mw.config.values.wgServer);
+						});
+				}
+
 				this.canvas.loadFromJSON(content, function () {
 					// add specifics objects not loaded by fabric
 					editor.loadSpecificsObjects();
@@ -948,7 +955,12 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 		// if existing crop, load object :
 		var cropPosition = this.getCropedImagePosition();
-		new ext_imageAnnotator.CropPopup(this, this.image, cropPosition, [this, this.applyCrop ], $('#mw-ia-popup-div'), this.freeCropping, this.predefinedFormat );
+		var cropPopup = new ext_imageAnnotator.CropPopup(this, this.image, cropPosition, [this, this.applyCrop ], $('#mw-ia-popup-div'), this.freeCropping, this.predefinedFormat );
+
+		//Enables closure with esc
+		var popupOptions = cropPopup.cropPopup.data('popupoptions');
+		popupOptions.escape = true;
+		cropPopup.cropPopup.data('popupoptions', popupOptions);
 	}
 
 	/**
@@ -1581,25 +1593,12 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			return
 		};
 
-		// TODO : config this in extension configuration vars :
-		// if thumbModeApiConvert is true,
-		// then thumb of annotated image is generated using APIs
-		// else it use fabricJS to convert it (in SVG), but this won't works for cropping images
-		var thumbModeApiConvert = true;
-
-		if (!thumbModeApiConvert) {
-			// display it only if content, (some browsers doesn't like empty images)
-			this.overlayImg = $('<img>').attr('class','annotationlayer').attr('src', "data:image/svg+xml;utf8," + this.getSVG());
-
-			// positioning
-			$(this.image).parent().css({ position:'relative'});
-			$(this.overlayImg).insertAfter(this.image);
-			$(this.overlayImg).css({ width:'100%'});
-
-			$(this.overlayImg).css({position:'absolute', width:'100%', height:'auto', top: 0, left: 0});
+		if(this.isStatic){
+			this.generateThumbUsingAPI(this.content);
 		} else {
 			this.generateThumbUsingAPI();
 		}
+	
 		$('#'+this.canvasId).hide();
 	}
 

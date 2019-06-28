@@ -32,7 +32,7 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 		this.clonedImage.appendTo(this.imagediv);
 
 		if (this.sourcePopup) {
-			this.sourcePopup.hide();
+			this.sourcePopup.css({'visibility': 'hidden', 'opacity': '0'});
 		}
 		
 		this.cropPopup.popup({
@@ -166,7 +166,7 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 
 		this.cropCallback[1].call(this.cropCallback[0], cropPositions);
 
-		this.sourcePopup && this.sourcePopup.show();
+		this.sourcePopup && this.sourcePopup.css({'visibility': 'visible', 'opacity': '1'});
 
 		this.hide();
 
@@ -174,7 +174,7 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 
 	ext_imageAnnotator.CropPopup.prototype.cancel = function () {
 
-		this.sourcePopup && this.sourcePopup.show();
+		this.sourcePopup && this.sourcePopup.css({'visibility': 'visible', 'opacity': '1'});
 
 		this.hide();
 

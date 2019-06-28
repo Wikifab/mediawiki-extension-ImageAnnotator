@@ -163,6 +163,11 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 					// open the crop popup (pass the ratio to it)
 					var cropPopup = new ext_imageAnnotator.CropPopup(editLink.popup.editor, editLink.popup.editor.image, cropPosition, [editLink.popup.editor, editLink.popup.editor.applyCrop ], editLink.popup.$editorPopup, false, ratio);
 
+					//Prevents closure with esc
+					var popupOptions = cropPopup.cropPopup.data('popupoptions');
+					popupOptions.escape = false;
+					cropPopup.cropPopup.data('popupoptions', popupOptions);
+
 					/* redefine these methods */
 					cropPopup.save = function () {
 						// the initial function
