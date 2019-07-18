@@ -45,7 +45,7 @@ class Hooks {
 				$filename = explode('|', $matches[1])[0];
 				$title = \Title::newFromText($filename);
 				if($title){
-					$input->getOutput()->addImage($title->getText(), false, false);
+					$input->getOutput()->addImage($title->getDBkey(), false, false);
 				}
 
 				return array( $out, 'noparse' => true, 'isHTML' => true );
