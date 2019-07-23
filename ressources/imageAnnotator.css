@@ -218,7 +218,7 @@
     opacity: 1;
 }
 
-.pfImagePreviewWrapper .pfImagePreviewWrapper .lds-grid {
+.pfImagePreviewWrapper .lds-grid {
     display: inline-block;
     position: absolute;
     width: 64px;
@@ -228,7 +228,7 @@
     left: 50%;
     transform: translate(-50%, -50%);
 }
-.pfImagePreviewWrapper .pfImagePreviewWrapper .lds-grid div {
+.pfImagePreviewWrapper .lds-grid div {
     position: absolute;
     width: 13px;
     height: 13px;
