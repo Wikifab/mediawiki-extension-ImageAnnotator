@@ -221,7 +221,6 @@ class Hooks {
 
 		$updater->addExtensionTable( 'annotatedimages',
 				__DIR__ . '/../sql/table.sql' );
-		$updater->modifyExtensionField('imagelinks', 'il_to', __DIR__ . '/../sql/updateImageLinks.sql');
 
 		return true;
 	}
