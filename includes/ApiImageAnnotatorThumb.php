@@ -91,6 +91,7 @@ class ApiImageAnnotatorThumb extends \ApiBase {
 
 
 		return [
+				'size' => $size,
 				'filename' => $outfilename,
 				'relative_filepath' => $subFilePath,
 				'filepath' => $outfilepathname,
@@ -246,12 +247,13 @@ class ApiImageAnnotatorThumb extends \ApiBase {
 	}
 
 	public function execute() {
-		global $wgServer;
+		global $wgServer, $wgThumbLimits;
 		$params = $this->extractRequestParams ();
 		$image = $params ['image'];
 		$jsondata = $params ['jsondata'];
 		$svgdata = $params['svgdata'];
 		$size = '';
+		$alternatesThumbs = [];
 
 		$result = 'not implemented';
 
@@ -280,6 +282,12 @@ class ApiImageAnnotatorThumb extends \ApiBase {
 		$hash = md5($jsondata);
 		$fileOutputPaths = $this->getOutFilename ($imageInfo, $size, $hash);
 
+		if ($wgThumbLimits) {
+			foreach ($wgThumbLimits as $thumbLimitSize) {
+				$alternatesThumbs[] = $this->getOutFilename ($imageInfo, $thumbLimitSize, $hash);
+			}
+		}
+
 		$fileOut = $fileOutputPaths['filepath'];
 		$fileUrl = $fileOutputPaths['fileurl'];
 		$fileOutRelative = $fileOutputPaths['relative_filepath'];
@@ -289,6 +297,9 @@ class ApiImageAnnotatorThumb extends \ApiBase {
 		$width = $jsonDecoded && isset($jsonDecoded->width) && $jsonDecoded->width ? $jsonDecoded->width : 800;
 
 		$convertResult = $this->svgToPngConvert($svgdata, $width, $imageInfo, $fileOut, $hash);
+		foreach ($alternatesThumbs as $key => $alternatesThumb) {
+			$alternatesThumbs[$key]['result'] = $this->svgToPngConvert($svgdata, $alternatesThumb['size'], $imageInfo, $alternatesThumb['filepath'], $hash);
+		}
 
 		// TODO : store result in bdd
 
@@ -299,6 +310,13 @@ class ApiImageAnnotatorThumb extends \ApiBase {
 			$r ['result'] = 'OK';
 			$r ['image'] = $fileUrl;
 			$r ['hash'] = $hash;
+			$r ['thumbs-images'] = [];
+			foreach ($alternatesThumbs as $alternatesThumb) {
+				if( $alternatesThumb['result']['success']) {
+					$r ['thumbs-images'][] = $alternatesThumb['fileurl'];
+				}
+
+			}
 		} else {
 			$r ['result'] = 'fail';
 			$r ['details'] = $convertResult['message'];
