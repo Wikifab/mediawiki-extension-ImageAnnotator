@@ -24,6 +24,7 @@ class Hooks {
 	public static function annotatedImageParser( $input, $image, $annotatedContent) {
 		global $wgOut;
 
+
 		// add module for display annotations
 		$wgOut->addModuleStyles('ext.imageannotator.editor.css');
 		$wgOut->addModules( [
@@ -37,9 +38,11 @@ class Hooks {
 			// using backend generation (for image including cropped images)
 			// image must have been generated before (during edition)
 			$annotatedImage = new AnnotatedImage($image, $annotatedContent);
+
 			if ($annotatedImage->exists()) {
-				$out = '<div><img src="' . $annotatedImage->getImgUrl() . '"/> </div>';
+				$out = '<div><img src="' . $annotatedImage->getImgUrl() . '" /> </div>';
 				$out = $annotatedImage->makeHtmlImageLink($input).'<div class="lds-grid"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>';
+
 
 				preg_match('/\[\[(.*)\]\]/', $image, $matches);
 				$filename = explode('|', $matches[1])[0];
