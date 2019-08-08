@@ -100,7 +100,7 @@ class AnnotatedImage {
 		return false;
 	}
 
-	protected function getHash() {
+	public function getHash() {
 		return md5(trim($this->annotatedContent));
 	}
 
@@ -140,7 +140,7 @@ class AnnotatedImage {
 		}
 	}
 
-	protected function getOutFilename ($size = '' ) {
+	public function getOutFilename ($size = '' ) {
 		global $wgUploadDirectory, $wgUploadPath;
 
 		$imageInfo = $this->getImageInfo();
@@ -150,10 +150,10 @@ class AnnotatedImage {
 
 		if ($this->thumbFile ) {
 			$outfilename = basename($this->thumbFile);
-			$subFilePath = $this->thumbFile;
+			$subFilePath = str_replace($wgUploadDirectory, '', $this->thumbFile);
 
 			// insert size in filename :
-			$pattern = '@^(thumb/[a-z0-9]/[a-z0-9]{2}/[^/]+)/ia-([a-z0-9]+)-px-(.*)$@';
+			$pattern = '@^(/?thumb/[a-z0-9]/[a-z0-9]{2}/[^/]+)/ia-([a-z0-9]+)-px-(.*)$@';
 			if (preg_match(''.$pattern.'', $subFilePath, $matches)) {
 				$outfilename = "ia-{$matches[2]}-{$size}px-{$matches[3]}";
 				$subFilePath = "{$matches[1]}/$outfilename";
