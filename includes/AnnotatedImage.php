@@ -257,7 +257,7 @@ class AnnotatedImage {
 		// 'data-thumbsrc' attribut is used in javascript to match the src of the thumb used in this link
 		// it enable to find back the 'a' tag given a 'src' value
 		$out = '<img class="annotationlayer" style="filter: blur(5px)" ' . $imgDim  . ' src="'. $this->getImgUrl() . '"/>';
-		$out = "<a class='image' href=\"". $this->getPageUrl() ."\" data-thumbsrc='". $this->getImgUrl() . "' >$out</a>";
+		$out = "<a class='image' href=\"". $this->getPageUrl() ."\" data-thumbsrc=\"". $this->getImgUrl() . "\" >$out</a>";
 
 		/*
 			'<a href="/wiki/Fichier:Test_de_tuto_LB_Final.jpg" class="image" title="annotation:Modèle:Main Picture annotation}"
