@@ -101,7 +101,7 @@ class ApiImageAnnotatorThumb extends \ApiBase {
 
 
 	public function correctSvgIncludedRessourcePathBeforeConversion($svg, $fileIncluded, $hash, $tmpDir, &$tempFiles) {
-		global $wgUploadDirectory, $wgServer, $wgImageAnnotatorOldWgServers;
+		global $wgUploadDirectory, $wgServer, $wgImageAnnotatorOldWgServers, $wgUploadPath;
 
 		// replace old wgServerUrls :
 		foreach ($wgImageAnnotatorOldWgServers as $oldWgServer) {
@@ -115,6 +115,11 @@ class ApiImageAnnotatorThumb extends \ApiBase {
 		if (isset($fileIncluded['thumbUrl'])){
 			$fileIncluded['thumbUrl'] = str_replace(urlencode($fileIncluded['filename']), $fileIncluded['filename'], $fileIncluded['thumbUrl']);
 		}
+
+		// replace thumb urls by original's one
+		$pattern = '@"'.$wgServer. $wgUploadPath. '/thumb/([a-z0-9]/[a-z0-9]{2})/([^"/]+)/([^"]+)"@';
+		$pattern = preg_replace('@https?://@', 'https?://', $pattern);
+		$svg = preg_replace($pattern, '"'.$wgServer . $wgUploadPath . '/$1/$2"', $svg);
 
 		// replace ALL files url by relative filepath
 		$filesToReplaces = [];
