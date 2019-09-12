@@ -26,10 +26,11 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 
 	/* utility function for checking ratio */
 	function respectsAspectRatio(a, b, w, h) {
-		
+
 		function greatestCommonDivisor(a,b) {
-			if (b == 0)
-		        return a
+			if (b == 0) {
+				return a
+			}
 		    return greatestCommonDivisor(b, a % b)
 		}
 
@@ -74,6 +75,7 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 			// if the is not an image (a video for instance) we do not add editor
 			return ;
 		}
+
 
 		// load static canvas
 		var staticEditor = new ext_imageAnnotator.Editor( imagePreview, canvasId = null, content, image ) ;
@@ -143,7 +145,7 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 			$("<img>").attr("src", $(image).attr("src")).load(function(){
 	            var imgRealWidth = this.width;
 	            var imgRealHeight = this.height;
-	            
+
 	            var regex = /(\d{1,2})_(\d{1,2})/i;
 				var match = regex.exec(editLink.predefinedFormat);
 				var ratio_width = parseInt(match[1]);

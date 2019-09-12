@@ -24,6 +24,10 @@ class ApiImageAnnotatorThumb extends \ApiBase {
 				'svgdata' => array (
 						\ApiBase::PARAM_TYPE => 'string',
 						\ApiBase::PARAM_REQUIRED => false
+				),
+				'force' => array (
+						\ApiBase::PARAM_TYPE => 'string',
+						\ApiBase::PARAM_REQUIRED => false
 				)
 		);
 	}
@@ -191,8 +195,30 @@ class ApiImageAnnotatorThumb extends \ApiBase {
 
 	}
 
-	public function svgToPngConvert($svg, $width, $fileIncluded, $fileOut, $hash) {
+	/*
+	 *
+	 */
+	/**
+	 *
+	 * @param string $svg
+	 * @param int $width
+	 * @param string $fileIncluded
+	 * @param string $fileOut
+	 * @param string $hash
+	 * @param boolean $force if set to false, file will not be regenerated if it exists
+	 * @return boolean[]|string[]|unknown[]|boolean[]|unknown[]|boolean[]|string[]
+	 */
+	public function svgToPngConvert($svg, $width, $fileIncluded, $fileOut, $hash, $force = true) {
 		global $wgUploadDirectory, $wgServer;
+
+		if (file_exists($fileOut) && ! $force) {
+			return [
+					'success' => true,
+					'fileout' => $fileOut,
+					$fileIncluded,
+					'message' => 'allready exists'
+			];
+		}
 
 		/*
 		$fileIncluded =
@@ -257,6 +283,10 @@ class ApiImageAnnotatorThumb extends \ApiBase {
 		$image = $params ['image'];
 		$jsondata = $params ['jsondata'];
 		$svgdata = $params['svgdata'];
+		$force = false;
+		if (isset($params['force']) && $params['force'] && $params['force'] != 'false') {
+			$force = true;
+		}
 		$size = '';
 		$alternatesThumbs = [];
 
@@ -301,9 +331,9 @@ class ApiImageAnnotatorThumb extends \ApiBase {
 
 		$width = $jsonDecoded && isset($jsonDecoded->width) && $jsonDecoded->width ? $jsonDecoded->width : 800;
 
-		$convertResult = $this->svgToPngConvert($svgdata, $width, $imageInfo, $fileOut, $hash);
+		$convertResult = $this->svgToPngConvert($svgdata, $width, $imageInfo, $fileOut, $hash, $force);
 		foreach ($alternatesThumbs as $key => $alternatesThumb) {
-			$alternatesThumbs[$key]['result'] = $this->svgToPngConvert($svgdata, $alternatesThumb['size'], $imageInfo, $alternatesThumb['filepath'], $hash);
+			$alternatesThumbs[$key]['result'] = $this->svgToPngConvert($svgdata, $alternatesThumb['size'], $imageInfo, $alternatesThumb['filepath'], $hash, $force);
 		}
 
 		// TODO : store result in bdd
