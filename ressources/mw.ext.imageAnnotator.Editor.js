@@ -1502,19 +1502,30 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		return this.exportOverSourceImage(noForceRegeneration);
 	}
 
+	ext_imageAnnotator.Editor.prototype.showLoader = function (image) {
+		image.css('filter', 'blur(5px)');
+		if(image.next().attr('class') !== "lds-grid"){
+			image.after('<div class="lds-grid"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>');
+        } else {
+			image.next().show();
+        }
+	}
+	ext_imageAnnotator.Editor.prototype.hideLoader = function (image) {
+		image.css('filter', 'blur(0px)');
+		if(image.next().attr('class') == "lds-grid"){
+			image.next().hide();
+        }
+	}
+
 	ext_imageAnnotator.Editor.prototype.generateThumbUsingAPI = function (jsoncontent, callback, noForceRegeneration) {
 		// fonction to do second request to execute follow action
 
 		var editor = this;
 
 		var forceRegeneration = (noForceRegeneration != true);
-
-		$(editor.image).css('filter', 'blur(5px)');
-		if($(editor.image).next().attr('class') !== "lds-grid"){
-            $(editor.image).after('<div class="lds-grid"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>');
-        } else {
-            $(editor.image).next().show();
-        }
+		
+		this.showLoader($(editor.image));
+		
 
 		if ( ! callback) {
 			callback = function setOverlayImage(url) {
@@ -1594,7 +1605,8 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		}
 		if (! this.content) {
 			$('#'+this.canvasId).hide();
-			return
+			this.hideLoader($(this.image));
+			return;
 		};
 
 		if(this.isStatic){

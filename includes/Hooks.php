@@ -41,7 +41,8 @@ class Hooks {
 
 			if ($annotatedImage->exists()) {
 				$out = '<div><img src="' . $annotatedImage->getImgUrl() . '" /> </div>';
-				$out = $annotatedImage->makeHtmlImageLink($input).'<div class="lds-grid"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>';
+				$out = $annotatedImage->makeHtmlImageLink($input);
+				//.'<div class="lds-grid"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>';
 
 
 				preg_match('/\[\[(.*)\]\]/', $image, $matches);
