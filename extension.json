@@ -33,6 +33,9 @@
 	"APIModules": {
 		"iaThumbs": "ImageAnnotator\\ApiImageAnnotatorThumb"
 	},
+	"SpecialPages": {
+		"AnnotatedImageMaintenance": "ImageAnnotator\\SpecialAnnotatedImageMaintenance"
+	},
 	"Hooks": {
 	    "BeforePageDisplay": [
 			"ImageAnnotator\\Hooks::onBeforePageDisplay"
@@ -94,6 +97,18 @@
 			    "imageannotator-toolbar-tooltip-freecropping"
 			]
 		},
+		"ext.imageannotator.maintenance": {
+			"scripts": [
+				"ressources/maintenance/aiRegeneration/BuildImage.js",
+				"ressources/maintenance/aiRegeneration/ProcessPageList.js",
+				"ressources/maintenance/aiRegeneration/ProcessSemanticPage.js",
+				"ressources/maintenance/annotatedImagesRegeneration.js"
+			],
+			"position": "bottom",
+			"dependencies": [
+				"ext.imageannotator.editor"
+			]
+		},
 		"ext.imageannotator.editor.css": {
 			"styles": "ressources/imageAnnotator.css"
 		}
@@ -107,7 +122,8 @@
 		"ImageAnnotator\\AnnotatedImage": "includes/AnnotatedImage.php",
 		"ImageAnnotator\\CustomsAnnotation": "includes/CustomsAnnotation.php",
 		"ImageAnnotator\\Hooks": "includes/Hooks.php",
-		"ImageAnnotator\\InputEditableImage": "includes/InputEditableImage.php"
+		"ImageAnnotator\\InputEditableImage": "includes/InputEditableImage.php",
+		"ImageAnnotator\\SpecialAnnotatedImageMaintenance": "includes/specials/SpecialAnnotatedImageMaintenance.php"
 	},
 	"manifest_version": 1
 }

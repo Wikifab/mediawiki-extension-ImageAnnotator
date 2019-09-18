@@ -11,11 +11,12 @@
 
 ext_imageAnnotator = ext_imageAnnotator || {};
 
+
+
 //$(document).ready(function (mw, ext_imageAnnotator ) {
 ( function ( $, mw , ext_imageAnnotator) {
 
 	var editLinkRegister = ext_imageAnnotator.getEditLinkRegister();
-
 
 	function isValidImageType(image) {
 		if( ! image || image.length == 0) {
@@ -49,6 +50,14 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 		this.popup = new ext_imageAnnotator.EditorBlock(container, img, content, updateCallBack, options );
 
 		return this.popup;
+	}
+
+	/**
+	 * this enable an outside extension to call ImageAnnotator with this function
+	 */
+	mw.ext_imageAnnotator.createAnnotatedImage = function (imagePreview, content, image) {
+
+		return new ext_imageAnnotator.Editor( imagePreview, canvasId = null, content, image ) ;
 	}
 
 
