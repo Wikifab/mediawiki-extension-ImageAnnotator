@@ -70,7 +70,11 @@ var ext_imageAnnotator_maintenance = ext_imageAnnotator_maintenance || {};
 
 	ext_imageAnnotator_maintenance.maintenance.listImages.prototype.listImagesResults = function (data) {
 		console.log("listImages results");
-		this.continuePage = data.continue.apcontinue;
+		if (data.continue) {
+			this.continuePage = data.continue.apcontinue;
+		} else {
+			this.continuePage = false;
+		}
 		var listImage = this;
 		var pages = data.query.allpages;
 		var pageslist = '';
@@ -85,6 +89,8 @@ var ext_imageAnnotator_maintenance = ext_imageAnnotator_maintenance || {};
 			console.log(listImage.continuePage);
 			if (listImage.continuePage) {
 				listImage.nextList();
+			} else {
+				console.log('annotated images regeneration list OVER');
 			}
 		});
 	}
@@ -94,10 +100,31 @@ var ext_imageAnnotator_maintenance = ext_imageAnnotator_maintenance || {};
 		console.log(data);
 	}
 
+	var listImage ;
+
 	$('#ia-start-regeneration').click(function () {
 		console.log("start !");
 
-		var listImage = new ext_imageAnnotator_maintenance.maintenance.listImages();
+		listImage = new ext_imageAnnotator_maintenance.maintenance.listImages();
+//
+//
+//		ext_imageAnnotator_maintenance.maintenance.buildingContainer =  new OO.ui.PanelLayout( {
+//		    expanded: false,
+//		    framed: true,
+//		    padded: true
+//		} );
+//
+//		$('#ia-regenerationoutput').append(ext_imageAnnotator_maintenance.maintenance.buildingContainer.$element);
+//
+//		var pageListProcess = new ext_imageAnnotator_maintenance.maintenance.processPageList("Test_d'image,_avec_caractères_spéciaux", function (sucess) {
+//
+//		});
+	});
+
+	$('#ia-continue-regeneration').click(function () {
+		console.log("continue !");
+
+		listImage.nextList();
 	});
 
 

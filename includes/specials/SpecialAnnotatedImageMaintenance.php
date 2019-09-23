@@ -26,7 +26,9 @@ class SpecialAnnotatedImageMaintenance extends SpecialPage{
         $out = $this->getOutput();
         $out->addModules(['ext.imageannotator.maintenance']);
 
-        $out->addHTML('<button id="ia-start-regeneration">Start</button>');
+        $out->addHTML('<div><button id="ia-start-regeneration">Start</button></div>');
+        $out->addHTML('<div><button id="ia-continue-regeneration">Continue after bug</button></div>');
+          $out->addHTML('<div><input id="ia-force-regeneration" type=checkbox >Force regeneration of images</input></div>');
         $out->addHTML('<div id="ia-regenerationoutput"></div>');
     }
 

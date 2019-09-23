@@ -1554,6 +1554,8 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 				jsoncontent = editor.getJson();
 			}
 			var token = jsondata.query.tokens.csrftoken;
+
+			try {
 			$.ajax({
 				type: "POST",
 				url: mw.util.wikiScript('api'),
@@ -1583,6 +1585,11 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			    		console.log(jsondata);
 			    	}
 			}});
+			} catch (e) {
+	    		console.error('Fail to generate thumb on server');
+	    		console.log(e);
+				
+			}
 		};
 
 		// first request to get token

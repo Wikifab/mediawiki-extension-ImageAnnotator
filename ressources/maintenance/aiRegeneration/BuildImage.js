@@ -42,13 +42,14 @@ ext_imageAnnotator_maintenance = ext_imageAnnotator_maintenance || {};
 		var img_url = null;
 
 		$.each(data.query.pages, function(index, value) {
-			if ( value.imageinfo && !value.imageinfo[0] && value.imageinfo[0].url){
+			if ( value.imageinfo && value.imageinfo[0] && value.imageinfo[0].url){
 				img_url = value.imageinfo[0].url;
 			}
 		});
 
 		if (! img_url) {
 			console.log ('fail to get url of source image ' + this.includedAnnotatedImage.image);
+			console.log(data);
 			if (this.callback) {
 				this.callback(false);
 			}
@@ -57,13 +58,22 @@ ext_imageAnnotator_maintenance = ext_imageAnnotator_maintenance || {};
 		buildImage.imgelement.attr('src',img_url);
 		var imgContent = buildImage.includedAnnotatedImage['annotation'];
 
+		var noForceRegeneration = true;
+
+		if ($('#ia-force-regeneration').val()) {
+			noForceRegeneration = false;
+		}
+
+
 		try {
 			var editor = new mw.ext_imageAnnotator.createAnnotatedImage(buildImage.imagePreview, imgContent,  buildImage.imgelement)
 
 			editor.generateThumbUsingAPI(imgContent, function () {
 				buildImage.generationEnded();
-			}, true);
+			}, noForceRegeneration);
 		} catch ( e) {
+			console.log("ERREUR for "+ img_url);
+			console.log(e);
 			this.callback(false);
 		}
 
