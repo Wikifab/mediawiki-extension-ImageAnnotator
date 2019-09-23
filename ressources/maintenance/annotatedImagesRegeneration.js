@@ -36,6 +36,10 @@ var ext_imageAnnotator_maintenance = ext_imageAnnotator_maintenance || {};
 		this.counter = 0;
 		this.continuePage = null;
 
+		this.pageParsingRunning = 0;
+
+		this.pagesToParse = [];
+
 		ext_imageAnnotator_maintenance.maintenance.buildingContainer =  new OO.ui.PanelLayout( {
 		    expanded: false,
 		    framed: true,
@@ -55,6 +59,8 @@ var ext_imageAnnotator_maintenance = ext_imageAnnotator_maintenance || {};
 				list: 'allpages',
 				// apfrom: form.wpDraftToken.value,
 				// apnamespace: 0,
+				prop:'revisions',
+				rvprop:'content'
 			};
 		if (this.continuePage) {
 			params.apfrom = this.continuePage;
@@ -66,6 +72,25 @@ var ext_imageAnnotator_maintenance = ext_imageAnnotator_maintenance || {};
 			self.listImagesResults(data);
 		}).fail( self.listImagesFail );
 	}
+
+	ext_imageAnnotator_maintenance.maintenance.listImages.prototype.parseNextPage = function () {
+
+		var listImages = this;
+		var title = this.pagesToParse.pop();
+
+		if ( ! title) {
+			console.log( 'END of pages to parse');
+			return;
+		}
+
+		console.log ('Parsing page ('  + this.pagesToParse.length + ' remaining)');
+
+		var pageListProcess = new ext_imageAnnotator_maintenance.maintenance.processVEPage(title, function (sucess) {
+
+			listImages.parseNextPage();
+		});
+	}
+
 
 
 	ext_imageAnnotator_maintenance.maintenance.listImages.prototype.listImagesResults = function (data) {
@@ -80,19 +105,34 @@ var ext_imageAnnotator_maintenance = ext_imageAnnotator_maintenance || {};
 		var pageslist = '';
 		console.log('nb pages to do : ' + pages.length);
 
+		var processSemanticAnnotatedImages = $('#ia-regeneration-semantic').prop('checked');
+		var processVEAnnotatedImages = $('#ia-regeneration-vepage').prop('checked');
+
+
 		pages.forEach(function (item, index){
 			listImage.counter++;
 			pageslist = pageslist + item.title + "\n";
-		});
-		var pageListProcess = new ext_imageAnnotator_maintenance.maintenance.processPageList(pageslist, function (sucess) {
-			console.log('Page list processed, getting new one');
-			console.log(listImage.continuePage);
-			if (listImage.continuePage) {
-				listImage.nextList();
-			} else {
-				console.log('annotated images regeneration list OVER');
+			if (processVEAnnotatedImages) {
+				listImage.pagesToParse.push(item.title);
 			}
 		});
+
+		if (processSemanticAnnotatedImages) {
+			var pageListProcess = new ext_imageAnnotator_maintenance.maintenance.processPageList(pageslist, function (sucess) {
+				console.log('Page list processed, getting new one');
+				if (listImage.continuePage) {
+					listImage.nextList();
+				} else {
+					console.log('annotated images regeneration list OVER');
+
+					// launch parser for VE ;
+					listImage.parseNextPage();
+				}
+			});
+		} else {
+			listImage.parseNextPage();
+		}
+
 	}
 
 	ext_imageAnnotator_maintenance.maintenance.listImages.prototype.listImagesFail = function (data) {
@@ -125,6 +165,24 @@ var ext_imageAnnotator_maintenance = ext_imageAnnotator_maintenance || {};
 		console.log("continue !");
 
 		listImage.nextList();
+	});
+	$('#ia-continue-pageparsing').click(function () {
+		console.log("restart page parsing !");
+
+		listImage.parseNextPage();
+	});
+
+
+	$('document').ready(function () {
+		ext_imageAnnotator_maintenance.maintenance.buildingContainer =  new OO.ui.PanelLayout( {
+		    expanded: false,
+		    framed: true,
+		    padded: true
+		} );
+		$('#ia-regenerationoutput').append(ext_imageAnnotator_maintenance.maintenance.buildingContainer.$element);
+
+		//new ext_imageAnnotator_maintenance.maintenance.processVEPage("Dsf", function() {});
+
 	});
 
 

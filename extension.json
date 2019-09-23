@@ -102,6 +102,7 @@
 				"ressources/maintenance/aiRegeneration/BuildImage.js",
 				"ressources/maintenance/aiRegeneration/ProcessPageList.js",
 				"ressources/maintenance/aiRegeneration/ProcessSemanticPage.js",
+				"ressources/maintenance/aiRegeneration/ProcessVEPage.js",
 				"ressources/maintenance/annotatedImagesRegeneration.js"
 			],
 			"position": "bottom",

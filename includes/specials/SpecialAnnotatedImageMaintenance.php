@@ -26,9 +26,12 @@ class SpecialAnnotatedImageMaintenance extends SpecialPage{
         $out = $this->getOutput();
         $out->addModules(['ext.imageannotator.maintenance']);
 
-        $out->addHTML('<div><button id="ia-start-regeneration">Start</button></div>');
+        $out->addHTML('<div><button id="ia-start-regeneration">Start semantic annotated</button>');
         $out->addHTML('<div><button id="ia-continue-regeneration">Continue after bug</button></div>');
-          $out->addHTML('<div><input id="ia-force-regeneration" type=checkbox >Force regeneration of images</input></div>');
+        $out->addHTML('<div><button id="ia-continue-pageparsing">Continue PAge Parsing</button></div>');
+        $out->addHTML('<div><input id="ia-force-regeneration" type=checkbox >Force regeneration of images</input></div>');
+        $out->addHTML('<div><input id="ia-regeneration-semantic" type=checkbox checked="check" >regenerate semantic annotated images</input></div>');
+        $out->addHTML('<div><input id="ia-regeneration-vepage" type=checkbox checked="check" >regenerate annotated images in VE</input></div>');
         $out->addHTML('<div id="ia-regenerationoutput"></div>');
     }
 
