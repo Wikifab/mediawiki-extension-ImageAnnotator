@@ -68,9 +68,11 @@ ext_imageAnnotator_maintenance = ext_imageAnnotator_maintenance || {};
 		try {
 			var editor = new mw.ext_imageAnnotator.createAnnotatedImage(buildImage.imagePreview, imgContent,  buildImage.imgelement)
 
-			editor.generateThumbUsingAPI(imgContent, function () {
-				buildImage.generationEnded();
-			}, noForceRegeneration);
+			setTimeout(function(){
+				editor.generateThumbUsingAPI(imgContent, function () {
+					buildImage.generationEnded();
+				}, noForceRegeneration);
+			}, 2000);
 		} catch ( e) {
 			console.log("ERREUR for "+ img_url);
 			console.log(e);
