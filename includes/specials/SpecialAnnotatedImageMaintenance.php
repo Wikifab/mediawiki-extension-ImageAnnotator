@@ -3,6 +3,7 @@
 namespace ImageAnnotator;
 
 use SpecialPage;
+use ErrorPageError;
 
 class SpecialAnnotatedImageMaintenance extends SpecialPage{
 
@@ -45,12 +46,9 @@ class SpecialAnnotatedImageMaintenance extends SpecialPage{
         $user = $this->getUser();
 
         // Check permissions
-        /*if (!$user->isAllowed('usecategorymanager')) {
-            throw new ErrorPageError(
-                'categorymanager-permissions-accessdenied-title',
-                'categorymanager-permissions-accessdenied-content'
-            );
-        }*/
+        if (!$user->isAllowed('annotated-image-maintenance')) {
+            throw new ErrorPageError('error', 'badaccess');
+        }
     }
 
 }
