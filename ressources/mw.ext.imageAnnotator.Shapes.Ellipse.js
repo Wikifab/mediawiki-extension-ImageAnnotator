@@ -28,7 +28,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
          outlineWidth: 1,
          outlineStyle: '#FFF',
 
-     initialize(optionsopt) {
+     initialize: function (optionsopt) {
 
         this.on('scaling', function(e) {
 
@@ -42,7 +42,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
               'scaleX'  : 1,
               'scaleY'  : 1
             });
-            
+
       });
 
         this.callSuper('initialize', optionsopt);
@@ -89,7 +89,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
   }
 
   // For objects that are contained in other objects, fabric.util.enlivenObjects()
-  // will look for classes within fabric. 
+  // will look for classes within fabric.
   fabric.Wfellipse = ext_imageAnnotator.shapes.Wfellipse;
 
 })(jQuery, mw, fabric, ext_imageAnnotator);
