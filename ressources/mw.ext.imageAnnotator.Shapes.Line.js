@@ -82,7 +82,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 	      this.callSuper('render', ctx);
 	   },
 
-	   _onEvents() {
+	   _onEvents: function() {
 
 	   	  this.on('added', function (e) {
 	      		this._addCircles();
