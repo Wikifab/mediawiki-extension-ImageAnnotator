@@ -13,7 +13,7 @@ var ext_imageAnnotator_maintenance = ext_imageAnnotator_maintenance || {};
 		this.counter = 0;
 		var processPage = this;
 
-		var url = mw.config.get('wgArticlePath').replace('$1', "Spécial:ExportSemanticJson");
+		var url = mw.config.get('wgArticlePath').replace('$1', "Special:ExportSemanticJson");
 
 
 		console.log('processPage');

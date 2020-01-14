@@ -11,7 +11,7 @@ ext_imageAnnotator_maintenance = ext_imageAnnotator_maintenance || {};
 		var processPageList = this;
 		this.callback = callback;
 
-		var url = mw.config.get('wgArticlePath').replace('$1', "Spécial:ExportSemanticJson");
+		var url = mw.config.get('wgArticlePath').replace('$1', "Special:ExportSemanticJson");
 
 		this.pageDoneCounter = 0;
 
