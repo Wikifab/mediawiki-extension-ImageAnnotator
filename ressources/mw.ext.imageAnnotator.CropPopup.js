@@ -13,7 +13,7 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 	 * @param {jQuery} container container to put editor in it
 	 * @param {string} [content='']
 	 */
-	ext_imageAnnotator.CropPopup = function (editLink, image, cropPosition, cropCallback, sourcePopup, freeCropping = false, format) {
+	ext_imageAnnotator.CropPopup = function (editLink, image, cropPosition, cropCallback, sourcePopup, freeCropping, format) {
 		this.editLink = editLink;
 		this.initPopup();
 		this.image = image;
