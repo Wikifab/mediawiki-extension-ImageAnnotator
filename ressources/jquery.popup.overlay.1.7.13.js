@@ -682,12 +682,15 @@
 
     // Hide popup if ESC key is pressed
     $(document).on('keydown', function (event) {
-        if(visiblePopupsArray.length) {
-            var elementId = visiblePopupsArray[visiblePopupsArray.length - 1];
-            var el = document.getElementById(elementId);
+        if(visiblePopupsArray.length && event.keyCode == 27) {
+            var visiblePopupsNumber = visiblePopupsArray.length;
+            for(var i = 0; i < visiblePopupsNumber; i++){
+                var elementId = visiblePopupsArray[visiblePopupsArray.length - 1];
+                var el = document.getElementById(elementId);
 
-            if ($(el).data('popupoptions').escape && event.keyCode == 27) {
-                methods.hide(el);
+                if ($(el).data('popupoptions').escape) {
+                    methods.hide(el);
+                }
             }
         }
     });

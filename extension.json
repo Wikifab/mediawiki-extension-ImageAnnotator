@@ -19,7 +19,8 @@
 			"ImageAnnotator\\Hooks::initialize"
 	],
 	"config": {
-		"ImageAnnotator-areaClasses": "imageAnnotator"
+		"ImageAnnotator-areaClasses": "imageAnnotator",
+		"ImageAnnotatorOldWgServers": []
 	},
 	"MessagesDirs": {
 		"ImageAnnotator": [
@@ -31,6 +32,9 @@
 	},
 	"APIModules": {
 		"iaThumbs": "ImageAnnotator\\ApiImageAnnotatorThumb"
+	},
+	"SpecialPages": {
+		"AnnotatedImageMaintenance": "ImageAnnotator\\SpecialAnnotatedImageMaintenance"
 	},
 	"Hooks": {
 	    "BeforePageDisplay": [
@@ -50,7 +54,7 @@
 	"ResourceModules": {
 		"ext.imageannotator.editor": {
 			"scripts": [
-				"ressources/fabric-2.4.6.min.js",
+				"ressources/fabric-3.5.0.min.js",
 				"ressources/jquery.popup.overlay.1.7.13.js",
 				"ressources/mw.ext.imageAnnotator.Shapes.Circle.js",
 				"ressources/mw.ext.imageAnnotator.Shapes.Ellipse.js",
@@ -92,6 +96,22 @@
 			    "imageannotator-toolbar-dell-label",
 			    "imageannotator-toolbar-tooltip-freecropping"
 			]
+		},
+		"ext.imageannotator.maintenance": {
+			"scripts": [
+				"ressources/maintenance/aiRegeneration/BuildImage.js",
+				"ressources/maintenance/aiRegeneration/ProcessPageList.js",
+				"ressources/maintenance/aiRegeneration/ProcessSemanticPage.js",
+				"ressources/maintenance/aiRegeneration/ProcessVEPage.js",
+				"ressources/maintenance/annotatedImagesRegeneration.js"
+			],
+			"position": "bottom",
+			"dependencies": [
+				"ext.imageannotator.editor"
+			]
+		},
+		"ext.imageannotator.editor.css": {
+			"styles": "ressources/imageAnnotator.css"
 		}
 	},
 	"ResourceFileModulePaths": {
@@ -103,7 +123,8 @@
 		"ImageAnnotator\\AnnotatedImage": "includes/AnnotatedImage.php",
 		"ImageAnnotator\\CustomsAnnotation": "includes/CustomsAnnotation.php",
 		"ImageAnnotator\\Hooks": "includes/Hooks.php",
-		"ImageAnnotator\\InputEditableImage": "includes/InputEditableImage.php"
+		"ImageAnnotator\\InputEditableImage": "includes/InputEditableImage.php",
+		"ImageAnnotator\\SpecialAnnotatedImageMaintenance": "includes/specials/SpecialAnnotatedImageMaintenance.php"
 	},
 	"manifest_version": 1
 }

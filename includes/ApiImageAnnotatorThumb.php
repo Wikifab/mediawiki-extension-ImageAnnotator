@@ -24,6 +24,10 @@ class ApiImageAnnotatorThumb extends \ApiBase {
 				'svgdata' => array (
 						\ApiBase::PARAM_TYPE => 'string',
 						\ApiBase::PARAM_REQUIRED => false
+				),
+				'force' => array (
+						\ApiBase::PARAM_TYPE => 'string',
+						\ApiBase::PARAM_REQUIRED => false
 				)
 		);
 	}
@@ -91,6 +95,7 @@ class ApiImageAnnotatorThumb extends \ApiBase {
 
 
 		return [
+				'size' => $size,
 				'filename' => $outfilename,
 				'relative_filepath' => $subFilePath,
 				'filepath' => $outfilepathname,
@@ -100,13 +105,25 @@ class ApiImageAnnotatorThumb extends \ApiBase {
 
 
 	public function correctSvgIncludedRessourcePathBeforeConversion($svg, $fileIncluded, $hash, $tmpDir, &$tempFiles) {
-		global $wgUploadDirectory, $wgServer;
+		global $wgUploadDirectory, $wgServer, $wgImageAnnotatorOldWgServers, $wgUploadPath;
+
+		// replace old wgServerUrls :
+		foreach ($wgImageAnnotatorOldWgServers as $oldWgServer) {
+			$svg = str_replace($oldWgServer, $wgServer, $svg);
+		}
 
 		// replace url encoded string of filename :
 		$svg = str_replace(urlencode($fileIncluded['filename']), $fileIncluded['filename'], $svg);
 		$fileIncluded['imgUrl'] = str_replace(urlencode($fileIncluded['filename']), $fileIncluded['filename'], $fileIncluded['imgUrl']);
 
-		$fileIncluded['thumbUrl'] = str_replace(urlencode($fileIncluded['filename']), $fileIncluded['filename'], $fileIncluded['thumbUrl']);
+		if (isset($fileIncluded['thumbUrl'])){
+			$fileIncluded['thumbUrl'] = str_replace(urlencode($fileIncluded['filename']), $fileIncluded['filename'], $fileIncluded['thumbUrl']);
+		}
+
+		// replace thumb urls by original's one
+		$pattern = '@"'.$wgServer. $wgUploadPath. '/thumb/([a-z0-9]/[a-z0-9]{2})/([^"/]+)/([^"]+)"@';
+		$pattern = preg_replace('@https?://@', 'https?://', $pattern);
+		$svg = preg_replace($pattern, '"'.$wgServer . $wgUploadPath . '/$1/$2"', $svg);
 
 		// replace ALL files url by relative filepath
 		$filesToReplaces = [];
@@ -178,8 +195,30 @@ class ApiImageAnnotatorThumb extends \ApiBase {
 
 	}
 
-	public function svgToPngConvert($svg, $fileIncluded, $fileOut, $hash) {
+	/*
+	 *
+	 */
+	/**
+	 *
+	 * @param string $svg
+	 * @param int $width
+	 * @param string $fileIncluded
+	 * @param string $fileOut
+	 * @param string $hash
+	 * @param boolean $force if set to false, file will not be regenerated if it exists
+	 * @return boolean[]|string[]|unknown[]|boolean[]|unknown[]|boolean[]|string[]
+	 */
+	public function svgToPngConvert($svg, $width, $fileIncluded, $fileOut, $hash, $force = true) {
 		global $wgUploadDirectory, $wgServer;
+
+		if (file_exists($fileOut) && ! $force) {
+			return [
+					'success' => true,
+					'fileout' => $fileOut,
+					$fileIncluded,
+					'message' => 'allready exists'
+			];
+		}
 
 		/*
 		$fileIncluded =
@@ -208,8 +247,6 @@ class ApiImageAnnotatorThumb extends \ApiBase {
 		file_put_contents($svgInFile, $svg);
 
 		// convert to png :
-		// TODO : determine png size according to request
-		$width = 800;
 		$cmd = "inkscape -z -f ". escapeshellarg ($svgInFile) ." -w $width --export-background-opacity=0,0 --export-png=". escapeshellarg ($fileOut) ."";
 
 		if (!file_exists(dirname($fileOut))) {
@@ -241,12 +278,17 @@ class ApiImageAnnotatorThumb extends \ApiBase {
 	}
 
 	public function execute() {
-		global $wgServer;
+		global $wgServer, $wgThumbLimits;
 		$params = $this->extractRequestParams ();
 		$image = $params ['image'];
 		$jsondata = $params ['jsondata'];
 		$svgdata = $params['svgdata'];
+		$force = false;
+		if (isset($params['force']) && $params['force'] && $params['force'] != 'false') {
+			$force = true;
+		}
 		$size = '';
+		$alternatesThumbs = [];
 
 		$result = 'not implemented';
 
@@ -275,14 +317,24 @@ class ApiImageAnnotatorThumb extends \ApiBase {
 		$hash = md5($jsondata);
 		$fileOutputPaths = $this->getOutFilename ($imageInfo, $size, $hash);
 
+		if ($wgThumbLimits) {
+			foreach ($wgThumbLimits as $thumbLimitSize) {
+				$alternatesThumbs[] = $this->getOutFilename ($imageInfo, $thumbLimitSize, $hash);
+			}
+		}
+
 		$fileOut = $fileOutputPaths['filepath'];
 		$fileUrl = $fileOutputPaths['fileurl'];
 		$fileOutRelative = $fileOutputPaths['relative_filepath'];
 
+		$jsonDecoded = json_decode($jsondata);
 
-		// TODO : convert svg to png
-		$convertResult = $this->svgToPngConvert($svgdata, $imageInfo, $fileOut, $hash);
+		$width = $jsonDecoded && isset($jsonDecoded->width) && $jsonDecoded->width ? $jsonDecoded->width : 800;
 
+		$convertResult = $this->svgToPngConvert($svgdata, $width, $imageInfo, $fileOut, $hash, $force);
+		foreach ($alternatesThumbs as $key => $alternatesThumb) {
+			$alternatesThumbs[$key]['result'] = $this->svgToPngConvert($svgdata, $alternatesThumb['size'], $imageInfo, $alternatesThumb['filepath'], $hash, $force);
+		}
 
 		// TODO : store result in bdd
 
@@ -293,6 +345,13 @@ class ApiImageAnnotatorThumb extends \ApiBase {
 			$r ['result'] = 'OK';
 			$r ['image'] = $fileUrl;
 			$r ['hash'] = $hash;
+			$r ['thumbs-images'] = [];
+			foreach ($alternatesThumbs as $alternatesThumb) {
+				if( $alternatesThumb['result']['success']) {
+					$r ['thumbs-images'][] = $alternatesThumb['fileurl'];
+				}
+
+			}
 		} else {
 			$r ['result'] = 'fail';
 			$r ['details'] = $convertResult['message'];

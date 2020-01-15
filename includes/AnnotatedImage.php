@@ -16,6 +16,7 @@ class AnnotatedImage {
 	protected $file;
 	protected $sourceImageUrl;
 	protected $thumbFile;
+	protected $thumbsFiles;
 
 	public function __construct($image, $annotatedContent) {
 
@@ -99,7 +100,7 @@ class AnnotatedImage {
 		return false;
 	}
 
-	protected function getHash() {
+	public function getHash() {
 		return md5(trim($this->annotatedContent));
 	}
 
@@ -139,17 +140,25 @@ class AnnotatedImage {
 		}
 	}
 
-	protected function getOutFilename ( ) {
+	public function getOutFilename ($size = '' ) {
 		global $wgUploadDirectory, $wgUploadPath;
 
 		$imageInfo = $this->getImageInfo();
 		$hash = $this->getHash();
 
-		$outfilename = 'ia-' . $hash ."-px-".$imageInfo['filename'] . '.png';
+		$outfilename = 'ia-' . $hash ."-".$size."px-".$imageInfo['filename'] . '.png';
 
 		if ($this->thumbFile ) {
 			$outfilename = basename($this->thumbFile);
-			$subFilePath = $this->thumbFile;
+			$subFilePath = str_replace($wgUploadDirectory, '', $this->thumbFile);
+
+			// insert size in filename :
+			$pattern = '@^(/?thumb/[a-z0-9]/[a-z0-9]{2}/[^/]+)/ia-([a-z0-9]+)-px-(.*)$@';
+			if (preg_match(''.$pattern.'', $subFilePath, $matches)) {
+				$outfilename = "ia-{$matches[2]}-{$size}px-{$matches[3]}";
+				$subFilePath = "{$matches[1]}/$outfilename";
+			}
+
 		} else {
 			$subFilePath = 'thumb/' . $imageInfo['hashdir']
 			. '/' .  $imageInfo['filename']
@@ -201,7 +210,31 @@ class AnnotatedImage {
 			return $r['fileurl'];
 		}
 	}
+	public function getImgThumbsUrl() {
+		global $wgThumbLimits;
+
+		$result = [];
+
+		foreach ($wgThumbLimits as $size) {
+			$r = $this->getOutFilename($size);
+			if (!file_exists($r['filepath'])) {
+				continue;
+			}
+			$result[] = [
+					'size' => $size,
+					'fileurl' => $r['fileurl']
+			];
+		}
+		return $result;
+	}
 	public function getPageUrl() {
+
+		// if there is thumb, we return the bigger one :
+		$thumbs = $this->getImgThumbsUrl();
+		if ($thumbs) {
+			$thumb = array_pop($thumbs);
+			return $thumb['fileurl'];
+		}
 
 		return $this->getImgUrl();
 
@@ -221,8 +254,10 @@ class AnnotatedImage {
 			$imgDim = ' data-file-width="'.$jsonData->width.'" data-file-height="'.$jsonData->height.'" ';
 		}
 
-		$out = '<img class="annotationlayer" ' . $imgDim  . ' src="'. $this->getImgUrl() . '"/>';
-		$out = "<a class='image' href=\"". $this->getPageUrl() ."\" >$out</a>";
+		// 'data-thumbsrc' attribut is used in javascript to match the src of the thumb used in this link
+		// it enable to find back the 'a' tag given a 'src' value
+		$out = '<img class="annotationlayer" style="filter: blur(5px)" ' . $imgDim  . ' src="'. $this->getImgUrl() . '"/>';
+		$out = "<a class='image' href=\"". $this->getPageUrl() ."\" data-thumbsrc=\"". $this->getImgUrl() . "\" >$out</a>";
 
 		/*
 			'<a href="/wiki/Fichier:Test_de_tuto_LB_Final.jpg" class="image" title="annotation:Modèle:Main Picture annotation}"

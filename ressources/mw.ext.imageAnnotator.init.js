@@ -11,11 +11,12 @@
 
 ext_imageAnnotator = ext_imageAnnotator || {};
 
+
+
 //$(document).ready(function (mw, ext_imageAnnotator ) {
 ( function ( $, mw , ext_imageAnnotator) {
 
 	var editLinkRegister = ext_imageAnnotator.getEditLinkRegister();
-
 
 	function isValidImageType(image) {
 		if( ! image || image.length == 0) {
@@ -26,10 +27,11 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 
 	/* utility function for checking ratio */
 	function respectsAspectRatio(a, b, w, h) {
-		
+
 		function greatestCommonDivisor(a,b) {
-			if (b == 0)
-		        return a
+			if (b == 0) {
+				return a
+			}
 		    return greatestCommonDivisor(b, a % b)
 		}
 
@@ -48,6 +50,14 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 		this.popup = new ext_imageAnnotator.EditorBlock(container, img, content, updateCallBack, options );
 
 		return this.popup;
+	}
+
+	/**
+	 * this enable an outside extension to call ImageAnnotator with this function
+	 */
+	mw.ext_imageAnnotator.createAnnotatedImage = function (imagePreview, content, image) {
+
+		return new ext_imageAnnotator.Editor( imagePreview, canvasId = null, content, image ) ;
 	}
 
 
@@ -74,6 +84,7 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 			// if the is not an image (a video for instance) we do not add editor
 			return ;
 		}
+
 
 		// load static canvas
 		var staticEditor = new ext_imageAnnotator.Editor( imagePreview, canvasId = null, content, image ) ;
@@ -143,7 +154,7 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 			$("<img>").attr("src", $(image).attr("src")).load(function(){
 	            var imgRealWidth = this.width;
 	            var imgRealHeight = this.height;
-	            
+
 	            var regex = /(\d{1,2})_(\d{1,2})/i;
 				var match = regex.exec(editLink.predefinedFormat);
 				var ratio_width = parseInt(match[1]);
@@ -162,6 +173,11 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 
 					// open the crop popup (pass the ratio to it)
 					var cropPopup = new ext_imageAnnotator.CropPopup(editLink.popup.editor, editLink.popup.editor.image, cropPosition, [editLink.popup.editor, editLink.popup.editor.applyCrop ], editLink.popup.$editorPopup, false, ratio);
+
+					//Prevents closure with esc
+					var popupOptions = cropPopup.cropPopup.data('popupoptions');
+					popupOptions.escape = false;
+					cropPopup.cropPopup.data('popupoptions', popupOptions);
 
 					/* redefine these methods */
 					cropPopup.save = function () {
@@ -207,6 +223,11 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 			}
 		}
 	});
+
+	$('.annotationlayer').each(function () {
+        $(this).css('filter', 'blur(0)');
+        $(this).parent().next().hide();
+    });
 
 }( jQuery, mediaWiki , ext_imageAnnotator) );
 

@@ -162,7 +162,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 		//content = '{"objects":[{"type":"image","originX":"left","originY":"top","left":39,"top":53,"width":360,"height":258,"fill":"rgb(0,0,0)","stroke":null,"strokeWidth":0,"strokeDashArray":null,"strokeLineCap":"butt","strokeLineJoin":"miter","strokeMiterLimit":10,"scaleX":1,"scaleY":1,"angle":0,"flipX":false,"flipY":false,"opacity":1,"shadow":null,"visible":true,"clipTo":null,"backgroundColor":"","fillRule":"nonzero","globalCompositeOperation":"source-over","transformMatrix":null,"skewX":0,"skewY":0,"crossOrigin":"","alignX":"none","alignY":"none","meetOrSlice":"meet","src":"http://files.wikifab.org/7/7b/Le_petit_robot_%C3%A9ducatif_SCOTT_by_La_Machinerie_robot-scott.jpg","filters":[],"resizeFilters":[]},{"type":"polyline","originX":"left","originY":"top","left":20,"top":20,"width":10,"height":90,"fill":"rgba(255,0,0,0)","stroke":"red","strokeWidth":3,"strokeDashArray":null,"strokeLineCap":"butt","strokeLineJoin":"miter","strokeMiterLimit":10,"scaleX":1,"scaleY":1,"angle":-90,"flipX":false,"flipY":false,"opacity":1,"shadow":null,"visible":true,"clipTo":null,"backgroundColor":"","fillRule":"nonzero","globalCompositeOperation":"source-over","transformMatrix":null,"skewX":0,"skewY":0,"points":[{"x":30,"y":30},{"x":30,"y":120},{"x":25,"y":110},{"x":30,"y":120},{"x":35,"y":110}]}]}';
 
-		this.updateData(content);
+		this.updateData(content, true);
 
 		if( ! this.isStatic) {
 			this.addToolbarDyn(toolbarConfig);
@@ -430,8 +430,9 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		});
 	}
 
-	ext_imageAnnotator.Editor.prototype.updateData = function (content) {
+	ext_imageAnnotator.Editor.prototype.updateData = function (content, noForceRegeneration) {
 		var editor = this;
+
 
 		this.content = content;
 		this.canvas.remove(this.canvas.getObjects());
@@ -439,6 +440,13 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			try {
 				// extract specifics objects to be loaded afterwards
 				content = editor.getSpecificsObjectsFromJson(content);
+
+				if (mw.config.values.ImageAnnotator.imageAnnotatorOldWgServers && mw.config.values.wgServer) {
+						// replace old wgServerUrls :
+						mw.config.values.ImageAnnotator.imageAnnotatorOldWgServers.forEach(function(element) {
+							content = content.replace(element, mw.config.values.wgServer);
+						});
+				}
 
 				this.canvas.loadFromJSON(content, function () {
 					// add specifics objects not loaded by fabric
@@ -486,11 +494,11 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 					editor.canvas.renderAll();
 					if ( editor.isStatic) {
-						editor.placeOverSourceImage();
+						editor.placeOverSourceImage(false, noForceRegeneration);
 					} else {
 			           // placeOverSourceImage() function call generateThumbUsingAPI
 			           // so we call it only if not calling placeOverSourceImage
-			           editor.generateThumbUsingAPI(content);
+			           editor.generateThumbUsingAPI(content, null, noForceRegeneration);
 					}
 
 				});
@@ -1074,7 +1082,12 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		var cropPosition = this.getCropedImagePosition();
 		console.log("start crop");
 		console.log(cropPosition);
-		new ext_imageAnnotator.CropPopup(this, this.image, cropPosition, [this, this.applyCrop ], $('#mw-ia-popup-div'), this.freeCropping, this.predefinedFormat );
+		var cropPopup = new ext_imageAnnotator.CropPopup(this, this.image, cropPosition, [this, this.applyCrop ], $('#mw-ia-popup-div'), this.freeCropping, this.predefinedFormat );
+
+		//Enables closure with esc
+		var popupOptions = cropPopup.cropPopup.data('popupoptions');
+		popupOptions.escape = true;
+		cropPopup.cropPopup.data('popupoptions', popupOptions);
 	}
 
 	/**
@@ -1816,15 +1829,35 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 	/**
 	 * this function generate an img div with svg content of canvas, and put it over the source image
 	 */
-	ext_imageAnnotator.Editor.prototype.placeOverSourceImage = function ( noredim) {
+	ext_imageAnnotator.Editor.prototype.placeOverSourceImage = function ( noredim, noForceRegeneration) {
 
-		return this.exportOverSourceImage();
+		return this.exportOverSourceImage(noForceRegeneration);
 	}
 
-	ext_imageAnnotator.Editor.prototype.generateThumbUsingAPI = function (jsoncontent, callback) {
+	ext_imageAnnotator.Editor.prototype.showLoader = function (image) {
+		image.css('filter', 'blur(5px)');
+		if(image.next().attr('class') !== "lds-grid"){
+			image.after('<div class="lds-grid"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>');
+        } else {
+			image.next().show();
+        }
+	}
+	ext_imageAnnotator.Editor.prototype.hideLoader = function (image) {
+		image.css('filter', 'blur(0px)');
+		if(image.next().attr('class') == "lds-grid"){
+			image.next().hide();
+        }
+	}
+
+	ext_imageAnnotator.Editor.prototype.generateThumbUsingAPI = function (jsoncontent, callback, noForceRegeneration) {
 		// fonction to do second request to execute follow action
 
 		var editor = this;
+
+		var forceRegeneration = (noForceRegeneration != true);
+		
+		this.showLoader($(editor.image));
+		
 
 		if ( ! callback) {
 			callback = function setOverlayImage(url) {
@@ -1839,6 +1872,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 				$(editor.overlayImg).insertAfter(editor.image);
 				$(editor.image).hide();
+				
 				// positioning : this methode wa used chen backgound is not set within annotated layer
 				// sould we keep it for wikifab olds one ?
 				//$(editor.image).parent().css({ position:'relative'});
@@ -1852,6 +1886,8 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 				jsoncontent = editor.getJson();
 			}
 			var token = jsondata.query.tokens.csrftoken;
+
+			try {
 			$.ajax({
 				type: "POST",
 				url: mw.util.wikiScript('api'),
@@ -1861,7 +1897,8 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 					token: token,
 					image: editor.image.attr('src'),
 					jsondata: jsoncontent,
-					svgdata: editor.getSVG()
+					svgdata: editor.getSVG(),
+					force: forceRegeneration
 				},
 			    dataType: 'json',
 			    success: function (jsondata) {
@@ -1870,11 +1907,21 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			    		editor.hash = jsondata.iaThumbs.hash;
 			    		//setOverlayImage(jsondata.iaThumbs.image);
 			    		callback(jsondata.iaThumbs.image, jsondata.iaThumbs);
+			    		if($(editor.overlayImg).next().attr('class') === "lds-grid"){
+				    		$(editor.overlayImg).on('load', function () {
+									$(this).next().hide();
+							});
+						}
 			    	} else {
 			    		console.log('Fail to generate annotatedImage');
 			    		console.log(jsondata);
 			    	}
 			}});
+			} catch (e) {
+	    		console.error('Fail to generate thumb on server');
+	    		console.log(e);
+				
+			}
 		};
 
 		// first request to get token
@@ -1891,34 +1938,22 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 	/**
 	 * this function generate an img div with svg content of canvas, and put it over the source image
 	 */
-	ext_imageAnnotator.Editor.prototype.exportOverSourceImage = function () {
+	ext_imageAnnotator.Editor.prototype.exportOverSourceImage = function (noForceRegeneration) {
 		if(this.overlayImg) {
 			$(this.overlayImg).remove();
 		}
 		if (! this.content) {
 			$('#'+this.canvasId).hide();
-			return
+			this.hideLoader($(this.image));
+			return;
 		};
 
-		// TODO : config this in extension configuration vars :
-		// if thumbModeApiConvert is true,
-		// then thumb of annotated image is generated using APIs
-		// else it use fabricJS to convert it (in SVG), but this won't works for cropping images
-		var thumbModeApiConvert = true;
-
-		if (!thumbModeApiConvert) {
-			// display it only if content, (some browsers doesn't like empty images)
-			this.overlayImg = $('<img>').attr('class','annotationlayer').attr('src', "data:image/svg+xml;utf8," + this.getSVG());
-
-			// positioning
-			$(this.image).parent().css({ position:'relative'});
-			$(this.overlayImg).insertAfter(this.image);
-			$(this.overlayImg).css({ width:'100%'});
-
-			$(this.overlayImg).css({position:'absolute', width:'100%', height:'auto', top: 0, left: 0});
+		if(this.isStatic){
+			this.generateThumbUsingAPI(this.content, null, noForceRegeneration);
 		} else {
 			this.generateThumbUsingAPI();
 		}
+	
 		$('#'+this.canvasId).hide();
 	}
 

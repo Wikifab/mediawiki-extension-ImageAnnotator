@@ -26,7 +26,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 	   centerTransform: true,
 
-	   initialize(optionsopt) {
+	   initialize: function (optionsopt) {
 
 	   	  this.on('scaling', function(e) {
 
@@ -40,7 +40,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 	   	  			'scaleX'	: 1,
 	   	  			'scaleY'	: 1
 	   	  		});
-	   	  		
+
 			});
 
 	      this.callSuper('initialize', optionsopt);
@@ -81,7 +81,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 	      if (this.minSize !== false && this.width * this.scaleX < this.minSize) {
 	         this.scaleX = (this.minSize / this.width);
 	      } else if (this.maxSize !== false && this.width * this.scaleX > this.maxSize) {
-	         this.scaleX = (this.maxSize / this.width); 
+	         this.scaleX = (this.maxSize / this.width);
 	      }
 	      if (this.minSize !== false && this.height * this.scaleY < this.minSize) {
 	         this.scaleY = (this.minSize / this.height);
@@ -106,7 +106,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 	}
 
 	// For objects that are contained in other objects, fabric.util.enlivenObjects()
-	// will look for classes within fabric. 
+	// will look for classes within fabric.
 	fabric.Wfrect = ext_imageAnnotator.shapes.Wfrect;
 
 })(jQuery, mw, fabric, ext_imageAnnotator);
