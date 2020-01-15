@@ -24,7 +24,11 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			return;
 		}
 		this.isStatic = editable ? false : true;
+		console.log("load editor");
+		// TODO : make sure that this image use source image
 		this.image = image;
+		this.checkImageIsSource();
+		console.log(this.image);
 		this.content = content;
 		this.canvasElement = null;
 		this.options = options;
@@ -174,6 +178,15 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 		this.addEditListeners();
 
+	}
+	
+	ext_imageAnnotator.Editor.prototype.checkImageIsSource = function () {
+		
+		var sourceImageUrl = this.getSourceImageUrl();
+		console.log("changin img source");
+		$(this.image).get(0).src = sourceImageUrl;
+		console.log(sourceImageUrl);
+		console.log($(this.image).get(0).src);
 	}
 
 	ext_imageAnnotator.Editor.prototype.addToolBarColors = function (toolbarConfig) {
@@ -1252,6 +1265,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		console.log("setInitBackground, orientation : " + angle + " or:"  + orientation);
 		
 		
+		console.log(editor.image[0]);
 
 		var imgInstance = new fabric.Image(editor.image[0], {
 			  left: 0,
@@ -1354,15 +1368,50 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		editor.canvas.renderAll();
 		
 	}
+
+	ext_imageAnnotator.Editor.prototype.getSourceImageName = function () {
+
+		// TODO : we should not get image name from this src filename (it cant be a thumb)
+		// we should read File name in a dedicated data attribut
+
+		var srcfileurl = $(this.image).get(0).src;
+
+		// test if url is url of a thumb : 
+		var thumbRegexp = new RegExp("/[a-z0-9]/[a-z0-9]{2}/([^/]+)/([^/]+)$", "g");
+
+		var thumbResult = thumbRegexp.exec(srcfileurl);
+
+		if (thumbResult) {
+			return thumbResult[1];
+		}
+		// if this is not a thumb, the filename is the correct File name
+		return srcfileurl.substring(srcfileurl.lastIndexOf('/')+1);
+	}
+	
+	ext_imageAnnotator.Editor.prototype.getSourceImageUrl = function () {
+
+		// TODO : we should not get image name from this src filename (it cant be a thumb)
+		// we should read File name in a dedicated data attribut
+
+		var srcfileurl = $(this.image).get(0).src;
+
+		var thumbRegexpReplace = new RegExp("/thumb/([a-z0-9])/([a-z0-9]{2})/([^/]+)/([^/]+)$", "g");
+
+		console.log(thumbRegexpReplace.exec(srcfileurl));
+		srcfileurl = srcfileurl.replace(thumbRegexpReplace, '/$1/$2/$3');
+		
+		
+		return srcfileurl;
+	}
 	
 	/**
 	 * this function do q query to mediawiki api to get back image real size and orientation
 	 */
 	ext_imageAnnotator.Editor.prototype.getBackgroundOrientation = function (callback) {
 
-		var filename = $(this.image).get(0).src.substring($(this.image).get(0).src.lastIndexOf('/')+1);
+		var filename = this.getSourceImageName();
 		var fileTitle = 'File:' + decodeURIComponent(filename);
-		
+
 		$.ajax({
 			type: "POST",
 			url: mw.util.wikiScript('api'),
@@ -1424,7 +1473,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 				editor.setInitBackground(width, height, orientation);
 			});
 		}
-		img.src = $(this.image).attr('src');
+		img.src = this.getSourceImageUrl();
 
 
 	}
