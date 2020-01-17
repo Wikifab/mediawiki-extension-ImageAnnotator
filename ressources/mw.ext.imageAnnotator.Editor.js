@@ -27,7 +27,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		console.log("load editor");
 		// TODO : make sure that this image use source image
 		this.image = image;
-		this.checkImageIsSource();
+		this.setSourceImage();
 		console.log(this.image);
 		this.content = content;
 		this.canvasElement = null;
@@ -180,13 +180,17 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 	}
 	
-	ext_imageAnnotator.Editor.prototype.checkImageIsSource = function () {
+	ext_imageAnnotator.Editor.prototype.setSourceImage = function () {
 		
 		var sourceImageUrl = this.getSourceImageUrl();
+		this.sourceImage = this.image.clone();
 		console.log("changin img source");
-		$(this.image).get(0).src = sourceImageUrl;
-		console.log(sourceImageUrl);
-		console.log($(this.image).get(0).src);
+		if ($(this.sourceImage).get(0).src != sourceImageUrl) {
+			console.log("NEED CHANGE");
+			console.log(sourceImageUrl);
+			console.log($(this.sourceImage).get(0).src);
+			$(this.sourceImage).get(0).src = sourceImageUrl;
+		}
 	}
 
 	ext_imageAnnotator.Editor.prototype.addToolBarColors = function (toolbarConfig) {
@@ -289,21 +293,21 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 	ext_imageAnnotator.Editor.prototype.updateSize= function () {
 		var width = this.editorWidth;
-		var baseHeight = $(this.image).height();
-		var baseWidth = $(this.image).width();
+		var baseHeight = $(this.sourceImage).height();
+		var baseWidth = $(this.sourceImage).width();
 		
 		console.log('updateSize');
 
 		console.log([
 			baseWidth, baseHeight,
-			this.image[0]
+			this.sourceImage[0]
 		]);
 
-		if(! baseHeight && this.image[0] != undefined && this.image[0].naturalHeight != undefined) {
+		if(! baseHeight && this.sourceImage[0] != undefined && this.sourceImage[0].naturalHeight != undefined) {
 			// if image not loaded yet, height element size may be null
 			// then try to read 'naturalHeight' attribut
-			baseHeight = this.image[0].naturalHeight;
-			baseWidth = this.image[0].naturalWidth;
+			baseHeight = this.sourceImage[0].naturalHeight;
+			baseWidth = this.sourceImage[0].naturalWidth;
 		}
 		// if there is a cropped image, use cropped dim as base dim :
 		var cropedImage = this.getCropedImagePosition();
@@ -1123,7 +1127,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		//cropPosition.left = cropPosition.left + cropPosition.width;
 		//cropPosition.top = cropPosition.top + cropPosition.height;
 
-		var imgInstance = new fabric.Image(this.image[0], {
+		var imgInstance = new fabric.Image(this.sourceImage[0], {
 			  left: cropPosition.left,
 			  top: cropPosition.top,
 			  angle: cropPosition.angle,
@@ -1153,7 +1157,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 		//if rotation has changed the position, correct it :
 		if (bounding.top != cropPosition.top || bounding.left != cropPosition.left) {
-			imgInstance = new fabric.Image(this.image[0], {
+			imgInstance = new fabric.Image(this.sourceImage[0], {
 				  left: cropPosition.left + cropPosition.left - bounding.left,
 				  top: cropPosition.top + cropPosition.top - bounding.top,
 				  angle: cropPosition.angle,
@@ -1243,7 +1247,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		console.log([imgWidth, imgHeight]);
 		
 		if (invertWidthHeight) {
-			var temp = this.image.get(0).width;
+			var temp = this.sourceImage.get(0).width;
 
 			temp = imgHeight;
 			imgHeight = imgWidth;
@@ -1251,9 +1255,9 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		}
 
 		if (this.isCustomWidth && invertWidthHeight) {
-			/*var temp = this.image.get(0).width;
-			this.image.get(0).width = this.image.get(0).height;
-			this.image.get(0).height = temp;*/
+			/*var temp = this.sourceImage.get(0).width;
+			this.sourceImage.get(0).width = this.image.get(0).height;
+			this.sourceImage.get(0).height = temp;*/
 			//editor.updateSize();
 		}
 
@@ -1267,7 +1271,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		
 		console.log(editor.image[0]);
 
-		var imgInstance = new fabric.Image(editor.image[0], {
+		var imgInstance = new fabric.Image(editor.sourceImage[0], {
 			  left: 0,
 			  top: 0,
 			  angle: angle,
@@ -1390,6 +1394,9 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 	
 	ext_imageAnnotator.Editor.prototype.getSourceImageUrl = function () {
 
+		if (this.sourceImage && $(this.sourceImage).get(0).src) {
+			return $(this.sourceImage).get(0).src
+		}
 		// TODO : we should not get image name from this src filename (it cant be a thumb)
 		// we should read File name in a dedicated data attribut
 
