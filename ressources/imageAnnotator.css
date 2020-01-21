@@ -334,3 +334,10 @@
     height: auto;
     min-height: 100%;
 }
+
+/* smartphones, touchscreens */
+@media (hover: none), (pointer: none), (pointer: coarse) {
+    .mw-ia-editButton {
+        display: none;
+    }
+}
