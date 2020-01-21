@@ -24,7 +24,11 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			return;
 		}
 		this.isStatic = editable ? false : true;
+		console.log("load editor");
+		// TODO : make sure that this image use source image
 		this.image = image;
+		this.setSourceImage();
+		console.log(this.image);
 		this.content = content;
 		this.canvasElement = null;
 		this.options = options;
@@ -37,6 +41,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		this.fixedBackgroundScale = 1; // scale = 1 mean backgroundwidth = standardWidth (ie backgroundwidth = baseWidth)
 		this.originalCropPosition = false;
 		this.backgroundIsCropped = false;
+		this.backgroundOrientation = 0;
 		if (this.fixedWidth) {
 			this.editorWidth = this.fixedWidth;
 			this.isCustomWidth = false;
@@ -174,6 +179,19 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		this.addEditListeners();
 
 	}
+	
+	ext_imageAnnotator.Editor.prototype.setSourceImage = function () {
+		
+		var sourceImageUrl = this.getSourceImageUrl();
+		this.sourceImage = this.image.clone();
+		console.log("changin img source");
+		if ($(this.sourceImage).get(0).src != sourceImageUrl) {
+			console.log("NEED CHANGE");
+			console.log(sourceImageUrl);
+			console.log($(this.sourceImage).get(0).src);
+			$(this.sourceImage).get(0).src = sourceImageUrl;
+		}
+	}
 
 	ext_imageAnnotator.Editor.prototype.addToolBarColors = function (toolbarConfig) {
 
@@ -275,14 +293,21 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 	ext_imageAnnotator.Editor.prototype.updateSize= function () {
 		var width = this.editorWidth;
-		var baseHeight = $(this.image).height();
-		var baseWidth = $(this.image).width();
+		var baseHeight = $(this.sourceImage).height();
+		var baseWidth = $(this.sourceImage).width();
+		
+		console.log('updateSize');
 
-		if(! baseHeight && this.image[0] != undefined && this.image[0].naturalHeight != undefined) {
+		console.log([
+			baseWidth, baseHeight,
+			this.sourceImage[0]
+		]);
+
+		if(! baseHeight && this.sourceImage[0] != undefined && this.sourceImage[0].naturalHeight != undefined) {
 			// if image not loaded yet, height element size may be null
 			// then try to read 'naturalHeight' attribut
-			baseHeight = this.image[0].naturalHeight;
-			baseWidth = this.image[0].naturalWidth;
+			baseHeight = this.sourceImage[0].naturalHeight;
+			baseWidth = this.sourceImage[0].naturalWidth;
 		}
 		// if there is a cropped image, use cropped dim as base dim :
 		var cropedImage = this.getCropedImagePosition();
@@ -293,18 +318,28 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		
 
 		var height = Math.round(baseHeight * width / baseWidth);
+		
+		switch (this.backgroundOrientation) {
+			case 6:
+			case 8:
+				console.log('image is turned, height : ' + height);
+				height = Math.round(baseWidth * width / baseHeight);
+				break;
+			default:
+				break;
+		}
+		
+		console.log('computed height = ' + height);
 
 		if (this.fixedHeight) {
 			height = this.fixedHeight;
 		}
 
-		this.canvasElement.attr('width', width);
 		if (height > 0) {
 			this.canvasElement.attr('height', height);
 		}
 		if (this.canvas) {
-			this.canvas.setWidth( width);
-			//this.canvas.setHeight( height);
+			this.canvas.setWidth(width);
 			this.canvas.setHeight(height);
 			this.canvas.renderAll();
 		}
@@ -675,9 +710,44 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 	}
 
 	ext_imageAnnotator.Editor.prototype.setCropZonePosition = function (cropPosition) {
-		if (! this.cropZone || ! cropPosition.height) {
+		if (! this.cropZone) {
 			return;
 		}
+
+		console.log('setCropZonePosition A');
+		console.log(this.fixedBackgroundWidth);
+		console.log(this.fixedBackgroundHeight);
+		console.log(this.fixedBackgroundTop);
+		console.log(this.fixedBackgroundLeft);
+		console.log(cropPosition);
+		
+		if ( ! cropPosition.cropzonetop ) {
+			cropPosition = {};
+			cropPosition.baseWidth = this.fixedBackgroundWidth;
+			cropPosition.cropzoneheight = 300;
+			cropPosition.cropzonewidth = 400;
+			cropPosition.cropzonescaleX = 1;
+			cropPosition.cropzonescaleY = 1;
+			
+			console.log('setCropZonePosition A1');
+			console.log(this.canvasElement.attr('height'));
+			console.log(cropPosition.baseWidth);
+			console.log(cropPosition);
+			
+			cropPosition.cropzonetop = parseInt((this.canvasElement.attr('height') - cropPosition.cropzoneheight)/ 2);
+			cropPosition.cropzoneleft = parseInt((cropPosition.baseWidth - cropPosition.cropzonewidth) / 2);
+			//cropPosition.cropzonetop = this.fixedBackgroundTop;
+			//cropPosition.cropzoneleft = this.fixedBackgroundLeft
+			console.log('setCropZonePosition A1');
+			console.log(this.fixedBackgroundWidth);
+			console.log(cropPosition);
+		}
+		
+		//TODO : check calc of position :
+
+		console.log('setCropZonePosition0');
+		console.log(this.fixedBackgroundWidth);
+		console.log(cropPosition);
 		
 		// change  baseWidth : 
 		var widthScale = this.fixedBackgroundWidth / cropPosition.baseWidth;
@@ -686,11 +756,14 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		cropPosition.cropzonewidth = cropPosition.cropzonewidth * widthScale;
 		cropPosition.cropzoneheight = cropPosition.cropzoneheight * widthScale;
 		cropPosition.baseWidth = this.fixedBackgroundWidth;
-		
+
+		console.log('setCropZonePosition1');
+		console.log(cropPosition);
 		
 		if (this.fixedHeight || this.fixedWidth) {
 			// invert of correction in getCropPosition
 			var correctedCrop = [];
+			correctedCrop.baseWidth = this.fixedBackgroundWidth;
 			correctedCrop.cropzoneleft = cropPosition.cropzoneleft + this.fixedBackgroundLeft;
 			correctedCrop.cropzonetop = cropPosition.cropzonetop + this.fixedBackgroundTop;
 			correctedCrop.cropzonewidth = cropPosition.cropzonewidth;
@@ -699,6 +772,11 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			correctedCrop.cropzonescaleY = cropPosition.cropzonescaleY ;
 			cropPosition = correctedCrop;
 		}
+		
+		console.log('setCropZonePosition');
+		console.log(cropPosition);
+		
+		
 
 		this.cropZone.top = cropPosition.cropzonetop;
 		this.cropZone.left = cropPosition.cropzoneleft;
@@ -711,6 +789,12 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 	ext_imageAnnotator.Editor.prototype.addCropZone = function(cropPosition) {
 
+
+		console.log("cropPosition in addCropZone");
+		console.log(cropPosition);
+
+		this.originalCropPosition = cropPosition;
+		
 		if ( ! cropPosition.cropzonetop ) {
 			cropPosition = {};
 			cropPosition.cropzoneheight = 300;
@@ -718,13 +802,20 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			cropPosition.cropzonescaleX = 1;
 			cropPosition.cropzonescaleY = 1;
 			cropPosition.cropzonetop = parseInt((this.canvasElement.attr('height') - cropPosition.cropzoneheight)/ 2);
-			cropPosition.cropzoneleft = parseInt((this.canvasElement.attr('width') - cropPosition.cropzonewidth) / 2);
+			cropPosition.cropzoneleft = parseInt((this.baseWidth - cropPosition.cropzonewidth) / 2);
+			//cropPosition.cropzonetop = this.fixedBackgroundTop;
+			//cropPosition.cropzoneleft = this.fixedBackgroundLeft
+			console.log(this.editorWidth);
+			console.log(cropPosition.cropzonewidth);
 		}
+		console.log("cropPosition2 in addCropZone");
+		console.log(cropPosition);
 
-		this.originalCropPosition = cropPosition;
 
 		// if fixedHeight is set, adjust crop position to corrected background position
 		if (this.fixedHeight || this.fixedWidth) {
+			console.log("cropPosition fixed width in " + this.fixedWidth);
+			console.log(cropPosition);
 			// invert of correction in getCropPosition
 			var correctedCrop = [];
 			correctedCrop.cropzoneleft = cropPosition.cropzoneleft * this.fixedBackgroundScale + this.fixedBackgroundLeft;
@@ -735,6 +826,9 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			correctedCrop.cropzonescaleY = cropPosition.cropzonescaleY ;
 			cropPosition = correctedCrop;
 		}
+		
+		console.log("correctedCrop in addCropZone");
+		console.log(cropPosition);
 
 		// canvas dim :
 		var canvasWidth = this.editorWidth;
@@ -755,6 +849,10 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			maxPositionX: canvasWidth,
 			maxPositionY: canvasHeight
 		});
+
+		console.log("circle");
+		console.log(circle);
+
 		this.canvas.add(circle);
 		this.canvas.setActiveObject(circle);
 		this.cropZone = circle;
@@ -924,31 +1022,74 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		var number = 1;
 		var result = [];
 
+		console.trace();
+
 		//we admit that there is only one image object possible : the cropped source image
 		objects.forEach(function(item) {
 			if (item.type == 'image') {
-				result.top = item.get('top');
-				result.left = item.get('left');
-				result.width = item.get('width');
-				result.height = item.get('height');
-				result.scaleX = item.get('scaleX');
-				result.scaleY = item.get('scaleY');
+				
+				var bounding = item.getBoundingRect();
+				
+				// bounding contain top, left, height and width of rectangle containing object
+				// usefull to get real coordinate for rotated objects for instance
+				console.log(bounding);
+				
+				//var itemWidth = item.get('width');
+				//var itemHeight = item.get('height');
+
+				/*switch (editor.backgroundOrientation) {
+					case 6:
+					case 8:
+					default:
+						itemWidth = item.get('height');
+						itemHeight = item.get('width');
+						break;
+				}*/
+				console.log("item top");
+				console.log(item.get('top'));
+				console.log("item left");
+				console.log(item.get('left'));
+				console.log("item scaleX");
+				console.log(item.get('scaleX'));
+				console.log("item scaleY");
+				console.log(item.get('scaleYX'));
+				result.top = bounding.top;
+				result.left = bounding.left;
+				result.width = bounding.width;
+				result.height = bounding.height;
+				result.scaleX = 1;
+				result.scaleY = 1;
+				result.angle = item.get('angle');
+
+				console.log('bounding 2');
+				console.log(result);
 				
 				result.baseWidth = parseInt(editor.baseWidth);
-				result.relativescale = item.width / result.baseWidth;
+				result.relativescale = result.width / result.baseWidth;
 				result.cropzonewidth = result.baseWidth / (result.relativescale * result.scaleX);
 				result.cropzoneheight = result.cropzonewidth * editor.canvas.getHeight() / editor.canvas.getWidth();
+
+
 
 				result.cropzonescaleX = 1;
 				result.cropzonescaleY = 1;
 
 				result.cropzonetop = - result.top * result.baseWidth / (result.width * result.scaleX) ;
+				console.log("result.cropzonetop = - result.top * result.baseWidth / (result.width * result.scaleX) ;");
+				
+				console.log("result.top " + result.top);
+				console.log("result.baseWidth " + result.baseWidth);
+				console.log("result.width " + result.width);
+				console.log("result.scaleX " + result.scaleX);
+
+				console.log("getCropedImagePosition - result.cropzonetop");
+				console.log(result.cropzonetop);
 				result.cropzoneleft = - result.left * result.baseWidth / (result.width * result.scaleY);
 			}
 		});
 
-		//console.log ("getCropedImagePosition");
-		//console.log (result);
+		console.log ("getCropedImagePosition");
+		console.log (result);
 		return result;
 	}
 
@@ -956,6 +1097,8 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 
 		// if existing crop, load object :
 		var cropPosition = this.getCropedImagePosition();
+		console.log("start crop");
+		console.log(cropPosition);
 		var cropPopup = new ext_imageAnnotator.CropPopup(this, this.image, cropPosition, [this, this.applyCrop ], $('#mw-ia-popup-div'), this.freeCropping, this.predefinedFormat );
 
 		//Enables closure with esc
@@ -978,21 +1121,56 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		
 		//var adjustedLeft = cropPosition.left ;
 		//var adjustedTop = cropPosition.top;
+		
+		console.log("apply crop");
+		console.log(cropPosition);
+		//cropPosition.left = cropPosition.left + cropPosition.width;
+		//cropPosition.top = cropPosition.top + cropPosition.height;
 
-		var imgInstance = new fabric.Image(this.image[0], {
+		var imgInstance = new fabric.Image(this.sourceImage[0], {
 			  left: cropPosition.left,
 			  top: cropPosition.top,
+			  angle: cropPosition.angle,
 			  //opacity: 0.8,
 			  hasControls: false,
 			  selectable: false
 			});
+		
 
 		// scale to set image size to canvas width :
-		var scale = this.editorWidth / imgInstance.width;
+		var imageRealWidth = imgInstance.width;
+		if( cropPosition.angle == 90 || cropPosition.angle == 270) {
+			imageRealWidth = imgInstance.height;
+		}
+		var scale = this.editorWidth / imageRealWidth;
 		// change scale according to crop:
 		scale = scale * cropPosition.relativescale ;
+		console.log("this.editorWidth / imageRealWidth = scale  cropPosition.relativescale");
+		console.log([this.editorWidth , imageRealWidth , scale, cropPosition.relativescale]);
 		// apply scale :
 		imgInstance.scale(scale);
+		
+
+		var bounding = imgInstance.getBoundingRect();
+		console.log("Bounding crop rect : ");
+		console.log(bounding);
+
+		//if rotation has changed the position, correct it :
+		if (bounding.top != cropPosition.top || bounding.left != cropPosition.left) {
+			imgInstance = new fabric.Image(this.sourceImage[0], {
+				  left: cropPosition.left + cropPosition.left - bounding.left,
+				  top: cropPosition.top + cropPosition.top - bounding.top,
+				  angle: cropPosition.angle,
+				  //opacity: 0.8,
+				  hasControls: false,
+				  selectable: false
+				});
+			imgInstance.scale(scale);
+		}
+		bounding = imgInstance.getBoundingRect();
+		console.log("Bounding crop rect corrected: ");
+		console.log(bounding);
+		
 
 		var canvas = this.canvas;
 		// remove previous images
@@ -1031,6 +1209,251 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		return result;
 	}
 
+	/**
+	 * set background according to image original size and orientation
+	 */
+	ext_imageAnnotator.Editor.prototype.setInitBackground = function (imgWidth, imgHeight, orientation = 0) {
+		
+		var editor = this;
+		
+		var angle;
+
+		editor.backgroundOrientation = orientation;
+		// update size to consider backgroundOrientation
+		this.updateSize();
+		
+		var invertWidthHeight = false;
+		switch (orientation) {
+			case 1 : 
+				angle = 0;
+				break;
+			case 3:
+				angle = 180;
+				break;
+			case 6:
+				angle = 90;
+				invertWidthHeight = true;
+				break;
+			case 8:
+				angle = 270;
+				invertWidthHeight = true;
+				break;
+			default:
+				angle = 0;
+				break;
+		}
+		
+		console.log('add background imgWidth, imgHeight 0');
+		console.log([imgWidth, imgHeight]);
+		
+		if (invertWidthHeight) {
+			var temp = this.sourceImage.get(0).width;
+
+			temp = imgHeight;
+			imgHeight = imgWidth;
+			imgWidth = temp;
+		}
+
+		if (this.isCustomWidth && invertWidthHeight) {
+			/*var temp = this.sourceImage.get(0).width;
+			this.sourceImage.get(0).width = this.image.get(0).height;
+			this.sourceImage.get(0).height = temp;*/
+			//editor.updateSize();
+		}
+
+		// TODO : there is a bug : rotation is done around the top left corner,
+		// so image disapaer from canvas when turned
+		// we must adjust position when image is rotated
+		// moreover, we must manage correctly crop....
+		
+		console.log("setInitBackground, orientation : " + angle + " or:"  + orientation);
+		
+		
+		console.log(editor.image[0]);
+
+		var imgInstance = new fabric.Image(editor.sourceImage[0], {
+			  left: 0,
+			  top: 0,
+			  angle: angle,
+			  //centeredRotation: true,
+			  //opacity: 0.8,
+			  hasControls: false,
+			  selectable: false
+		});
+		
+		console.log('add background width');
+		console.log(imgWidth);
+
+		// scale to set image size to canvas width :
+		var scale = editor.editorWidth / imgWidth;
+
+		editor.fixedBackgroundWidth = editor.editorWidth;
+		editor.fixedBackgroundTop = 0;
+		editor.fixedBackgroundLeft = 0;
+		editor.fixedBackgroundScale = 1;
+		
+		console.log("bg editor.fixedHeight : " +editor.fixedHeight)
+
+		if (editor.fixedHeight) {
+			scale = editor.baseWidth / imgWidth;
+			var realWidth = imgWidth * scale;
+			
+			
+			var scaleF = editor.fixedHeight / imgHeight;
+			if (scaleF < scale) {
+				// margin on right and left
+				editor.fixedBackgroundScale = scaleF / scale;
+				scale = scaleF;
+				editor.fixedBackgroundWidth = Math.round(realWidth * editor.fixedBackgroundScale);
+				editor.fixedBackgroundLeft = Math.round((editor.editorWidth - editor.fixedBackgroundWidth) / 2);
+				editor.fixedBackgroundTop = 0;
+				console.log("fixedBackgroundLeft 1 :" + editor.fixedBackgroundLeft);
+			} else {
+				// width = baseWidth
+				editor.fixedBackgroundScale = 1;
+				//var realHeight = imgHeight * scale;
+				var realHeight = editor.fixedHeight;
+				editor.fixedBackgroundTop = Math.round((editor.fixedHeight - realHeight) / 2);
+				editor.fixedBackgroundLeft = Math.round((editor.editorWidth - realWidth) / 2);
+				editor.fixedBackgroundWidth = Math.round(realWidth);
+				// margins on top and bottom
+				console.log("fixedBackgroundLeft 2 :" + editor.fixedBackgroundLeft);
+				console.log("fixedBackgroundLeft 2 fixedHeight :" + editor.fixedHeight);
+				console.log("fixedBackgroundLeft 2 realHeight :" + realHeight);
+			}
+		} else {
+			
+		}
+		
+		
+		imgInstance.top = editor.fixedBackgroundTop;
+		imgInstance.left = editor.fixedBackgroundLeft;
+
+		// apply scale :
+		imgInstance.scale(scale);
+		//var widthTemp = imgInstance.width;
+		//var heightTemp = imgInstance.height;
+		//imgInstance.width = widthTemp * scale;
+		//imgInstance.height = heightTemp * scale;
+
+		this.backgroundIsCropped = false;
+
+		// add new image cropped :
+		editor.canvas.add(imgInstance);
+
+		console.log("after imgInstance adding to canvas");
+		console.log($.extend({}, imgInstance));
+
+		switch (orientation) {
+			case 6:
+			case 8:
+			default:
+				imgInstance.center();
+				imgInstance.setCoords();
+				var bounding = imgInstance.getBoundingRect();
+				// adjust background position info, changed due to the center() call
+				editor.fixedBackgroundTop = bounding.top;
+				editor.fixedBackgroundLeft = bounding.left;
+
+				break;
+		}
+		console.log('bounding');
+		console.log(bounding);
+		console.log('backgroun top left width : ');
+		console.log([editor.fixedBackgroundTop,editor.fixedBackgroundLeft,editor.fixedBackgroundWidth]);
+
+		imgInstance.sendToBack();
+
+		editor.backgroundImage = imgInstance;
+
+		editor.setCropZonePosition(editor.originalCropPosition);
+		
+
+		editor.canvas.renderAll();
+		
+	}
+
+	ext_imageAnnotator.Editor.prototype.getSourceImageName = function () {
+
+		// TODO : we should not get image name from this src filename (it cant be a thumb)
+		// we should read File name in a dedicated data attribut
+
+		var srcfileurl = $(this.image).get(0).src;
+
+		// test if url is url of a thumb : 
+		var thumbRegexp = new RegExp("/[a-z0-9]/[a-z0-9]{2}/([^/]+)/([^/]+)$", "g");
+
+		var thumbResult = thumbRegexp.exec(srcfileurl);
+
+		if (thumbResult) {
+			return thumbResult[1];
+		}
+		// if this is not a thumb, the filename is the correct File name
+		return srcfileurl.substring(srcfileurl.lastIndexOf('/')+1);
+	}
+	
+	ext_imageAnnotator.Editor.prototype.getSourceImageUrl = function () {
+
+		if (this.sourceImage && $(this.sourceImage).get(0).src) {
+			return $(this.sourceImage).get(0).src
+		}
+		// TODO : we should not get image name from this src filename (it cant be a thumb)
+		// we should read File name in a dedicated data attribut
+
+		var srcfileurl = $(this.image).get(0).src;
+
+		var thumbRegexpReplace = new RegExp("/thumb/([a-z0-9])/([a-z0-9]{2})/([^/]+)/([^/]+)$", "g");
+
+		console.log(thumbRegexpReplace.exec(srcfileurl));
+		srcfileurl = srcfileurl.replace(thumbRegexpReplace, '/$1/$2/$3');
+		
+		
+		return srcfileurl;
+	}
+	
+	/**
+	 * this function do q query to mediawiki api to get back image real size and orientation
+	 */
+	ext_imageAnnotator.Editor.prototype.getBackgroundOrientation = function (callback) {
+
+		var filename = this.getSourceImageName();
+		var fileTitle = 'File:' + decodeURIComponent(filename);
+
+		$.ajax({
+			type: "POST",
+			url: mw.util.wikiScript('api'),
+			data: { 
+				action:'query',
+				format:'json',
+				titles: fileTitle,
+				iiprop: "metadata|size", 
+				prop: 'imageinfo'
+			},
+			dataType: 'json',
+			success: function (jsondata) {
+				var orientation = 0;
+				var width = 0;
+				var height = 0;
+				if (jsondata.query.pages) {
+					$.each(jsondata.query.pages, function(pageid, page) {
+						if (! page.imageinfo) {
+							console.error('imageinfo undefined', page);
+							return;
+						}
+						width = page.imageinfo[0].width;
+						height = page.imageinfo[0].height;
+						page.imageinfo[0].metadata.forEach(function(element) {
+							  if(element.name == 'Orientation') {
+								  orientation = element.value;
+							  }
+						});
+					});
+				}
+				callback(width, height, orientation);
+			}
+		});
+	}
+
 	ext_imageAnnotator.Editor.prototype.addBackground = function () {
 
 		if(this.hasBackground()) {
@@ -1044,65 +1467,20 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		// load image first to get img size
 
 		img.onload = function() {
-			var imgWidth = this.width;
-			var imgHeight = this.height;
-
-			var imgInstance = new fabric.Image(editor.image[0], {
-				  left: 0,
-				  top: 0,
-				  //opacity: 0.8,
-				  hasControls: false,
-				  selectable: false
-			});
-
-			// scale to set image size to canvas width :
-			var scale = editor.editorWidth / imgWidth;
-
-			editor.fixedBackgroundWidth = editor.editorWidth;
-			editor.fixedBackgroundTop = 0;
-			editor.fixedBackgroundLeft = 0;
-			editor.fixedBackgroundScale = 1;
-
-			if (editor.fixedHeight) {
-				scale = editor.baseWidth / imgWidth;
-				var realWidth = imgWidth * scale;
-				
-				
-				var scaleF = editor.fixedHeight / imgHeight;
-				if (scaleF < scale) {
-					// margin on right and left
-					editor.fixedBackgroundScale = scaleF / scale;
-					scale = scaleF;
-					editor.fixedBackgroundWidth = Math.round(realWidth * editor.fixedBackgroundScale);
-					editor.fixedBackgroundLeft = Math.round((editor.editorWidth - editor.fixedBackgroundWidth) / 2);
-					editor.fixedBackgroundTop = 0;
-				} else {
-					// width = baseWidth
-					editor.fixedBackgroundScale = 1;
-					var realHeight = imgHeight * scale;
-					editor.fixedBackgroundTop = Math.round((editor.fixedHeight - realHeight) / 2);
-					editor.fixedBackgroundLeft = Math.round((editor.editorWidth - realWidth) / 2);
-					editor.fixedBackgroundWidth = Math.round(realWidth);
-					// margins on top and bottom
+			
+			var imgObj = this;
+			
+			editor.getBackgroundOrientation(function(width, height, orientation) {
+				if (! width || ! height) {
+					width = imgObj.width;
+					height = imgObj.height;
 				}
-			}
-			imgInstance.top = editor.fixedBackgroundTop;
-			imgInstance.left = editor.fixedBackgroundLeft;
-			// apply scale :
-			imgInstance.scale(scale);
-			this.backgroundIsCropped = false;
-
-			// add new image cropped :
-			editor.canvas.add(imgInstance);
-			imgInstance.sendToBack();
-
-			editor.backgroundImage = imgInstance;
-
-			editor.setCropZonePosition(editor.originalCropPosition);
-
-			editor.canvas.renderAll();
+				width = imgObj.width;
+				height = imgObj.height;
+				editor.setInitBackground(width, height, orientation);
+			});
 		}
-		img.src = $(this.image).attr('src');
+		img.src = this.getSourceImageUrl();
 
 
 	}
@@ -1129,12 +1507,16 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		// get the cropzone item :
 		objects.forEach(function(item) {
 			if (item.type == 'cropzone') {
+
 				result.cropzoneleft = Math.round(item.left);
 				result.cropzonetop = Math.round(item.top);
 				result.cropzonewidth = Math.round(item.width);
 				result.cropzoneheight = Math.round(item.height);
 				result.cropzonescaleX = item.scaleX;
 				result.cropzonescaleY = item.scaleY;
+			} else if (item.type == 'image') {
+				// we get back orientation from background object
+				result.angle = item.angle;
 			}
 		});
 
@@ -1146,6 +1528,9 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 		
 		result.baseWidth = this.fixedBackgroundWidth;
 
+		console.log ("getCropPosition2");
+		console.log (result);
+		
 		if (this.fixedHeight) {
 			var correctedResult = [];
 			correctedResult.cropzoneleft = Math.round(result.cropzoneleft - this.fixedBackgroundLeft);
@@ -1154,12 +1539,15 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 			correctedResult.cropzoneheight = (result.cropzoneheight );
 			correctedResult.cropzonescaleX = result.cropzonescaleX ;
 			correctedResult.cropzonescaleY = result.cropzonescaleY ;
+			correctedResult.angle = result.angle ;
 			result = correctedResult;
 		}
 		result.baseWidth = this.fixedBackgroundWidth;
 
-		//console.log ("getCropPosition");
-		//console.log (result);
+		console.log ("getCropPosition backgroun w, top, left");
+		console.log([this.fixedBackgroundWidth,this.fixedBackgroundTop,this.fixedBackgroundLeft]);
+		console.log ("getCropPosition");
+		console.log (result);
 		return result;
 	}
 

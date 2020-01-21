@@ -90,6 +90,9 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 		$(this.imagediv).css("background-size", "100% 100%");
 		this.clonedImage.hide();
 
+		console.log("addCropZone in CropPopup");
+		console.log(this.cropPosition);
+
 		this.editor.addCropZone(this.cropPosition);
 		var editor = this.editor;
 		var cropPopup = this;
