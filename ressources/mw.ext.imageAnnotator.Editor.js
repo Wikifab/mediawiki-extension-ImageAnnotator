@@ -83,6 +83,21 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 				{'type':'del', 'parent':'tools'}
 			];
 
+		if (ext_imageAnnotator.cropFunctionDisabled) {
+			toolbarConfig = [
+				{'type':'div', 'name':'tools'},
+				{'type':'square', 'parent':'tools'},
+				{'type':'circle', 'parent':'tools'},
+				// {'type':'ellipse', 'parent':'tools'},
+				{'type':'arrow2', 'parent':'tools'},
+				{'type':'line', 'parent':'tools'},
+				{'type':'text', 'parent':'tools'},
+				{'type':'numberedbullet', 'parent':'tools'},
+				{'type':'duplicate', 'parent':'tools'},
+				{'type':'del', 'parent':'tools'}
+			];
+		}
+
 		// colors
 		toolbarConfig = this.addToolBarColors(toolbarConfig);
 

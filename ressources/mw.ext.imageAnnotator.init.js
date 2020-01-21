@@ -16,7 +16,18 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 //$(document).ready(function (mw, ext_imageAnnotator ) {
 ( function ( $, mw , ext_imageAnnotator) {
 
+	ext_imageAnnotator.cropFunctionDisabled = false;
+
+	if (window.matchMedia("(hover: none), (pointer: none), (pointer: coarse)").matches) {
+		// if we are on a mobile device, we disable crop function
+		console.log('Mobile device detected, crop is disabled');
+		ext_imageAnnotator.cropFunctionDisabled = true;
+	}
+
+
 	var editLinkRegister = ext_imageAnnotator.getEditLinkRegister();
+
+
 
 	function isValidImageType(image) {
 		if( ! image || image.length == 0) {
@@ -148,7 +159,7 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 
 		editLinkRegister.registerEditLink(editLink, $(dataInput).attr('name'));
 
-		if (editLink.predefinedFormat) { /* Imposed ratio : the image must be cropped before being added. */
+		if (! ext_imageAnnotator.cropFunctionDisabled && editLink.predefinedFormat) { /* Imposed ratio : the image must be cropped before being added. */
 
 			// Trick to get the actual width and height of the image.
 			$("<img>").attr("src", $(image).attr("src")).load(function(){
