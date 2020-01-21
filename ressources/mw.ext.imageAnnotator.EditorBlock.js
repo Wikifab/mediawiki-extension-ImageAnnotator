@@ -29,18 +29,12 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 
 		this.editorWidth = options['custom-dimensions'] ? options['custom-dimensions'].width : ext_imageAnnotator.standardWidth;
 
-		console.log('editor dimention : ' + this.editorWidth);
-
-
 		this.clonedImage = $(image).clone();
 
 		// check that image is an original size :
 		var imgSrc = this.clonedImage.attr('src');
 		var regex = new RegExp('/thumb/([a-z0-9A-Z])/([a-z0-9A-Z]{2})/([^/]+)/([^/]+)$');
 		if (imgSrc.match(regex)) {
-			console.log("EditorBlock construct");
-			console.log('Warning : image source should not be thumbnail, filename changed to original');
-			console.log(imgSrc);
 			imgSrc = imgSrc.replace(regex, '/$1/$2/$3');
 			this.clonedImage.attr("src",imgSrc);
 		}
@@ -70,7 +64,6 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 		$(this.imagediv).css("background-repeat", "no");
 		$(this.imagediv).css("background-size", "100% 100%");
 		this.clonedImage.hide();
-
 
 		//console.log('launchEditor');
 		//console.log(this.clonedImage);
@@ -126,7 +119,6 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 	 */
 	ext_imageAnnotator.EditorBlock.prototype.hide = function() {
 		// call an cancel action
-		console.log("EditorBlock.prototype.hide");
 	}
 
 	/**

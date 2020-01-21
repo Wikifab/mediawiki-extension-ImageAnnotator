@@ -34,7 +34,7 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 		if (this.sourcePopup) {
 			this.sourcePopup.css({'visibility': 'hidden', 'opacity': '0'});
 		}
-		
+
 		this.cropPopup.popup({
 			blur: false
 		});
@@ -76,7 +76,9 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 
 		if (!this.freeCropping) {
 			// user won't be able to change format
-			if (this.format) options['predefinedFormat'] = this.format;
+			if (this.format) {
+				options['predefinedFormat'] = this.format;
+			}
 			// else default formats
 		} else {
 			options['free-cropping'] = true;
@@ -89,9 +91,6 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 		$(this.imagediv).css("background-repeat", "no");
 		$(this.imagediv).css("background-size", "100% 100%");
 		this.clonedImage.hide();
-
-		console.log("addCropZone in CropPopup");
-		console.log(this.cropPosition);
 
 		this.editor.addCropZone(this.cropPosition);
 		var editor = this.editor;
