@@ -336,7 +336,7 @@
 }
 
 /* smartphones, touchscreens */
-@media (hover: none), (pointer: none), (pointer: coarse) {
+@media (max-width: 500px) {
     .mw-ia-editButton {
         display: none;
     }
