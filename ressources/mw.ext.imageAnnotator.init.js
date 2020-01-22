@@ -18,11 +18,13 @@ ext_imageAnnotator = ext_imageAnnotator || {};
 
 	ext_imageAnnotator.cropFunctionDisabled = false;
 
-	if (window.matchMedia("(hover: none), (pointer: none), (pointer: coarse)").matches) {
+	if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
 		// if we are on a mobile device, we disable crop function
 		console.log('Mobile device detected, crop is disabled');
 		ext_imageAnnotator.cropFunctionDisabled = true;
 	}
+
+
 
 
 	var editLinkRegister = ext_imageAnnotator.getEditLinkRegister();
