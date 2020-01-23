@@ -1134,7 +1134,7 @@ var ext_imageAnnotator = ext_imageAnnotator || {};
 	/**
 	 * set background according to image original size and orientation
 	 */
-	ext_imageAnnotator.Editor.prototype.setInitBackground = function (imgWidth, imgHeight, orientation = 0) {
+	ext_imageAnnotator.Editor.prototype.setInitBackground = function (imgWidth, imgHeight, orientation) {
 		
 		var editor = this;
 		
