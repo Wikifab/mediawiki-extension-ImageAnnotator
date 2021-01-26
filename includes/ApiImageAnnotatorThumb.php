@@ -105,7 +105,7 @@ class ApiImageAnnotatorThumb extends \ApiBase {
 
 
 	public function correctSvgIncludedRessourcePathBeforeConversion($svg, $fileIncluded, $hash, $tmpDir, &$tempFiles) {
-		global $wgUploadDirectory, $wgServer, $wgImageAnnotatorOldWgServers, $wgUploadPath;
+		global $wgUploadDirectory, $wgServer, $wgImageAnnotatorOldWgServers, $wgUploadPath, $wgImageAnnotatorRemoveExif;
 
 		// replace old wgServerUrls :
 		foreach ($wgImageAnnotatorOldWgServers as $oldWgServer) {
@@ -189,6 +189,12 @@ class ApiImageAnnotatorThumb extends \ApiBase {
 				// we should never have empty url, why this appends ?
 				$svg = str_replace('"' . $fileToReplace['url'], '"' . $fileToReplace['path'], $svg);
 			}
+		}
+
+		$filepath = $wgUploadDirectory . '/' . $fileIncluded['hashdir']. '/' .  $fileIncluded['filename'];
+		if ($wgImageAnnotatorRemoveExif && !file_exists($filepath . "_original"))) {
+			$removeExifCmd = "exiftool -all= " . escapeshellarg ($filepath);
+			exec($removeExifCmd);
 		}
 
 		return $svg;

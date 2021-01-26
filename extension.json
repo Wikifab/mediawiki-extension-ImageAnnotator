@@ -20,6 +20,7 @@
 	],
 	"config": {
 		"ImageAnnotator-areaClasses": "imageAnnotator",
+		"ImageAnnotatorRemoveExif": false,
 		"ImageAnnotatorOldWgServers": []
 	},
 	"MessagesDirs": {
