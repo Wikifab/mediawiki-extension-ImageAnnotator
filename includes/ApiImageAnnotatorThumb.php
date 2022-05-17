@@ -192,7 +192,7 @@ class ApiImageAnnotatorThumb extends \ApiBase {
 		}
 
 		$filepath = $wgUploadDirectory . '/' . $fileIncluded['hashdir']. '/' .  $fileIncluded['filename'];
-		if ($wgImageAnnotatorRemoveExif && !file_exists($filepath . "_original"))) {
+		if ($wgImageAnnotatorRemoveExif && !file_exists($filepath . "_original")) {
 			$removeExifCmd = "exiftool -all= " . escapeshellarg ($filepath);
 			exec($removeExifCmd);
 		}
