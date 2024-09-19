@@ -105,7 +105,7 @@ class ApiImageAnnotatorThumb extends \ApiBase {
 
 
 	public function correctSvgIncludedRessourcePathBeforeConversion($svg, $fileIncluded, $hash, $tmpDir, &$tempFiles) {
-		global $wgUploadDirectory, $wgServer, $wgImageAnnotatorOldWgServers, $wgUploadPath, $wgImageAnnotatorRemoveExif;
+		global $wgUploadDirectory, $wgServer, $wgImageAnnotatorOldWgServers, $wgUploadPath, $wgImageAnnotatorRemoveExif, $wgImageAnnotatorConvertWhiteBg;
 
 		// replace old wgServerUrls :
 		foreach ($wgImageAnnotatorOldWgServers as $oldWgServer) {
@@ -169,9 +169,18 @@ class ApiImageAnnotatorThumb extends \ApiBase {
 		foreach ($filesToReplaces as $fileToReplace) {
 			// replace file url by file's relative path :
 
+            $pngTransform = false;
+            if (isset($wgImageAnnotatorConvertWhiteBg) && $wgImageAnnotatorConvertWhiteBg) {
+                $exploded = explode('.',$fileToReplace['filename']);
+                if (strtolower(end($exploded)) == 'png') {
+                    $pngTransform = true;
+                }
+            }
+
+
 			// if file path as a quote (') in it, it cause trouble during svg conversion
 			// we must copy the file to a temp path without quote
-			if (strpos($fileToReplace['path'], "'") !== false) {
+			if (strpos($fileToReplace['path'], "'") !== false || $pngTransform) {
 				$tmpSourceFileName = $hash. '-' .  $fileToReplace['filename'];
 				$tmpSourceFileName = str_replace("'", '_', $tmpSourceFileName);
 				$tmpSourceFilePath = $tmpDir . "/" . $tmpSourceFileName;
@@ -182,6 +191,12 @@ class ApiImageAnnotatorThumb extends \ApiBase {
 				);
 				$copyContext = stream_context_create ( $contextOptions );
 				copy ( $fileToReplace ['path'], $tmpSourceFilePath, $copyContext );
+                if ($pngTransform) {
+                    $sourceFileTransform = $tmpSourceFilePath;
+				    $tempFiles[] = $sourceFileTransform;
+                    $tmpSourceFilePath = $tmpSourceFilePath .'-white.png';
+                    exec("convert '$sourceFileTransform' -background white -alpha remove -alpha off '$tmpSourceFilePath'");
+                }
 				$fileToReplace['path'] = $tmpSourceFilePath;
 				$tempFiles[] = $tmpSourceFilePath;
 			}

@@ -37,6 +37,12 @@ It's important to set the target param, using the name of the image attribute. N
 {{#annotatedImage:[[File:{{{Main_Picture}}}|frameless|border]]|{{{Main_Picture_annotation}}}}}
  ```
  
+# configuration
+
+it possible to force conversion of png to use a white background, using this config in file LocalSettings.php :
+```
+$wgImageAnnotatorConvertWhiteBg = True
+```
  
 # Credits
 
